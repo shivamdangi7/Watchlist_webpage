@@ -155,36 +155,143 @@
             background: #5a6268;
         }
 
+        .tag-filters {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .tag-filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .tag-filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag-filter-btn {
+            padding: 6px 14px;
+            border: 2px solid;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-filter-btn.red { border-color: #dc3545; color: #dc3545; background: white; }
+        .tag-filter-btn.red:hover { background: #dc3545; color: white; }
+
+        .tag-filter-btn.blue { border-color: #007bff; color: #007bff; background: white; }
+        .tag-filter-btn.blue:hover { background: #007bff; color: white; }
+
+        .tag-filter-btn.green { border-color: #28a745; color: #28a745; background: white; }
+        .tag-filter-btn.green:hover { background: #28a745; color: white; }
+
+        .tag-filter-btn.orange { border-color: #fd7e14; color: #fd7e14; background: white; }
+        .tag-filter-btn.orange:hover { background: #fd7e14; color: white; }
+
+        .tag-filter-btn.purple { border-color: #6f42c1; color: #6f42c1; background: white; }
+        .tag-filter-btn.purple:hover { background: #6f42c1; color: white; }
+
         .symbols-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 10px;
             margin-top: 15px;
         }
 
-        .symbol-btn {
-            padding: 10px;
+        .symbol-card {
             background: white;
             border: 2px solid #667eea;
-            color: #667eea;
             border-radius: 5px;
+            padding: 8px;
+            position: relative;
+        }
+
+        .symbol-card.tagged-red { border-color: #dc3545; }
+        .symbol-card.tagged-blue { border-color: #007bff; }
+        .symbol-card.tagged-green { border-color: #28a745; }
+        .symbol-card.tagged-orange { border-color: #fd7e14; }
+        .symbol-card.tagged-purple { border-color: #6f42c1; }
+
+        .symbol-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .symbol-btn {
+            padding: 8px 10px;
+            background: transparent;
+            border: none;
+            color: #667eea;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
+            text-align: left;
+            flex: 1;
         }
 
         .symbol-btn:hover {
-            background: #667eea;
-            color: white;
+            color: #4c5fd5;
+            text-decoration: underline;
         }
 
-        .symbol-btn.opened {
-            background: #28a745;
-            border-color: #28a745;
+        .symbol-remove {
+            background: #dc3545;
             color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+
+        .symbol-remove:hover {
+            background: #c82333;
+        }
+
+        .symbol-tags {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tag-btn {
+            padding: 3px 8px;
+            border: 1px solid;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tag-btn.red { border-color: #dc3545; color: #dc3545; background: white; }
+        .tag-btn.red.active { background: #dc3545; color: white; }
+
+        .tag-btn.blue { border-color: #007bff; color: #007bff; background: white; }
+        .tag-btn.blue.active { background: #007bff; color: white; }
+
+        .tag-btn.green { border-color: #28a745; color: #28a745; background: white; }
+        .tag-btn.green.active { background: #28a745; color: white; }
+
+        .tag-btn.orange { border-color: #fd7e14; color: #fd7e14; background: white; }
+        .tag-btn.orange.active { background: #fd7e14; color: white; }
+
+        .tag-btn.purple { border-color: #6f42c1; color: #6f42c1; background: white; }
+        .tag-btn.purple.active { background: #6f42c1; color: white; }
 
         .batch-status {
             margin-top: 10px;
@@ -293,8 +400,16 @@ Example:
                             const existingIndex = folders.findIndex(f => f.name === folderName);
 
                             if (existingIndex >= 0) {
-                                // Update existing folder
-                                folders[existingIndex].symbols = symbols;
+                                // Update existing folder - preserve existing tags
+                                const existingSymbolsMap = {};
+                                folders[existingIndex].symbols.forEach(s => {
+                                    existingSymbolsMap[s.name] = s.tags || [];
+                                });
+
+                                folders[existingIndex].symbols = symbols.map(sym => ({
+                                    name: sym,
+                                    tags: existingSymbolsMap[sym] || []
+                                }));
                                 folders[existingIndex].batchIndex = 0;
                                 folders[existingIndex].batchRunning = false;
                                 folders[existingIndex].openedSymbols = [];
@@ -302,7 +417,7 @@ Example:
                                 // Add new folder
                                 folders.push({
                                     name: folderName,
-                                    symbols: symbols,
+                                    symbols: symbols.map(sym => ({ name: sym, tags: [] })),
                                     batchIndex: 0,
                                     batchRunning: false,
                                     openedSymbols: []
@@ -417,17 +532,81 @@ Example:
                 header.appendChild(folderName);
                 header.appendChild(controls);
 
+                // Tag filters
+                const tagFilters = document.createElement('div');
+                tagFilters.className = 'tag-filters';
+
+                const tagTitle = document.createElement('div');
+                tagTitle.className = 'tag-filter-title';
+                tagTitle.textContent = 'Open by Tag:';
+
+                const tagButtons = document.createElement('div');
+                tagButtons.className = 'tag-filter-buttons';
+
+                const tags = ['red', 'blue', 'green', 'orange', 'purple'];
+                tags.forEach(tag => {
+                    const count = folder.symbols.filter(s => s.tags && s.tags.includes(tag)).length;
+                    if (count > 0) {
+                        const btn = document.createElement('button');
+                        btn.className = `tag-filter-btn ${tag}`;
+                        btn.textContent = `${tag.charAt(0).toUpperCase() + tag.slice(1)} (${count})`;
+                        btn.onclick = () => openByTag(folderIndex, tag);
+                        tagButtons.appendChild(btn);
+                    }
+                });
+
+                tagFilters.appendChild(tagTitle);
+                tagFilters.appendChild(tagButtons);
+
                 // Symbols grid
                 const symbolsGrid = document.createElement('div');
                 symbolsGrid.className = 'symbols-grid';
 
-                folder.symbols.forEach((symbol, symbolIndex) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'symbol-btn';
-                    btn.textContent = symbol;
-                    btn.id = `symbol-${folderIndex}-${symbolIndex}`;
-                    btn.onclick = () => openSymbol(folderIndex, symbolIndex);
-                    symbolsGrid.appendChild(btn);
+                folder.symbols.forEach((symbolObj, symbolIndex) => {
+                    const card = document.createElement('div');
+                    card.className = 'symbol-card';
+                    card.id = `symbol-${folderIndex}-${symbolIndex}`;
+
+                    // Add tag class if symbol has tags
+                    if (symbolObj.tags && symbolObj.tags.length > 0) {
+                        card.classList.add(`tagged-${symbolObj.tags[0]}`);
+                    }
+
+                    // Symbol header with name and remove button
+                    const symbolHeader = document.createElement('div');
+                    symbolHeader.className = 'symbol-header';
+
+                    const symbolBtn = document.createElement('button');
+                    symbolBtn.className = 'symbol-btn';
+                    symbolBtn.textContent = symbolObj.name;
+                    symbolBtn.onclick = () => openSymbol(folderIndex, symbolIndex);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'symbol-remove';
+                    removeBtn.textContent = '✕';
+                    removeBtn.onclick = () => removeSymbol(folderIndex, symbolIndex);
+
+                    symbolHeader.appendChild(symbolBtn);
+                    symbolHeader.appendChild(removeBtn);
+
+                    // Tag buttons
+                    const tagsDiv = document.createElement('div');
+                    tagsDiv.className = 'symbol-tags';
+
+                    tags.forEach(tag => {
+                        const tagBtn = document.createElement('button');
+                        tagBtn.className = `tag-btn ${tag}`;
+                        if (symbolObj.tags && symbolObj.tags.includes(tag)) {
+                            tagBtn.classList.add('active');
+                        }
+                        tagBtn.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+                        tagBtn.onclick = () => toggleTag(folderIndex, symbolIndex, tag);
+                        tagsDiv.appendChild(tagBtn);
+                    });
+
+                    card.appendChild(symbolHeader);
+                    card.appendChild(tagsDiv);
+                    symbolsGrid.appendChild(card);
                 });
 
                 // Batch status
@@ -437,6 +616,9 @@ Example:
                 batchStatus.style.display = 'none';
 
                 folderDiv.appendChild(header);
+                if (tagButtons.children.length > 0) {
+                    folderDiv.appendChild(tagFilters);
+                }
                 folderDiv.appendChild(symbolsGrid);
                 folderDiv.appendChild(batchStatus);
                 container.appendChild(folderDiv);
@@ -445,18 +627,65 @@ Example:
 
         function openSymbol(folderIndex, symbolIndex) {
             const folder = folders[folderIndex];
-            const symbol = folder.symbols[symbolIndex];
-            const url = `https://in.tradingview.com/chart/?symbol=${symbol}`;
+            const symbolObj = folder.symbols[symbolIndex];
+            const url = `https://in.tradingview.com/chart/?symbol=${symbolObj.name}`;
 
             window.open(url, '_blank');
-
-            // Mark as opened
-            const btn = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
-            btn.classList.add('opened');
 
             if (!folder.openedSymbols.includes(symbolIndex)) {
                 folder.openedSymbols.push(symbolIndex);
             }
+        }
+
+        function removeSymbol(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            if (confirm(`Remove ${symbolObj.name} from this folder?`)) {
+                folder.symbols.splice(symbolIndex, 1);
+                saveFolders();
+                displayFolders();
+                showNotification('Symbol removed!', 'info');
+            }
+        }
+
+        function toggleTag(folderIndex, symbolIndex, tag) {
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            if (!symbolObj.tags) {
+                symbolObj.tags = [];
+            }
+
+            const tagIndex = symbolObj.tags.indexOf(tag);
+            if (tagIndex >= 0) {
+                // Remove tag
+                symbolObj.tags.splice(tagIndex, 1);
+            } else {
+                // Add tag (only one tag per symbol)
+                symbolObj.tags = [tag];
+            }
+
+            saveFolders();
+            displayFolders();
+        }
+
+        function openByTag(folderIndex, tag) {
+            const folder = folders[folderIndex];
+            const taggedSymbols = folder.symbols
+                .map((s, idx) => ({ symbol: s, index: idx }))
+                .filter(item => item.symbol.tags && item.symbol.tags.includes(tag));
+
+            if (taggedSymbols.length === 0) {
+                alert(`No symbols found with ${tag} tag`);
+                return;
+            }
+
+            taggedSymbols.forEach(item => {
+                openSymbol(folderIndex, item.index);
+            });
+
+            showNotification(`Opened ${taggedSymbols.length} ${tag} tagged symbol(s)!`, 'success');
         }
 
         function openAll(folderIndex) {

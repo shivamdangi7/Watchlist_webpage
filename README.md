@@ -22,12 +22,29 @@ A web-based tool for managing and opening TradingView chart links for multiple s
 - Delete individual folders with the "Delete" button
 - Clear all folders at once with "Clear All Folders" button
 
+### 🏷️ Color Tagging System
+Organize your symbols with 5 color tags:
+- **Red, Blue, Green, Orange, Purple** tags available for each symbol
+- Click tag buttons below each symbol to assign/remove tags
+- Only one tag per symbol (clicking a new tag replaces the old one)
+- Symbol cards display colored borders based on their assigned tag
+- Tag counts are shown in the "Open by Tag" section
+
+### 🗑️ Symbol Management
+- **Remove individual symbols**: Each symbol has an "✕" button to remove it from the folder
+- Confirmation dialog prevents accidental deletions
+- Removed symbols are permanently deleted from the folder
+
 ### 🔗 Smart Link Opening
 Each folder provides multiple ways to open TradingView charts:
 
-1. **Individual Symbol Buttons**: Click any symbol to open its TradingView chart
+1. **Individual Symbol Buttons**: Click any symbol name to open its TradingView chart
 2. **Open All**: Opens all symbols in the folder at once in separate tabs
-3. **Open 2 at a time**:
+3. **Open by Tag**: Opens all symbols with a specific color tag
+   - Buttons appear only for tags that have symbols assigned
+   - Shows count of symbols for each tag
+   - Opens all tagged symbols in one click
+4. **Open 2 at a time**:
    - Opens 2 symbols at a time
    - Shows progress tracking
    - Click "Next 2" to continue opening the next batch
@@ -35,10 +52,11 @@ Each folder provides multiple ways to open TradingView charts:
    - Can stop the process anytime with "Stop" button
 
 ### ✅ Visual Feedback
-- Opened symbols are highlighted in green
-- Success notifications when folders are added/deleted
+- Symbol cards display colored borders matching their assigned tag
+- Success notifications when folders/symbols are added/deleted/tagged
 - Real-time progress tracking for batch opening
-- Confirmation dialogs for destructive actions
+- Confirmation dialogs for destructive actions (delete/remove)
+- Tag buttons highlight when active
 
 ## How to Use
 
@@ -52,14 +70,21 @@ Each folder provides multiple ways to open TradingView charts:
 
 3. **Click "Add Folder"**: Your folders will appear below with all symbols as clickable buttons
 
-4. **Choose your opening method**:
-   - Click individual symbols as needed
+4. **Tag your symbols** (optional):
+   - Click the color tag buttons below each symbol
+   - Assign Red, Blue, Green, Orange, or Purple tags
+   - Use tags to categorize symbols by strategy, sector, etc.
+
+5. **Choose your opening method**:
+   - Click individual symbol names to open charts
    - Use "Open All" for quick access to all charts
+   - Use tag buttons (e.g., "Red (4)") to open all symbols with that tag
    - Use "Open 2 at a time" for controlled batch opening
 
-5. **Manage your folders**:
+6. **Manage your symbols and folders**:
+   - Click "✕" next to any symbol to remove it
    - Add more folders by pasting new data
-   - Delete folders you no longer need
+   - Delete entire folders with the "Delete" button
    - Clear input box after adding folders
 
 ## Data Format
@@ -101,9 +126,29 @@ The input format is simple:
 - **Stop**: Stops the batch opening process
 - **Delete**: Removes the specific folder (with confirmation)
 
+### Tag Controls (per folder)
+- **Red (N)**: Opens all symbols tagged with Red
+- **Blue (N)**: Opens all symbols tagged with Blue
+- **Green (N)**: Opens all symbols tagged with Green
+- **Orange (N)**: Opens all symbols tagged with Orange
+- **Purple (N)**: Opens all symbols tagged with Purple
+- N indicates the number of symbols with that tag
+
+### Symbol Controls (per symbol)
+- **Symbol Name Button**: Click to open the symbol's TradingView chart
+- **✕ Button**: Remove the symbol from the folder
+- **Color Tag Buttons**: Click to assign/change the symbol's tag color
+
 ## Notes
 
-- Folders are automatically saved and will be available when you revisit the page
-- If a folder with the same name already exists, it will be updated with new symbols
-- Opened symbols are visually marked (green) to track which ones you've already viewed
-- The batch opening feature helps prevent overwhelming your browser with too many tabs at once
+- **Persistence**: All folders, symbols, and tags are automatically saved to localStorage and persist across browser sessions
+- **Folder Updates**: If you paste data for a folder that already exists, it updates the symbols while preserving existing tags
+- **Tag Organization**: Use color tags to categorize symbols by:
+  - Trading strategy (e.g., Red = Breakout, Blue = Trend Following)
+  - Sector or industry grouping
+  - Risk level or position size
+  - Any custom categorization system you prefer
+- **One Tag Per Symbol**: Each symbol can only have one color tag at a time
+- **Symbol Removal**: Removing a symbol permanently deletes it from the folder
+- **Batch Opening**: The "Open 2 at a time" feature helps prevent overwhelming your browser with too many tabs at once
+- **Browser Compatibility**: Works with all modern browsers that support localStorage
