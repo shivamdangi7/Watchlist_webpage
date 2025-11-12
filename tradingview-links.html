@@ -146,6 +146,15 @@
             background: #c82333;
         }
 
+        .btn-delete {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #5a6268;
+        }
+
         .symbols-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -214,14 +223,18 @@
         <div class="instruction">
             <h3>How to use:</h3>
             <p>Paste your data in the format: <code>### Date, NSE:SYMBOL1, NSE:SYMBOL2, BSE:SYMBOL3</code><br>
-            Click "Parse Data" to generate clickable links. Use "Open All" to open all links at once, or "Open 2 at a time" to open them in batches.</p>
+            Click "Add Folder" to add folders to your list. Folders are cached - you can keep adding more! Use "Open All" to open all links at once, or "Open 2 at a time" to open them in batches.</p>
         </div>
 
         <div class="input-section">
             <textarea id="clipboardInput" placeholder="Paste your clipboard data here...
 Example:
 ### 11 Nov 2025,NSE:URBANCO, NSE:RUPA, NSE:SEAMECLTD, NSE:PREMEXPLN"></textarea>
-            <button class="btn-primary" onclick="parseData()">Parse Data</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="parseData()">Add Folder</button>
+                <button class="btn-primary" onclick="clearTextarea()" style="background: #6c757d;">Clear Input</button>
+                <button class="btn-primary" onclick="clearAllFolders()" style="background: #dc3545;">Clear All Folders</button>
+            </div>
         </div>
 
         <div id="foldersContainer" class="folders-container"></div>
@@ -231,6 +244,27 @@ Example:
         let folders = [];
         let batchIntervals = {};
 
+        // Load folders from localStorage on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFolders();
+        });
+
+        function loadFolders() {
+            const saved = localStorage.getItem('tradingViewFolders');
+            if (saved) {
+                try {
+                    folders = JSON.parse(saved);
+                    displayFolders();
+                } catch (e) {
+                    console.error('Error loading saved folders:', e);
+                }
+            }
+        }
+
+        function saveFolders() {
+            localStorage.setItem('tradingViewFolders', JSON.stringify(folders));
+        }
+
         function parseData() {
             const input = document.getElementById('clipboardInput').value.trim();
             if (!input) {
@@ -238,8 +272,8 @@ Example:
                 return;
             }
 
-            folders = [];
             const lines = input.split('\n');
+            let newFoldersAdded = 0;
 
             lines.forEach(line => {
                 line = line.trim();
@@ -255,24 +289,81 @@ Example:
                         const symbols = parts.slice(1).filter(s => s.includes(':'));
 
                         if (symbols.length > 0) {
-                            folders.push({
-                                name: folderName,
-                                symbols: symbols,
-                                batchIndex: 0,
-                                batchRunning: false,
-                                openedSymbols: []
-                            });
+                            // Check if folder already exists
+                            const existingIndex = folders.findIndex(f => f.name === folderName);
+
+                            if (existingIndex >= 0) {
+                                // Update existing folder
+                                folders[existingIndex].symbols = symbols;
+                                folders[existingIndex].batchIndex = 0;
+                                folders[existingIndex].batchRunning = false;
+                                folders[existingIndex].openedSymbols = [];
+                            } else {
+                                // Add new folder
+                                folders.push({
+                                    name: folderName,
+                                    symbols: symbols,
+                                    batchIndex: 0,
+                                    batchRunning: false,
+                                    openedSymbols: []
+                                });
+                                newFoldersAdded++;
+                            }
                         }
                     }
                 }
             });
 
-            if (folders.length === 0) {
+            if (newFoldersAdded === 0 && folders.length === 0) {
                 alert('No valid data found. Make sure your data starts with ### followed by folder name and symbols.');
                 return;
             }
 
+            saveFolders();
             displayFolders();
+
+            // Show success message
+            if (newFoldersAdded > 0) {
+                showNotification(`Added ${newFoldersAdded} new folder(s)!`, 'success');
+            } else {
+                showNotification('Folder(s) updated!', 'info');
+            }
+        }
+
+        function clearTextarea() {
+            document.getElementById('clipboardInput').value = '';
+        }
+
+        function clearAllFolders() {
+            if (confirm('Are you sure you want to clear all folders? This cannot be undone.')) {
+                folders = [];
+                saveFolders();
+                displayFolders();
+                showNotification('All folders cleared!', 'info');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#28a745' : '#17a2b8'};
+                color: white;
+                border-radius: 5px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
         function displayFolders() {
@@ -313,9 +404,15 @@ Example:
                 stopBtn.id = `stop-btn-${folderIndex}`;
                 stopBtn.onclick = () => stopBatch(folderIndex);
 
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-control btn-delete';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteFolder(folderIndex);
+
                 controls.appendChild(openAllBtn);
                 controls.appendChild(openBatchBtn);
                 controls.appendChild(stopBtn);
+                controls.appendChild(deleteBtn);
 
                 header.appendChild(folderName);
                 header.appendChild(controls);
@@ -447,6 +544,16 @@ Example:
             if (folder.batchIndex < folder.symbols.length) {
                 const statusDiv = document.getElementById(`status-${folderIndex}`);
                 statusDiv.textContent = `Stopped at ${folder.batchIndex} of ${folder.symbols.length} symbols.`;
+            }
+        }
+
+        function deleteFolder(folderIndex) {
+            const folder = folders[folderIndex];
+            if (confirm(`Are you sure you want to delete the folder "${folder.name}"?`)) {
+                folders.splice(folderIndex, 1);
+                saveFolders();
+                displayFolders();
+                showNotification('Folder deleted!', 'info');
             }
         }
     </script>
