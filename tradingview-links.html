@@ -30,22 +30,15 @@
 
         h1 {
             color: #e8eaed;
-            margin-bottom: 8px;
+            margin-bottom: 16px;
             text-align: center;
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
 
-        .subtitle {
-            color: #9aa0a6;
-            text-align: center;
-            margin-bottom: 32px;
-            font-size: 14px;
-        }
-
         .input-section {
-            margin-bottom: 30px;
+            margin-bottom: 12px;
         }
 
         textarea {
@@ -88,6 +81,13 @@
 
         .btn-primary:active {
             background: #669df6;
+        }
+
+        .btn-compact {
+            padding: 6px 14px !important;
+            font-size: 12px !important;
+            border-radius: 16px !important;
+            margin: 0 !important;
         }
 
         .folders-container {
@@ -401,55 +401,6 @@
             color: #aecbfa;
         }
 
-        .instruction {
-            background: #232323;
-            border-left: 3px solid #fcad70;
-            padding: 18px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-        }
-
-        .instruction h3 {
-            color: #fdd663;
-            margin-bottom: 10px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .instruction p {
-            color: #9aa0a6;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .instruction code {
-            background: #1e1e1e;
-            padding: 3px 7px;
-            border-radius: 4px;
-            color: #8ab4f8;
-            font-family: 'Courier New', monospace;
-        }
-
-        .sync-section {
-            margin: 25px 0;
-            padding: 20px;
-            background: #1e1e1e;
-            border: 1px solid #2c2c2c;
-            border-radius: 12px;
-        }
-
-        .sync-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
-        }
-
-        .sync-card {
-            background: #232323;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid #2c2c2c;
-        }
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
@@ -463,13 +414,8 @@
             }
 
             h1 {
-                font-size: 22px;
-                margin-bottom: 4px;
-            }
-
-            .subtitle {
-                font-size: 12px;
-                margin-bottom: 16px;
+                font-size: 20px;
+                margin-bottom: 12px;
             }
 
             .input-section {
@@ -484,40 +430,15 @@
             }
 
             .btn-primary {
-                padding: 10px 20px;
-                font-size: 13px;
-                border-radius: 20px;
-                width: 100%;
-                margin-top: 8px;
-            }
-
-            .instruction {
-                padding: 12px;
-                margin-bottom: 16px;
-                border-radius: 6px;
-            }
-
-            .instruction h3 {
-                font-size: 14px;
-                margin-bottom: 6px;
-            }
-
-            .instruction p {
+                padding: 8px 16px;
                 font-size: 12px;
-                line-height: 1.5;
+                border-radius: 14px;
             }
 
-            .sync-section {
-                margin: 16px 0;
-                padding: 14px;
-            }
-
-            .sync-options {
-                grid-template-columns: 1fr;
-            }
-
-            .sync-card {
-                padding: 12px;
+            .btn-compact {
+                padding: 6px 12px !important;
+                font-size: 11px !important;
+                border-radius: 12px !important;
             }
 
             .folder {
@@ -637,31 +558,14 @@
             }
 
             h1 {
-                font-size: 20px;
-            }
-
-            .subtitle {
-                font-size: 11px;
-                margin-bottom: 12px;
+                font-size: 18px;
+                margin-bottom: 10px;
             }
 
             textarea {
                 min-height: 80px;
                 padding: 10px;
                 font-size: 12px;
-            }
-
-            .instruction {
-                padding: 10px;
-                margin-bottom: 12px;
-            }
-
-            .instruction h3 {
-                font-size: 13px;
-            }
-
-            .instruction p {
-                font-size: 11px;
             }
 
             .folder {
@@ -707,69 +611,38 @@
 <body>
     <div class="container">
         <h1>📈 TradingView Watchlist Manager</h1>
-        <div class="subtitle">Organize and manage your trading symbols with style</div>
 
-        <div class="instruction">
-            <h3>💡 Quick Start Guide</h3>
-            <p>Paste your data in the format: <code>### Date, NSE:SYMBOL1, NSE:SYMBOL2, BSE:SYMBOL3</code><br>
-            Click "Add Folder" to create organized watchlists. Tag symbols with colors, open them individually or in batches. Your data is saved automatically!</p>
-        </div>
+        <div class="input-section" style="margin-bottom: 12px;">
+            <textarea id="clipboardInput" placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2" style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
+            <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center;">
+                <button class="btn-primary btn-compact" onclick="parseData()">Add Folder</button>
+                <button class="btn-primary btn-compact" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear Input</button>
+                <button class="btn-primary btn-compact" onclick="clearAllFolders()" style="background: #f28b82; color: #000;">Clear All</button>
 
-        <div class="input-section">
-            <textarea id="clipboardInput" placeholder="Paste your clipboard data here...
-Example:
-### 11 Nov 2025,NSE:URBANCO, NSE:RUPA, NSE:SEAMECLTD, NSE:PREMEXPLN"></textarea>
-            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                <button class="btn-primary" onclick="parseData()">Add Folder</button>
-                <button class="btn-primary" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear Input</button>
-                <button class="btn-primary" onclick="clearAllFolders()" style="background: #f28b82; color: #000;">Clear All Folders</button>
+                <!-- Sync buttons inline -->
+                <button class="btn-primary btn-compact" onclick="exportData()" style="background: #81c995; margin-left: auto;">💾 Export</button>
+                <label for="importFile" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;">📥 Import</label>
+                <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
+
+                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;">☁️ Sync</button>
             </div>
         </div>
 
-        <div class="sync-section">
-            <h2 style="color: #e8eaed; font-size: 18px; margin-bottom: 12px;">📦 Data Sync & Backup</h2>
-
-            <div class="sync-options">
-                <!-- Export/Import -->
-                <div class="sync-card">
-                    <h3 style="color: #8ab4f8; font-size: 14px; margin-bottom: 8px;">💾 Local Backup</h3>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn-primary" onclick="exportData()" style="background: #81c995; flex: 1; min-width: 120px;">Export Data</button>
-                        <label for="importFile" class="btn-primary" style="background: #8ab4f8; flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; cursor: pointer;">Import Data</label>
-                        <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
-                    </div>
-                </div>
-
-                <!-- GitHub Gist Sync -->
-                <div class="sync-card">
-                    <h3 style="color: #8ab4f8; font-size: 14px; margin-bottom: 8px;">☁️ GitHub Sync</h3>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <input type="password" id="githubToken" placeholder="GitHub Token (optional)" style="flex: 1; min-width: 200px; padding: 8px 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px; color: #e8eaed; font-size: 13px;">
-                        <button class="btn-primary" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed; padding: 8px 16px;">?</button>
-                    </div>
-                    <div id="tokenHelp" style="display: none; background: #232323; padding: 12px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; color: #9aa0a6; line-height: 1.5;">
-                        <strong style="color: #fdd663;">How to get GitHub Token:</strong><br>
-                        1. Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ab4f8;">github.com/settings/tokens</a><br>
-                        2. Click "Generate new token (classic)"<br>
-                        3. Select scope: <code style="background: #1e1e1e; padding: 2px 4px; border-radius: 3px;">gist</code><br>
-                        4. Copy and paste token here
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn-primary" onclick="uploadToGist()" style="background: #c58af9; flex: 1; min-width: 120px;">Upload to Cloud</button>
-                        <button class="btn-primary" onclick="showDownloadDialog()" style="background: #fcad70; flex: 1; min-width: 120px;">Download from Cloud</button>
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
-                        <button class="btn-primary" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed; font-size: 12px; padding: 6px 12px;">Clear Stored Token</button>
-                    </div>
-                    <div id="syncStatus" style="margin-top: 8px; font-size: 12px; color: #9aa0a6;"></div>
-
-                    <!-- Security Notice -->
-                    <div style="margin-top: 12px; padding: 10px; background: #232323; border-left: 2px solid #fcad70; border-radius: 4px;">
-                        <div style="font-size: 11px; color: #9aa0a6; line-height: 1.5;">
-                            🔒 <strong style="color: #fcad70;">Security:</strong> Token stored locally in your browser. Only grant <code style="background: #1e1e1e; padding: 2px 4px; border-radius: 3px;">gist</code> permission. Never share your token.
-                        </div>
-                    </div>
-                </div>
+        <!-- Collapsible GitHub Sync Panel -->
+        <div id="syncPanel" style="display: none; margin-bottom: 12px; padding: 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;">
+                <input type="password" id="githubToken" placeholder="GitHub Token" style="flex: 1; min-width: 150px; padding: 6px 10px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 12px;">
+                <button class="btn-primary btn-compact" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed;">?</button>
+                <button class="btn-primary btn-compact" onclick="uploadToGist()" style="background: #c58af9;">Upload</button>
+                <button class="btn-primary btn-compact" onclick="showDownloadDialog()" style="background: #fcad70;">Download</button>
+                <button class="btn-primary btn-compact" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed; font-size: 11px;">Clear Token</button>
+            </div>
+            <div id="tokenHelp" style="display: none; background: #232323; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px; color: #9aa0a6; line-height: 1.4;">
+                <strong style="color: #fdd663;">Get Token:</strong> <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ab4f8;">github.com/settings/tokens</a> → Generate (classic) → Select <code style="background: #1e1e1e; padding: 1px 3px;">gist</code> scope
+            </div>
+            <div id="syncStatus" style="font-size: 11px; color: #9aa0a6; margin-bottom: 6px;"></div>
+            <div style="padding: 6px; background: #232323; border-left: 2px solid #fcad70; border-radius: 3px; font-size: 10px; color: #9aa0a6; line-height: 1.3;">
+                🔒 Token stored locally. Only grant <code style="background: #1e1e1e; padding: 1px 3px;">gist</code> permission.
             </div>
         </div>
 
@@ -1325,6 +1198,13 @@ Example:
                 displayFolders();
                 showNotification('Folder deleted!', 'info');
             }
+        }
+
+        // ========== SYNC PANEL TOGGLE ==========
+
+        function toggleSyncPanel() {
+            const panel = document.getElementById('syncPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         }
 
         // ========== EXPORT/IMPORT FUNCTIONS ==========
