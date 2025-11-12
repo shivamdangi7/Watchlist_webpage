@@ -57,6 +57,7 @@ Each folder provides multiple ways to open TradingView charts:
 - Real-time progress tracking for batch opening
 - Confirmation dialogs for destructive actions (delete/remove)
 - Tag buttons highlight when active
+- **Clean Display**: Exchange prefixes (NSE:, BSE:) are hidden from UI to save space while maintaining full functionality
 
 ## How to Use
 
@@ -112,6 +113,17 @@ The input format is simple:
 - **Storage**: Browser localStorage API
 - **Compatibility**: Works with all modern browsers
 - **Offline**: Fully functional offline after initial load
+- **Design**: Modern AMOLED dark theme based on Material Design guidelines
+  - Pure black background (#000000) for AMOLED screens
+  - Material Design elevation colors (#121212, #1e1e1e, #232323)
+  - Soft, eye-friendly accent colors (Google Blue #8ab4f8, Green #81c995, Red #f28b82, Orange #fcad70, Purple #c58af9)
+  - Optimized for performance - no GPU-intensive effects
+- **Responsive Design**: Fully optimized for mobile devices
+  - Reduced padding and spacing on mobile (768px and below)
+  - Full-width buttons for easier tapping
+  - Compact layout to minimize vertical space usage
+  - 2-column symbol grid on small screens (480px and below)
+  - Touch-friendly button sizes and spacing
 
 ## Button Controls
 

@@ -13,24 +13,35 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            padding: 30px;
+            background: #121212;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+            padding: 40px;
+            border: 1px solid #1f1f1f;
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 20px;
+            color: #e8eaed;
+            margin-bottom: 8px;
             text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #9aa0a6;
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 14px;
         }
 
         .input-section {
@@ -40,40 +51,43 @@
         textarea {
             width: 100%;
             min-height: 150px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #2c2c2c;
+            border-radius: 12px;
             font-size: 14px;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             resize: vertical;
-            transition: border-color 0.3s;
+            background: #1e1e1e;
+            color: #e8eaed;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #8ab4f8;
+        }
+
+        textarea::placeholder {
+            color: #5f6368;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #8ab4f8;
+            color: #000;
             border: none;
-            padding: 12px 30px;
-            border-radius: 6px;
-            font-size: 16px;
+            padding: 12px 28px;
+            border-radius: 24px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #aecbfa;
         }
 
         .btn-primary:active {
-            transform: translateY(0);
+            background: #669df6;
         }
 
         .folders-container {
@@ -81,26 +95,32 @@
         }
 
         .folder {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
+            background: #1e1e1e;
+            border: 1px solid #2c2c2c;
+            border-radius: 12px;
+            padding: 24px;
             margin-bottom: 20px;
+        }
+
+        .folder:hover {
+            border-color: #3c4043;
         }
 
         .folder-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2c2c2c;
         }
 
         .folder-name {
             font-size: 20px;
-            font-weight: 600;
-            color: #333;
+            font-weight: 700;
+            color: #e8eaed;
         }
 
         .folder-controls {
@@ -112,94 +132,101 @@
         .btn-control {
             padding: 8px 16px;
             border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .btn-open-all {
-            background: #28a745;
-            color: white;
+            background: #81c995;
+            color: #000;
         }
 
         .btn-open-all:hover {
-            background: #218838;
+            background: #a8dab5;
         }
 
         .btn-open-batch {
-            background: #17a2b8;
-            color: white;
+            background: #8ab4f8;
+            color: #000;
         }
 
         .btn-open-batch:hover {
-            background: #138496;
+            background: #aecbfa;
         }
 
         .btn-stop {
-            background: #dc3545;
-            color: white;
+            background: #f28b82;
+            color: #000;
         }
 
         .btn-stop:hover {
-            background: #c82333;
+            background: #f6aea9;
         }
 
         .btn-delete {
-            background: #6c757d;
-            color: white;
+            background: #5f6368;
+            color: #e8eaed;
         }
 
         .btn-delete:hover {
-            background: #5a6268;
+            background: #80868b;
         }
 
         .tag-filters {
             margin: 15px 0;
-            padding: 15px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
+            padding: 12px 16px;
+            background: #232323;
+            border-radius: 8px;
+            border: 1px solid #2c2c2c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .tag-filter-title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
-            margin-bottom: 10px;
-            color: #495057;
+            color: #9aa0a6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         .tag-filter-buttons {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            flex: 1;
         }
 
         .tag-filter-btn {
             padding: 6px 14px;
-            border: 2px solid;
-            border-radius: 5px;
+            border: 1.5px solid;
+            border-radius: 16px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            background: transparent;
+            transition: all 0.2s ease;
         }
 
-        .tag-filter-btn.red { border-color: #dc3545; color: #dc3545; background: white; }
-        .tag-filter-btn.red:hover { background: #dc3545; color: white; }
+        .tag-filter-btn.red { border-color: #f28b82; color: #f28b82; }
+        .tag-filter-btn.red:hover { background: #f28b82; color: #000; }
 
-        .tag-filter-btn.blue { border-color: #007bff; color: #007bff; background: white; }
-        .tag-filter-btn.blue:hover { background: #007bff; color: white; }
+        .tag-filter-btn.blue { border-color: #8ab4f8; color: #8ab4f8; }
+        .tag-filter-btn.blue:hover { background: #8ab4f8; color: #000; }
 
-        .tag-filter-btn.green { border-color: #28a745; color: #28a745; background: white; }
-        .tag-filter-btn.green:hover { background: #28a745; color: white; }
+        .tag-filter-btn.green { border-color: #81c995; color: #81c995; }
+        .tag-filter-btn.green:hover { background: #81c995; color: #000; }
 
-        .tag-filter-btn.orange { border-color: #fd7e14; color: #fd7e14; background: white; }
-        .tag-filter-btn.orange:hover { background: #fd7e14; color: white; }
+        .tag-filter-btn.orange { border-color: #fcad70; color: #fcad70; }
+        .tag-filter-btn.orange:hover { background: #fcad70; color: #000; }
 
-        .tag-filter-btn.purple { border-color: #6f42c1; color: #6f42c1; background: white; }
-        .tag-filter-btn.purple:hover { background: #6f42c1; color: white; }
+        .tag-filter-btn.purple { border-color: #c58af9; color: #c58af9; }
+        .tag-filter-btn.purple:hover { background: #c58af9; color: #000; }
 
         .symbols-grid {
             display: grid;
@@ -209,128 +236,449 @@
         }
 
         .symbol-card {
-            background: white;
-            border: 2px solid #667eea;
-            border-radius: 5px;
-            padding: 8px;
+            background: #232323;
+            border: 1.5px solid #2c2c2c;
+            border-radius: 8px;
+            padding: 10px;
             position: relative;
+            transition: border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .symbol-card.tagged-red { border-color: #dc3545; }
-        .symbol-card.tagged-blue { border-color: #007bff; }
-        .symbol-card.tagged-green { border-color: #28a745; }
-        .symbol-card.tagged-orange { border-color: #fd7e14; }
-        .symbol-card.tagged-purple { border-color: #6f42c1; }
+        .symbol-card:hover {
+            border-color: #3c4043;
+        }
+
+        .symbol-card.tagged-red {
+            border-color: #f28b82;
+        }
+        .symbol-card.tagged-blue {
+            border-color: #8ab4f8;
+        }
+        .symbol-card.tagged-green {
+            border-color: #81c995;
+        }
+        .symbol-card.tagged-orange {
+            border-color: #fcad70;
+        }
+        .symbol-card.tagged-purple {
+            border-color: #c58af9;
+        }
 
         .symbol-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            gap: 6px;
         }
 
         .symbol-btn {
-            padding: 8px 10px;
+            padding: 6px 8px;
             background: transparent;
             border: none;
-            color: #667eea;
-            font-size: 13px;
+            color: #8ab4f8;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             text-align: left;
             flex: 1;
+            transition: color 0.2s ease;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .symbol-btn:hover {
-            color: #4c5fd5;
+            color: #aecbfa;
             text-decoration: underline;
         }
 
+        .symbol-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .symbol-remove {
-            background: #dc3545;
-            color: white;
+            background: #f28b82;
+            color: #000;
             border: none;
-            padding: 2px 6px;
-            border-radius: 3px;
+            padding: 4px 8px;
+            border-radius: 12px;
             font-size: 11px;
             cursor: pointer;
-            transition: all 0.2s;
+            font-weight: 700;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
         }
 
         .symbol-remove:hover {
-            background: #c82333;
+            background: #f6aea9;
         }
 
         .symbol-tags {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
+            position: relative;
+            display: inline-block;
+            flex-shrink: 0;
         }
 
-        .tag-btn {
-            padding: 3px 8px;
-            border: 1px solid;
-            border-radius: 3px;
-            font-size: 10px;
+        .tag-dropdown-btn {
+            padding: 4px 8px;
+            border: 1px solid #3c4043;
+            border-radius: 6px;
+            font-size: 18px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
+            background: #1e1e1e;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
         }
 
-        .tag-btn.red { border-color: #dc3545; color: #dc3545; background: white; }
-        .tag-btn.red.active { background: #dc3545; color: white; }
+        .tag-dropdown-btn:hover {
+            background: #2c2c2c;
+            border-color: #5f6368;
+        }
 
-        .tag-btn.blue { border-color: #007bff; color: #007bff; background: white; }
-        .tag-btn.blue.active { background: #007bff; color: white; }
+        .tag-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #2c2c2c;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 8px;
+            z-index: 1000;
+            min-width: 160px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
 
-        .tag-btn.green { border-color: #28a745; color: #28a745; background: white; }
-        .tag-btn.green.active { background: #28a745; color: white; }
+        .tag-dropdown-menu.show {
+            display: block;
+        }
 
-        .tag-btn.orange { border-color: #fd7e14; color: #fd7e14; background: white; }
-        .tag-btn.orange.active { background: #fd7e14; color: white; }
+        .tag-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #e8eaed;
+            margin-bottom: 4px;
+            transition: background 0.2s ease;
+        }
 
-        .tag-btn.purple { border-color: #6f42c1; color: #6f42c1; background: white; }
-        .tag-btn.purple.active { background: #6f42c1; color: white; }
+        .tag-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .tag-option:hover {
+            background: #3c4043;
+        }
+
+        .tag-option.active {
+            background: #8ab4f8;
+            color: #000;
+        }
+
+        .tag-option .emoji {
+            font-size: 18px;
+        }
 
         .batch-status {
-            margin-top: 10px;
-            padding: 10px;
-            background: #e7f3ff;
-            border-left: 4px solid #17a2b8;
-            border-radius: 4px;
+            margin-top: 15px;
+            padding: 12px 16px;
+            background: #232323;
+            border-left: 3px solid #8ab4f8;
+            border-radius: 6px;
             font-size: 14px;
-            color: #0c5460;
+            color: #aecbfa;
         }
 
         .instruction {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            background: #232323;
+            border-left: 3px solid #fcad70;
+            padding: 18px;
+            margin-bottom: 25px;
+            border-radius: 8px;
         }
 
         .instruction h3 {
-            color: #856404;
-            margin-bottom: 8px;
+            color: #fdd663;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .instruction p {
-            color: #856404;
+            color: #9aa0a6;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
+        }
+
+        .instruction code {
+            background: #1e1e1e;
+            padding: 3px 7px;
+            border-radius: 4px;
+            color: #8ab4f8;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+
+            .container {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            h1 {
+                font-size: 22px;
+                margin-bottom: 4px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 16px;
+            }
+
+            .input-section {
+                margin-bottom: 16px;
+            }
+
+            textarea {
+                min-height: 100px;
+                padding: 12px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+
+            .btn-primary {
+                padding: 10px 20px;
+                font-size: 13px;
+                border-radius: 20px;
+                width: 100%;
+                margin-top: 8px;
+            }
+
+            .instruction {
+                padding: 12px;
+                margin-bottom: 16px;
+                border-radius: 6px;
+            }
+
+            .instruction h3 {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            .instruction p {
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .folder {
+                padding: 14px;
+                margin-bottom: 14px;
+                border-radius: 8px;
+            }
+
+            .folder-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+
+            .folder-name {
+                font-size: 16px;
+                width: 100%;
+            }
+
+            .folder-controls {
+                width: 100%;
+                gap: 6px;
+            }
+
+            .btn-control {
+                flex: 1;
+                min-width: calc(50% - 3px);
+                padding: 8px 12px;
+                font-size: 12px;
+                border-radius: 16px;
+            }
+
+            .tag-filters {
+                margin: 12px 0;
+                padding: 10px 12px;
+                border-radius: 6px;
+                gap: 8px;
+            }
+
+            .tag-filter-title {
+                font-size: 11px;
+            }
+
+            .tag-filter-buttons {
+                gap: 6px;
+            }
+
+            .tag-filter-btn {
+                padding: 5px 10px;
+                font-size: 12px;
+                border-radius: 12px;
+            }
+
+            .symbols-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 8px;
+                margin-top: 12px;
+            }
+
+            .symbol-card {
+                padding: 10px;
+                border-radius: 6px;
+            }
+
+            .symbol-btn {
+                font-size: 13px;
+                padding: 6px 8px;
+            }
+
+            .symbol-remove {
+                padding: 3px 6px;
+                font-size: 10px;
+                border-radius: 10px;
+            }
+
+            .tag-dropdown-btn {
+                padding: 3px 6px;
+                font-size: 16px;
+                border-radius: 5px;
+            }
+
+            .tag-dropdown-menu {
+                min-width: 140px;
+                padding: 6px;
+                border-radius: 6px;
+            }
+
+            .tag-option {
+                padding: 6px 10px;
+                font-size: 13px;
+                margin-bottom: 3px;
+            }
+
+            .tag-option .emoji {
+                font-size: 16px;
+            }
+
+            .batch-status {
+                margin-top: 12px;
+                padding: 10px 12px;
+                font-size: 12px;
+                border-radius: 5px;
+            }
+        }
+
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            body {
+                padding: 4px;
+            }
+
+            .container {
+                padding: 12px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+
+            textarea {
+                min-height: 80px;
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .instruction {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+
+            .instruction h3 {
+                font-size: 13px;
+            }
+
+            .instruction p {
+                font-size: 11px;
+            }
+
+            .folder {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .folder-name {
+                font-size: 15px;
+            }
+
+            .btn-control {
+                font-size: 11px;
+                padding: 7px 10px;
+            }
+
+            .symbols-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .symbol-card {
+                padding: 8px;
+            }
+
+            .symbol-btn {
+                font-size: 12px;
+                padding: 5px 6px;
+            }
+
+            .tag-filter-btn {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .batch-status {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 TradingView Link Manager</h1>
+        <h1>📈 TradingView Watchlist Manager</h1>
+        <div class="subtitle">Organize and manage your trading symbols with style</div>
 
         <div class="instruction">
-            <h3>How to use:</h3>
+            <h3>💡 Quick Start Guide</h3>
             <p>Paste your data in the format: <code>### Date, NSE:SYMBOL1, NSE:SYMBOL2, BSE:SYMBOL3</code><br>
-            Click "Add Folder" to add folders to your list. Folders are cached - you can keep adding more! Use "Open All" to open all links at once, or "Open 2 at a time" to open them in batches.</p>
+            Click "Add Folder" to create organized watchlists. Tag symbols with colors, open them individually or in batches. Your data is saved automatically!</p>
         </div>
 
         <div class="input-section">
@@ -339,8 +687,8 @@ Example:
 ### 11 Nov 2025,NSE:URBANCO, NSE:RUPA, NSE:SEAMECLTD, NSE:PREMEXPLN"></textarea>
             <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                 <button class="btn-primary" onclick="parseData()">Add Folder</button>
-                <button class="btn-primary" onclick="clearTextarea()" style="background: #6c757d;">Clear Input</button>
-                <button class="btn-primary" onclick="clearAllFolders()" style="background: #dc3545;">Clear All Folders</button>
+                <button class="btn-primary" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear Input</button>
+                <button class="btn-primary" onclick="clearAllFolders()" style="background: #f28b82; color: #000;">Clear All Folders</button>
             </div>
         </div>
 
@@ -458,17 +806,24 @@ Example:
             }
         }
 
+        function getDisplayName(symbolName) {
+            // Remove exchange prefix (NSE:, BSE:, etc.) for display
+            const parts = symbolName.split(':');
+            return parts.length > 1 ? parts[1] : symbolName;
+        }
+
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                padding: 15px 20px;
-                background: ${type === 'success' ? '#28a745' : '#17a2b8'};
-                color: white;
-                border-radius: 5px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                padding: 15px 24px;
+                background: ${type === 'success' ? '#81c995' : '#8ab4f8'};
+                color: #000;
+                font-weight: 600;
+                border-radius: 8px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.5);
                 z-index: 10000;
                 animation: slideIn 0.3s ease-out;
             `;
@@ -543,14 +898,20 @@ Example:
                 const tagButtons = document.createElement('div');
                 tagButtons.className = 'tag-filter-buttons';
 
-                const tags = ['red', 'blue', 'green', 'orange', 'purple'];
+                const tags = [
+                    { name: 'red', emoji: '📕', label: 'Red Book' },
+                    { name: 'blue', emoji: '📘', label: 'Blue Book' },
+                    { name: 'green', emoji: '📗', label: 'Green Book' },
+                    { name: 'orange', emoji: '📙', label: 'Orange Book' },
+                    { name: 'purple', emoji: '📓', label: 'Purple Book' }
+                ];
                 tags.forEach(tag => {
-                    const count = folder.symbols.filter(s => s.tags && s.tags.includes(tag)).length;
+                    const count = folder.symbols.filter(s => s.tags && s.tags.includes(tag.name)).length;
                     if (count > 0) {
                         const btn = document.createElement('button');
-                        btn.className = `tag-filter-btn ${tag}`;
-                        btn.textContent = `${tag.charAt(0).toUpperCase() + tag.slice(1)} (${count})`;
-                        btn.onclick = () => openByTag(folderIndex, tag);
+                        btn.className = `tag-filter-btn ${tag.name}`;
+                        btn.textContent = `${tag.emoji} (${count})`;
+                        btn.onclick = () => openByTag(folderIndex, tag.name);
                         tagButtons.appendChild(btn);
                     }
                 });
@@ -572,40 +933,110 @@ Example:
                         card.classList.add(`tagged-${symbolObj.tags[0]}`);
                     }
 
-                    // Symbol header with name and remove button
+                    // Symbol header with name button
                     const symbolHeader = document.createElement('div');
                     symbolHeader.className = 'symbol-header';
 
                     const symbolBtn = document.createElement('button');
                     symbolBtn.className = 'symbol-btn';
-                    symbolBtn.textContent = symbolObj.name;
+                    symbolBtn.textContent = getDisplayName(symbolObj.name);
                     symbolBtn.onclick = () => openSymbol(folderIndex, symbolIndex);
 
+                    // Controls container (tag + remove button)
+                    const controlsDiv = document.createElement('div');
+                    controlsDiv.className = 'symbol-controls';
+
+                    // Tag dropdown
+                    const tagsDiv = document.createElement('div');
+                    tagsDiv.className = 'symbol-tags';
+
+                    // Find current tag
+                    const currentTag = symbolObj.tags && symbolObj.tags.length > 0 ? symbolObj.tags[0] : null;
+                    const currentTagObj = currentTag ? tags.find(t => t.name === currentTag) : null;
+
+                    // Dropdown button
+                    const dropdownBtn = document.createElement('button');
+                    dropdownBtn.className = 'tag-dropdown-btn';
+                    dropdownBtn.innerHTML = currentTagObj ? currentTagObj.emoji : '🔖';
+                    dropdownBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleDropdown(folderIndex, symbolIndex);
+                    };
+
+                    // Dropdown menu
+                    const dropdownMenu = document.createElement('div');
+                    dropdownMenu.className = 'tag-dropdown-menu';
+                    dropdownMenu.id = `tag-menu-${folderIndex}-${symbolIndex}`;
+
+                    tags.forEach(tag => {
+                        const option = document.createElement('div');
+                        option.className = 'tag-option';
+                        if (currentTag === tag.name) {
+                            option.classList.add('active');
+                        }
+
+                        const emoji = document.createElement('span');
+                        emoji.className = 'emoji';
+                        emoji.textContent = tag.emoji;
+
+                        const label = document.createElement('span');
+                        label.textContent = tag.label;
+
+                        option.appendChild(emoji);
+                        option.appendChild(label);
+
+                        option.onclick = (e) => {
+                            e.stopPropagation();
+                            toggleTag(folderIndex, symbolIndex, tag.name);
+                            closeAllDropdowns();
+                        };
+
+                        dropdownMenu.appendChild(option);
+                    });
+
+                    // Add "Remove Tag" option
+                    if (currentTag) {
+                        const removeOption = document.createElement('div');
+                        removeOption.className = 'tag-option';
+                        removeOption.style.borderTop = '1px solid #444';
+                        removeOption.style.marginTop = '4px';
+                        removeOption.style.paddingTop = '8px';
+                        removeOption.style.color = '#dc2626';
+
+                        const removeEmoji = document.createElement('span');
+                        removeEmoji.className = 'emoji';
+                        removeEmoji.textContent = '✕';
+
+                        const removeLabel = document.createElement('span');
+                        removeLabel.textContent = 'Remove Tag';
+
+                        removeOption.appendChild(removeEmoji);
+                        removeOption.appendChild(removeLabel);
+
+                        removeOption.onclick = (e) => {
+                            e.stopPropagation();
+                            removeTag(folderIndex, symbolIndex);
+                            closeAllDropdowns();
+                        };
+
+                        dropdownMenu.appendChild(removeOption);
+                    }
+
+                    tagsDiv.appendChild(dropdownBtn);
+                    tagsDiv.appendChild(dropdownMenu);
+
+                    // Remove button
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'symbol-remove';
                     removeBtn.textContent = '✕';
                     removeBtn.onclick = () => removeSymbol(folderIndex, symbolIndex);
 
+                    // Assemble the card
                     symbolHeader.appendChild(symbolBtn);
-                    symbolHeader.appendChild(removeBtn);
-
-                    // Tag buttons
-                    const tagsDiv = document.createElement('div');
-                    tagsDiv.className = 'symbol-tags';
-
-                    tags.forEach(tag => {
-                        const tagBtn = document.createElement('button');
-                        tagBtn.className = `tag-btn ${tag}`;
-                        if (symbolObj.tags && symbolObj.tags.includes(tag)) {
-                            tagBtn.classList.add('active');
-                        }
-                        tagBtn.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
-                        tagBtn.onclick = () => toggleTag(folderIndex, symbolIndex, tag);
-                        tagsDiv.appendChild(tagBtn);
-                    });
-
+                    controlsDiv.appendChild(tagsDiv);
+                    controlsDiv.appendChild(removeBtn);
+                    symbolHeader.appendChild(controlsDiv);
                     card.appendChild(symbolHeader);
-                    card.appendChild(tagsDiv);
                     symbolsGrid.appendChild(card);
                 });
 
@@ -641,7 +1072,7 @@ Example:
             const folder = folders[folderIndex];
             const symbolObj = folder.symbols[symbolIndex];
 
-            if (confirm(`Remove ${symbolObj.name} from this folder?`)) {
+            if (confirm(`Remove ${getDisplayName(symbolObj.name)} from this folder?`)) {
                 folder.symbols.splice(symbolIndex, 1);
                 saveFolders();
                 displayFolders();
@@ -669,6 +1100,35 @@ Example:
             saveFolders();
             displayFolders();
         }
+
+        function removeTag(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+            symbolObj.tags = [];
+            saveFolders();
+            displayFolders();
+        }
+
+        function toggleDropdown(folderIndex, symbolIndex) {
+            closeAllDropdowns();
+            const menu = document.getElementById(`tag-menu-${folderIndex}-${symbolIndex}`);
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('.tag-dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.symbol-tags')) {
+                closeAllDropdowns();
+            }
+        });
 
         function openByTag(folderIndex, tag) {
             const folder = folders[folderIndex];
