@@ -285,9 +285,14 @@
             flex: 1;
             transition: color 0.2s ease;
             min-width: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .symbol-btn:hover {
@@ -340,10 +345,29 @@
             font-weight: 700;
             transition: background 0.2s ease;
             flex-shrink: 0;
+            display: none;
         }
 
         .symbol-remove:hover {
             background: #f6aea9;
+        }
+
+        /* Show remove buttons when folder is in edit mode */
+        .folder.edit-mode .symbol-remove {
+            display: block;
+        }
+
+        .btn-edit-mode {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .btn-edit-mode:hover {
+            background: #fdd663;
+        }
+
+        .btn-edit-mode.active {
+            background: #f28b82;
         }
 
         .note-modal {
@@ -958,6 +982,12 @@
                 stopBtn.id = `stop-btn-${folderIndex}`;
                 stopBtn.onclick = () => stopBatch(folderIndex);
 
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn-control btn-edit-mode';
+                editBtn.textContent = 'Edit';
+                editBtn.id = `edit-btn-${folderIndex}`;
+                editBtn.onclick = () => toggleEditMode(folderIndex);
+
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-control btn-delete';
                 deleteBtn.textContent = 'Delete';
@@ -966,6 +996,7 @@
                 controls.appendChild(openAllBtn);
                 controls.appendChild(openBatchBtn);
                 controls.appendChild(stopBtn);
+                controls.appendChild(editBtn);
                 controls.appendChild(deleteBtn);
 
                 header.appendChild(folderName);
@@ -1024,6 +1055,7 @@
                     const symbolBtn = document.createElement('button');
                     symbolBtn.className = 'symbol-btn';
                     symbolBtn.textContent = getDisplayName(symbolObj.name);
+                    symbolBtn.title = getDisplayName(symbolObj.name); // Tooltip shows full name
                     symbolBtn.onclick = () => openSymbol(folderIndex, symbolIndex);
 
                     // Controls container (tag + remove button)
@@ -1338,6 +1370,23 @@
                 saveFolders();
                 displayFolders();
                 showNotification('Folder deleted!', 'info');
+            }
+        }
+
+        function toggleEditMode(folderIndex) {
+            const folderDiv = document.getElementById(`folder-${folderIndex}`);
+            const editBtn = document.getElementById(`edit-btn-${folderIndex}`);
+
+            if (folderDiv.classList.contains('edit-mode')) {
+                // Exit edit mode
+                folderDiv.classList.remove('edit-mode');
+                editBtn.classList.remove('active');
+                editBtn.textContent = 'Edit';
+            } else {
+                // Enter edit mode
+                folderDiv.classList.add('edit-mode');
+                editBtn.classList.add('active');
+                editBtn.textContent = 'Done';
             }
         }
 
