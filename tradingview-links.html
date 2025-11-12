@@ -301,6 +301,34 @@
             gap: 6px;
         }
 
+        .symbol-note-btn {
+            background: #5f6368;
+            color: #e8eaed;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .symbol-note-btn:hover {
+            background: #80868b;
+        }
+
+        .symbol-note-btn.has-note {
+            background: #fdd663;
+            color: #000;
+            box-shadow: 0 0 8px rgba(253, 214, 99, 0.6);
+        }
+
+        .symbol-note-btn.has-note:hover {
+            background: #fcad70;
+            box-shadow: 0 0 12px rgba(253, 214, 99, 0.8);
+        }
+
         .symbol-remove {
             background: #f28b82;
             color: #000;
@@ -316,6 +344,93 @@
 
         .symbol-remove:hover {
             background: #f6aea9;
+        }
+
+        .note-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note-modal.show {
+            display: flex;
+        }
+
+        .note-modal-content {
+            background: #1e1e1e;
+            border: 1px solid #2c2c2c;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .note-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2c2c2c;
+        }
+
+        .note-modal-title {
+            color: #e8eaed;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .note-modal-close {
+            background: #5f6368;
+            color: #e8eaed;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .note-modal-close:hover {
+            background: #80868b;
+        }
+
+        .note-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            background: #232323;
+            border: 1px solid #2c2c2c;
+            border-radius: 8px;
+            color: #e8eaed;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .note-textarea:focus {
+            outline: none;
+            border-color: #fdd663;
+        }
+
+        .note-textarea::placeholder {
+            color: #5f6368;
+        }
+
+        .note-modal-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
         }
 
         .symbol-tags {
@@ -649,6 +764,21 @@
         <div id="foldersContainer" class="folders-container"></div>
     </div>
 
+    <!-- Note Modal -->
+    <div id="noteModal" class="note-modal">
+        <div class="note-modal-content">
+            <div class="note-modal-header">
+                <div class="note-modal-title" id="noteModalTitle">Add Note</div>
+                <button class="note-modal-close" onclick="closeNoteModal()">Close</button>
+            </div>
+            <textarea id="noteTextarea" class="note-textarea" placeholder="Write your notes about this stock..."></textarea>
+            <div class="note-modal-buttons">
+                <button class="btn-primary btn-compact" onclick="deleteNote()" style="background: #f28b82;">Delete Note</button>
+                <button class="btn-primary btn-compact" onclick="saveNote()" style="background: #fdd663; color: #000;">Save Note</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let folders = [];
         let batchIntervals = {};
@@ -979,6 +1109,16 @@
                     tagsDiv.appendChild(dropdownBtn);
                     tagsDiv.appendChild(dropdownMenu);
 
+                    // Note button
+                    const noteBtn = document.createElement('button');
+                    noteBtn.className = 'symbol-note-btn';
+                    noteBtn.textContent = '📝';
+                    noteBtn.title = 'Add/Edit Note';
+                    if (symbolObj.note && symbolObj.note.trim()) {
+                        noteBtn.classList.add('has-note');
+                    }
+                    noteBtn.onclick = () => openNoteModal(folderIndex, symbolIndex);
+
                     // Remove button
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'symbol-remove';
@@ -988,6 +1128,7 @@
                     // Assemble the card
                     symbolHeader.appendChild(symbolBtn);
                     controlsDiv.appendChild(tagsDiv);
+                    controlsDiv.appendChild(noteBtn);
                     controlsDiv.appendChild(removeBtn);
                     symbolHeader.appendChild(controlsDiv);
                     card.appendChild(symbolHeader);
@@ -1200,6 +1341,65 @@
             }
         }
 
+        // ========== NOTE FUNCTIONS ==========
+
+        let currentEditingNote = { folderIndex: null, symbolIndex: null };
+
+        function openNoteModal(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            currentEditingNote = { folderIndex, symbolIndex };
+
+            document.getElementById('noteModalTitle').textContent = `Note for ${getDisplayName(symbolObj.name)}`;
+            document.getElementById('noteTextarea').value = symbolObj.note || '';
+            document.getElementById('noteModal').classList.add('show');
+        }
+
+        function closeNoteModal() {
+            document.getElementById('noteModal').classList.remove('show');
+            document.getElementById('noteTextarea').value = '';
+            currentEditingNote = { folderIndex: null, symbolIndex: null };
+        }
+
+        function saveNote() {
+            const { folderIndex, symbolIndex } = currentEditingNote;
+            if (folderIndex === null || symbolIndex === null) return;
+
+            const note = document.getElementById('noteTextarea').value.trim();
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            symbolObj.note = note;
+            saveFolders();
+            displayFolders();
+            closeNoteModal();
+            showNotification(note ? 'Note saved!' : 'Note cleared!', 'success');
+        }
+
+        function deleteNote() {
+            const { folderIndex, symbolIndex } = currentEditingNote;
+            if (folderIndex === null || symbolIndex === null) return;
+
+            if (confirm('Delete this note?')) {
+                const folder = folders[folderIndex];
+                const symbolObj = folder.symbols[symbolIndex];
+
+                symbolObj.note = '';
+                saveFolders();
+                displayFolders();
+                closeNoteModal();
+                showNotification('Note deleted!', 'info');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('noteModal').addEventListener('click', (e) => {
+            if (e.target.id === 'noteModal') {
+                closeNoteModal();
+            }
+        });
+
         // ========== SYNC PANEL TOGGLE ==========
 
         function toggleSyncPanel() {
@@ -1316,6 +1516,13 @@
                             if (typeof tag !== 'string') {
                                 return false;
                             }
+                        }
+                    }
+
+                    // If note exists, must be a string
+                    if (symbol.note !== undefined) {
+                        if (typeof symbol.note !== 'string') {
+                            return false;
                         }
                     }
                 }
