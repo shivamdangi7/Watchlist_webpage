@@ -121,6 +121,79 @@
             font-size: 20px;
             font-weight: 700;
             color: #e8eaed;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .folder-name:hover {
+            color: #8ab4f8;
+        }
+
+        .folder-name-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .folder-tag-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .folder-tag-badge {
+            padding: 4px 10px;
+            border: 1.5px solid;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .folder-tag-badge.red { border-color: #f28b82; color: #f28b82; }
+        .folder-tag-badge.red:hover { background: #f28b82; color: #000; }
+
+        .folder-tag-badge.blue { border-color: #8ab4f8; color: #8ab4f8; }
+        .folder-tag-badge.blue:hover { background: #8ab4f8; color: #000; }
+
+        .folder-tag-badge.green { border-color: #81c995; color: #81c995; }
+        .folder-tag-badge.green:hover { background: #81c995; color: #000; }
+
+        .folder-tag-badge.orange { border-color: #fcad70; color: #fcad70; }
+        .folder-tag-badge.orange:hover { background: #fcad70; color: #000; }
+
+        .folder-tag-badge.purple { border-color: #c58af9; color: #c58af9; }
+        .folder-tag-badge.purple:hover { background: #c58af9; color: #000; }
+
+        .folder-collapse-icon {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+            color: #9aa0a6;
+        }
+
+        .folder.collapsed .folder-collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .folder-content {
+            max-height: 5000px;
+            overflow: visible;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .folder.collapsed .folder-content {
+            max-height: 0;
+            opacity: 0;
         }
 
         .folder-controls {
@@ -267,6 +340,56 @@
             border-color: #c58af9;
         }
 
+        /* Compact View Styles */
+        .folder.compact-view .symbols-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
+        .folder.compact-view .symbol-card {
+            padding: 8px;
+            gap: 4px;
+        }
+
+        .folder.compact-view .symbol-btn {
+            font-size: 12px;
+            padding: 4px 6px;
+        }
+
+        .folder.compact-view .symbol-controls {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .folder.compact-view .symbol-card:hover .symbol-controls {
+            opacity: 1;
+        }
+
+        .folder.compact-view .symbol-note-preview {
+            display: none;
+        }
+
+        /* Detailed View Styles */
+        .folder.detailed-view .symbol-note-preview {
+            display: block;
+            font-size: 11px;
+            color: #9aa0a6;
+            padding: 6px 8px;
+            background: #1e1e1e;
+            border-radius: 6px;
+            margin-top: 4px;
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+            font-style: italic;
+            border-left: 2px solid #fdd663;
+        }
+
+        .folder.detailed-view .symbol-note-preview:empty {
+            display: none;
+        }
+
         .symbol-header {
             display: flex;
             align-items: center;
@@ -334,6 +457,12 @@
             box-shadow: 0 0 12px rgba(253, 214, 99, 0.8);
         }
 
+        /* Hide note and remove buttons by default */
+        .symbol-note-btn,
+        .symbol-remove {
+            display: none;
+        }
+
         .symbol-remove {
             background: #f28b82;
             color: #000;
@@ -345,14 +474,14 @@
             font-weight: 700;
             transition: background 0.2s ease;
             flex-shrink: 0;
-            display: none;
         }
 
         .symbol-remove:hover {
             background: #f6aea9;
         }
 
-        /* Show remove buttons when folder is in edit mode */
+        /* Show note and remove buttons when folder is in edit mode */
+        .folder.edit-mode .symbol-note-btn,
         .folder.edit-mode .symbol-remove {
             display: block;
         }
@@ -491,7 +620,7 @@
             border: 1px solid #3c4043;
             border-radius: 8px;
             padding: 8px;
-            z-index: 1000;
+            z-index: 5000;
             min-width: 160px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.6);
         }
@@ -767,6 +896,28 @@
             </div>
         </div>
 
+        <!-- Folder Management Controls -->
+        <div id="folderManagement" style="display: none; margin-bottom: 8px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                <button class="btn-primary btn-compact" onclick="expandAll()" style="background: #81c995;">▼ Expand All</button>
+                <button class="btn-primary btn-compact" onclick="collapseAll()" style="background: #fcad70;">▶ Collapse All</button>
+
+                <!-- Batch Size Setting -->
+                <div style="display: flex; gap: 4px; align-items: center;">
+                    <label style="font-size: 11px; color: #9aa0a6; white-space: nowrap;">Open:</label>
+                    <select id="batchSizeSelect" onchange="updateBatchSize()" style="padding: 4px 8px; background: #232323; border: 1px solid #2c2c2c; border-radius: 8px; color: #e8eaed; font-size: 11px; cursor: pointer;">
+                        <option value="2">2 at a time</option>
+                        <option value="3">3 at a time</option>
+                        <option value="5">5 at a time</option>
+                        <option value="10">10 at a time</option>
+                    </select>
+                </div>
+
+                <!-- View Mode Toggle -->
+                <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()" style="background: #c58af9; margin-left: auto;">📋 Compact</button>
+            </div>
+        </div>
+
         <!-- Collapsible GitHub Sync Panel -->
         <div id="syncPanel" style="display: none; margin-bottom: 12px; padding: 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px;">
             <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;">
@@ -944,9 +1095,63 @@
             }, 3000);
         }
 
+        // ========== BATCH SIZE HELPERS ==========
+
+        function getBatchSize() {
+            return parseInt(localStorage.getItem('batchSize') || '2');
+        }
+
+        function updateBatchSize() {
+            const select = document.getElementById('batchSizeSelect');
+            const batchSize = parseInt(select.value);
+            localStorage.setItem('batchSize', batchSize.toString());
+
+            // Update all batch button texts
+            displayFolders();
+
+            showNotification(`Batch size set to ${batchSize} symbols`, 'info');
+        }
+
         function displayFolders() {
             const container = document.getElementById('foldersContainer');
             container.innerHTML = '';
+
+            // Define tags array
+            const tags = [
+                { name: 'red', emoji: '📕', label: 'Red' },
+                { name: 'blue', emoji: '📘', label: 'Blue' },
+                { name: 'green', emoji: '📗', label: 'Green' },
+                { name: 'orange', emoji: '📙', label: 'Orange' },
+                { name: 'purple', emoji: '📓', label: 'Purple' }
+            ];
+
+            // Show/hide folder management buttons
+            const folderManagement = document.getElementById('folderManagement');
+            if (folders.length > 0) {
+                folderManagement.style.display = 'block';
+            } else {
+                folderManagement.style.display = 'none';
+            }
+
+            // Update view mode button text
+            const viewMode = localStorage.getItem('watchlistViewMode') || 'detailed';
+            const viewModeBtn = document.getElementById('viewModeBtn');
+            if (viewModeBtn) {
+                if (viewMode === 'compact') {
+                    viewModeBtn.textContent = '📋 Compact';
+                    viewModeBtn.style.background = '#c58af9';
+                } else {
+                    viewModeBtn.textContent = '📊 Detailed';
+                    viewModeBtn.style.background = '#8ab4f8';
+                }
+            }
+
+            // Update batch size select
+            const batchSize = getBatchSize();
+            const batchSizeSelect = document.getElementById('batchSizeSelect');
+            if (batchSizeSelect) {
+                batchSizeSelect.value = batchSize.toString();
+            }
 
             folders.forEach((folder, folderIndex) => {
                 const folderDiv = document.createElement('div');
@@ -957,9 +1162,56 @@
                 const header = document.createElement('div');
                 header.className = 'folder-header';
 
+                // Create folder name wrapper with tags
+                const folderNameWrapper = document.createElement('div');
+                folderNameWrapper.className = 'folder-name-wrapper';
+
                 const folderName = document.createElement('div');
                 folderName.className = 'folder-name';
-                folderName.textContent = folder.name;
+                folderName.onclick = () => toggleFolderCollapse(folderIndex);
+
+                // Add collapse icon
+                const collapseIcon = document.createElement('span');
+                collapseIcon.className = 'folder-collapse-icon';
+                collapseIcon.textContent = '▼';
+
+                // Add folder name text
+                const folderNameText = document.createElement('span');
+                folderNameText.textContent = folder.name;
+
+                folderName.appendChild(collapseIcon);
+                folderName.appendChild(folderNameText);
+
+                folderNameWrapper.appendChild(folderName);
+
+                // Add tag badges next to folder name
+                const tagCounts = {};
+                folder.symbols.forEach(symbolObj => {
+                    if (symbolObj.tags && symbolObj.tags.length > 0) {
+                        const tag = symbolObj.tags[0];
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    }
+                });
+
+                if (Object.keys(tagCounts).length > 0) {
+                    const tagBadgesDiv = document.createElement('div');
+                    tagBadgesDiv.className = 'folder-tag-badges';
+
+                    tags.forEach(tagObj => {
+                        if (tagCounts[tagObj.name]) {
+                            const badge = document.createElement('button');
+                            badge.className = `folder-tag-badge ${tagObj.name}`;
+                            badge.textContent = `${tagObj.emoji} ${tagCounts[tagObj.name]}`;
+                            badge.onclick = (e) => {
+                                e.stopPropagation();
+                                openByTag(folderIndex, tagObj.name);
+                            };
+                            tagBadgesDiv.appendChild(badge);
+                        }
+                    });
+
+                    folderNameWrapper.appendChild(tagBadgesDiv);
+                }
 
                 const controls = document.createElement('div');
                 controls.className = 'folder-controls';
@@ -971,7 +1223,7 @@
 
                 const openBatchBtn = document.createElement('button');
                 openBatchBtn.className = 'btn-control btn-open-batch';
-                openBatchBtn.textContent = 'Open 2 at a time';
+                openBatchBtn.textContent = `Open ${batchSize} at a time`;
                 openBatchBtn.id = `batch-btn-${folderIndex}`;
                 openBatchBtn.onclick = () => openBatch(folderIndex);
 
@@ -999,40 +1251,8 @@
                 controls.appendChild(editBtn);
                 controls.appendChild(deleteBtn);
 
-                header.appendChild(folderName);
+                header.appendChild(folderNameWrapper);
                 header.appendChild(controls);
-
-                // Tag filters
-                const tagFilters = document.createElement('div');
-                tagFilters.className = 'tag-filters';
-
-                const tagTitle = document.createElement('div');
-                tagTitle.className = 'tag-filter-title';
-                tagTitle.textContent = 'Open by Tag:';
-
-                const tagButtons = document.createElement('div');
-                tagButtons.className = 'tag-filter-buttons';
-
-                const tags = [
-                    { name: 'red', emoji: '📕', label: 'Red Book' },
-                    { name: 'blue', emoji: '📘', label: 'Blue Book' },
-                    { name: 'green', emoji: '📗', label: 'Green Book' },
-                    { name: 'orange', emoji: '📙', label: 'Orange Book' },
-                    { name: 'purple', emoji: '📓', label: 'Purple Book' }
-                ];
-                tags.forEach(tag => {
-                    const count = folder.symbols.filter(s => s.tags && s.tags.includes(tag.name)).length;
-                    if (count > 0) {
-                        const btn = document.createElement('button');
-                        btn.className = `tag-filter-btn ${tag.name}`;
-                        btn.textContent = `${tag.emoji} (${count})`;
-                        btn.onclick = () => openByTag(folderIndex, tag.name);
-                        tagButtons.appendChild(btn);
-                    }
-                });
-
-                tagFilters.appendChild(tagTitle);
-                tagFilters.appendChild(tagButtons);
 
                 // Symbols grid
                 const symbolsGrid = document.createElement('div');
@@ -1164,6 +1384,15 @@
                     controlsDiv.appendChild(removeBtn);
                     symbolHeader.appendChild(controlsDiv);
                     card.appendChild(symbolHeader);
+
+                    // Add note preview for detailed view
+                    if (symbolObj.note && symbolObj.note.trim()) {
+                        const notePreview = document.createElement('div');
+                        notePreview.className = 'symbol-note-preview';
+                        notePreview.textContent = symbolObj.note;
+                        card.appendChild(notePreview);
+                    }
+
                     symbolsGrid.appendChild(card);
                 });
 
@@ -1173,12 +1402,29 @@
                 batchStatus.id = `status-${folderIndex}`;
                 batchStatus.style.display = 'none';
 
+                // Wrap collapsible content
+                const folderContent = document.createElement('div');
+                folderContent.className = 'folder-content';
+
+                folderContent.appendChild(symbolsGrid);
+                folderContent.appendChild(batchStatus);
+
                 folderDiv.appendChild(header);
-                if (tagButtons.children.length > 0) {
-                    folderDiv.appendChild(tagFilters);
+                folderDiv.appendChild(folderContent);
+
+                // Apply collapsed state if folder has it
+                if (folder.collapsed) {
+                    folderDiv.classList.add('collapsed');
                 }
-                folderDiv.appendChild(symbolsGrid);
-                folderDiv.appendChild(batchStatus);
+
+                // Apply view mode (default to detailed view)
+                const viewMode = localStorage.getItem('watchlistViewMode') || 'detailed';
+                if (viewMode === 'compact') {
+                    folderDiv.classList.add('compact-view');
+                } else {
+                    folderDiv.classList.add('detailed-view');
+                }
+
                 container.appendChild(folderDiv);
             });
         }
@@ -1306,6 +1552,7 @@
         function openNextBatch(folderIndex) {
             const folder = folders[folderIndex];
             const statusDiv = document.getElementById(`status-${folderIndex}`);
+            const batchSize = getBatchSize();
 
             if (folder.batchIndex >= folder.symbols.length) {
                 // All done
@@ -1317,20 +1564,20 @@
                 return;
             }
 
-            // Open next 2 symbols
+            // Open next N symbols (based on batch size)
             let opened = 0;
-            for (let i = 0; i < 2 && folder.batchIndex < folder.symbols.length; i++) {
+            for (let i = 0; i < batchSize && folder.batchIndex < folder.symbols.length; i++) {
                 openSymbol(folderIndex, folder.batchIndex);
                 folder.batchIndex++;
                 opened++;
             }
 
-            statusDiv.textContent = `Opened ${folder.batchIndex} of ${folder.symbols.length} symbols. Click "Next 2" to continue.`;
+            statusDiv.textContent = `Opened ${folder.batchIndex} of ${folder.symbols.length} symbols. Click "Next ${batchSize}" to continue.`;
 
             // Show next button
             if (folder.batchIndex < folder.symbols.length) {
                 const nextBtn = document.getElementById(`batch-btn-${folderIndex}`);
-                nextBtn.textContent = 'Next 2';
+                nextBtn.textContent = `Next ${batchSize}`;
                 nextBtn.style.display = 'inline-block';
                 nextBtn.onclick = () => {
                     nextBtn.style.display = 'none';
@@ -1348,10 +1595,11 @@
         function stopBatch(folderIndex) {
             const folder = folders[folderIndex];
             folder.batchRunning = false;
+            const batchSize = getBatchSize();
 
             // Update UI
             const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
-            batchBtn.textContent = 'Open 2 at a time';
+            batchBtn.textContent = `Open ${batchSize} at a time`;
             batchBtn.style.display = 'inline-block';
             batchBtn.onclick = () => openBatch(folderIndex);
 
@@ -1388,6 +1636,60 @@
                 editBtn.classList.add('active');
                 editBtn.textContent = 'Done';
             }
+        }
+
+        // ========== COLLAPSE/EXPAND FUNCTIONS ==========
+
+        function toggleFolderCollapse(folderIndex) {
+            const folder = folders[folderIndex];
+            const folderDiv = document.getElementById(`folder-${folderIndex}`);
+
+            // Toggle collapsed state
+            folder.collapsed = !folder.collapsed;
+
+            if (folder.collapsed) {
+                folderDiv.classList.add('collapsed');
+            } else {
+                folderDiv.classList.remove('collapsed');
+            }
+
+            saveFolders();
+        }
+
+        function collapseAll() {
+            folders.forEach((folder, index) => {
+                folder.collapsed = true;
+                const folderDiv = document.getElementById(`folder-${index}`);
+                if (folderDiv) {
+                    folderDiv.classList.add('collapsed');
+                }
+            });
+            saveFolders();
+        }
+
+        function expandAll() {
+            folders.forEach((folder, index) => {
+                folder.collapsed = false;
+                const folderDiv = document.getElementById(`folder-${index}`);
+                if (folderDiv) {
+                    folderDiv.classList.remove('collapsed');
+                }
+            });
+            saveFolders();
+        }
+
+        // ========== VIEW MODE TOGGLE ==========
+
+        function toggleViewMode() {
+            const currentMode = localStorage.getItem('watchlistViewMode') || 'detailed';
+            const newMode = currentMode === 'compact' ? 'detailed' : 'compact';
+
+            localStorage.setItem('watchlistViewMode', newMode);
+
+            // Re-render all folders with new view mode
+            displayFolders();
+
+            showNotification(`Switched to ${newMode === 'compact' ? 'Compact' : 'Detailed'} view!`, 'info');
         }
 
         // ========== NOTE FUNCTIONS ==========
@@ -1579,6 +1881,9 @@
                 // Initialize optional properties
                 if (!folder.openedSymbols) {
                     folder.openedSymbols = [];
+                }
+                if (folder.collapsed === undefined) {
+                    folder.collapsed = false;
                 }
             }
 
