@@ -430,6 +430,27 @@
             font-family: 'Courier New', monospace;
         }
 
+        .sync-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #1e1e1e;
+            border: 1px solid #2c2c2c;
+            border-radius: 12px;
+        }
+
+        .sync-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .sync-card {
+            background: #232323;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #2c2c2c;
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             body {
@@ -484,6 +505,19 @@
             .instruction p {
                 font-size: 12px;
                 line-height: 1.5;
+            }
+
+            .sync-section {
+                margin: 16px 0;
+                padding: 14px;
+            }
+
+            .sync-options {
+                grid-template-columns: 1fr;
+            }
+
+            .sync-card {
+                padding: 12px;
             }
 
             .folder {
@@ -689,6 +723,53 @@ Example:
                 <button class="btn-primary" onclick="parseData()">Add Folder</button>
                 <button class="btn-primary" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear Input</button>
                 <button class="btn-primary" onclick="clearAllFolders()" style="background: #f28b82; color: #000;">Clear All Folders</button>
+            </div>
+        </div>
+
+        <div class="sync-section">
+            <h2 style="color: #e8eaed; font-size: 18px; margin-bottom: 12px;">📦 Data Sync & Backup</h2>
+
+            <div class="sync-options">
+                <!-- Export/Import -->
+                <div class="sync-card">
+                    <h3 style="color: #8ab4f8; font-size: 14px; margin-bottom: 8px;">💾 Local Backup</h3>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="exportData()" style="background: #81c995; flex: 1; min-width: 120px;">Export Data</button>
+                        <label for="importFile" class="btn-primary" style="background: #8ab4f8; flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; cursor: pointer;">Import Data</label>
+                        <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- GitHub Gist Sync -->
+                <div class="sync-card">
+                    <h3 style="color: #8ab4f8; font-size: 14px; margin-bottom: 8px;">☁️ GitHub Sync</h3>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                        <input type="password" id="githubToken" placeholder="GitHub Token (optional)" style="flex: 1; min-width: 200px; padding: 8px 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px; color: #e8eaed; font-size: 13px;">
+                        <button class="btn-primary" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed; padding: 8px 16px;">?</button>
+                    </div>
+                    <div id="tokenHelp" style="display: none; background: #232323; padding: 12px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; color: #9aa0a6; line-height: 1.5;">
+                        <strong style="color: #fdd663;">How to get GitHub Token:</strong><br>
+                        1. Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ab4f8;">github.com/settings/tokens</a><br>
+                        2. Click "Generate new token (classic)"<br>
+                        3. Select scope: <code style="background: #1e1e1e; padding: 2px 4px; border-radius: 3px;">gist</code><br>
+                        4. Copy and paste token here
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="uploadToGist()" style="background: #c58af9; flex: 1; min-width: 120px;">Upload to Cloud</button>
+                        <button class="btn-primary" onclick="showDownloadDialog()" style="background: #fcad70; flex: 1; min-width: 120px;">Download from Cloud</button>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+                        <button class="btn-primary" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed; font-size: 12px; padding: 6px 12px;">Clear Stored Token</button>
+                    </div>
+                    <div id="syncStatus" style="margin-top: 8px; font-size: 12px; color: #9aa0a6;"></div>
+
+                    <!-- Security Notice -->
+                    <div style="margin-top: 12px; padding: 10px; background: #232323; border-left: 2px solid #fcad70; border-radius: 4px;">
+                        <div style="font-size: 11px; color: #9aa0a6; line-height: 1.5;">
+                            🔒 <strong style="color: #fcad70;">Security:</strong> Token stored locally in your browser. Only grant <code style="background: #1e1e1e; padding: 2px 4px; border-radius: 3px;">gist</code> permission. Never share your token.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1243,6 +1324,342 @@ Example:
                 saveFolders();
                 displayFolders();
                 showNotification('Folder deleted!', 'info');
+            }
+        }
+
+        // ========== EXPORT/IMPORT FUNCTIONS ==========
+
+        function exportData() {
+            if (folders.length === 0) {
+                alert('No data to export! Please add some folders first.');
+                return;
+            }
+
+            const dataStr = JSON.stringify(folders, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            link.href = url;
+            link.download = `watchlist-backup-${timestamp}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showNotification('Data exported successfully!', 'success');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Security: Check file size (max 10MB)
+            const MAX_FILE_SIZE = 10 * 1024 * 1024;
+            if (file.size > MAX_FILE_SIZE) {
+                alert('File too large! Maximum size is 10MB.');
+                event.target.value = '';
+                return;
+            }
+
+            // Security: Check file type
+            if (!file.name.endsWith('.json')) {
+                alert('Invalid file type! Please select a .json file.');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+
+                    // Security: Comprehensive data validation
+                    if (!validateImportedData(imported)) {
+                        throw new Error('Invalid data structure');
+                    }
+
+                    const confirmMsg = `This will replace all existing data with ${imported.length} folder(s). Continue?`;
+                    if (confirm(confirmMsg)) {
+                        folders = imported;
+                        saveFolders();
+                        displayFolders();
+                        showNotification(`Imported ${imported.length} folder(s) successfully!`, 'success');
+                    }
+                } catch (err) {
+                    alert('Invalid file format! Please select a valid backup file.');
+                    console.error('Import error:', err);
+                }
+            };
+            reader.readAsText(file);
+
+            // Reset input so same file can be imported again
+            event.target.value = '';
+        }
+
+        // Security: Validate imported data structure
+        function validateImportedData(data) {
+            // Must be an array
+            if (!Array.isArray(data)) {
+                return false;
+            }
+
+            // Validate each folder
+            for (const folder of data) {
+                // Folder must be an object with required properties
+                if (typeof folder !== 'object' || folder === null) {
+                    return false;
+                }
+
+                // Must have name (string) and symbols (array)
+                if (typeof folder.name !== 'string' || !Array.isArray(folder.symbols)) {
+                    return false;
+                }
+
+                // Validate each symbol
+                for (const symbol of folder.symbols) {
+                    if (typeof symbol !== 'object' || symbol === null) {
+                        return false;
+                    }
+
+                    // Symbol must have name (string)
+                    if (typeof symbol.name !== 'string' || symbol.name.length === 0) {
+                        return false;
+                    }
+
+                    // If tags exist, must be an array of strings
+                    if (symbol.tags !== undefined) {
+                        if (!Array.isArray(symbol.tags)) {
+                            return false;
+                        }
+                        for (const tag of symbol.tags) {
+                            if (typeof tag !== 'string') {
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                // Initialize optional properties
+                if (!folder.openedSymbols) {
+                    folder.openedSymbols = [];
+                }
+            }
+
+            return true;
+        }
+
+        // ========== GITHUB GIST SYNC FUNCTIONS ==========
+
+        let gistId = localStorage.getItem('watchlistGistId') || null;
+
+        function toggleTokenHelp() {
+            const helpDiv = document.getElementById('tokenHelp');
+            helpDiv.style.display = helpDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function setSyncStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('syncStatus');
+            const colors = {
+                success: '#81c995',
+                error: '#f28b82',
+                info: '#8ab4f8',
+                warning: '#fcad70'
+            };
+            statusDiv.style.color = colors[type] || colors.info;
+            statusDiv.textContent = message;
+        }
+
+        function getGithubToken() {
+            const token = document.getElementById('githubToken').value.trim();
+
+            // If no token provided, try to get from localStorage
+            if (!token) {
+                const savedToken = localStorage.getItem('githubToken');
+                if (savedToken) {
+                    return savedToken;
+                }
+                return null;
+            }
+
+            // Save token to localStorage for future use
+            localStorage.setItem('githubToken', token);
+            return token;
+        }
+
+        async function uploadToGist() {
+            if (folders.length === 0) {
+                alert('No data to upload! Please add some folders first.');
+                return;
+            }
+
+            const token = getGithubToken();
+            if (!token) {
+                alert('Please enter your GitHub token first!\n\nClick the "?" button to learn how to get one.');
+                return;
+            }
+
+            setSyncStatus('Uploading to GitHub Gist...', 'info');
+
+            try {
+                const data = JSON.stringify(folders, null, 2);
+                const timestamp = new Date().toISOString();
+
+                const gistData = {
+                    description: `TradingView Watchlist - Last updated: ${timestamp}`,
+                    public: false,
+                    files: {
+                        'watchlist-data.json': {
+                            content: data
+                        }
+                    }
+                };
+
+                let response;
+                if (gistId) {
+                    // Update existing gist
+                    response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify(gistData)
+                    });
+                } else {
+                    // Create new gist
+                    response = await fetch('https://api.github.com/gists', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify(gistData)
+                    });
+                }
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to upload to GitHub');
+                }
+
+                const gist = await response.json();
+                gistId = gist.id;
+                localStorage.setItem('watchlistGistId', gistId);
+
+                setSyncStatus(`✓ Uploaded successfully! Gist ID: ${gistId}`, 'success');
+                showNotification('Data uploaded to GitHub Gist!', 'success');
+
+                // Show the gist ID for user to copy
+                setTimeout(() => {
+                    setSyncStatus(`Gist ID: ${gistId} (saved for next time)`, 'info');
+                }, 3000);
+
+            } catch (err) {
+                console.error('Upload error:', err);
+                setSyncStatus(`✗ Upload failed: ${err.message}`, 'error');
+                alert(`Failed to upload to GitHub:\n${err.message}\n\nPlease check your token and try again.`);
+            }
+        }
+
+        async function downloadFromGist(gistIdToDownload) {
+            const token = getGithubToken();
+
+            setSyncStatus('Downloading from GitHub Gist...', 'info');
+
+            try {
+                const headers = {
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+
+                // Add token if available (optional for public gists)
+                if (token) {
+                    headers['Authorization'] = `token ${token}`;
+                }
+
+                const response = await fetch(`https://api.github.com/gists/${gistIdToDownload}`, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Gist not found. Please check the Gist ID.');
+                    }
+                    throw new Error('Failed to download from GitHub');
+                }
+
+                const gist = await response.json();
+                const filename = Object.keys(gist.files)[0];
+                const content = gist.files[filename].content;
+
+                // Security: Check content size before parsing (max 10MB)
+                const MAX_CONTENT_SIZE = 10 * 1024 * 1024;
+                if (content.length > MAX_CONTENT_SIZE) {
+                    throw new Error('Gist content too large (max 10MB)');
+                }
+
+                const imported = JSON.parse(content);
+
+                // Security: Comprehensive data validation
+                if (!validateImportedData(imported)) {
+                    throw new Error('Invalid data structure in gist');
+                }
+
+                const confirmMsg = `Download will replace all existing data with ${imported.length} folder(s). Continue?`;
+                if (confirm(confirmMsg)) {
+                    folders = imported;
+                    gistId = gistIdToDownload;
+                    localStorage.setItem('watchlistGistId', gistId);
+                    saveFolders();
+                    displayFolders();
+                    setSyncStatus(`✓ Downloaded ${imported.length} folder(s) successfully!`, 'success');
+                    showNotification('Data downloaded from GitHub Gist!', 'success');
+                }
+
+            } catch (err) {
+                console.error('Download error:', err);
+                setSyncStatus(`✗ Download failed: ${err.message}`, 'error');
+                alert(`Failed to download from GitHub:\n${err.message}`);
+            }
+        }
+
+        function showDownloadDialog() {
+            const currentGistId = localStorage.getItem('watchlistGistId');
+            let message = 'Enter Gist ID to download:';
+
+            if (currentGistId) {
+                message += `\n\n(Leave empty to use saved Gist ID: ${currentGistId})`;
+            }
+
+            const inputGistId = prompt(message, '');
+
+            if (inputGistId === null) {
+                // User cancelled
+                return;
+            }
+
+            const gistIdToUse = inputGistId.trim() || currentGistId;
+
+            if (!gistIdToUse) {
+                alert('Please enter a Gist ID!');
+                return;
+            }
+
+            downloadFromGist(gistIdToUse);
+        }
+
+        // Security: Clear stored GitHub token
+        function clearStoredToken() {
+            if (confirm('Clear stored GitHub token and Gist ID from browser?\n\nYou will need to re-enter them for future syncs.')) {
+                localStorage.removeItem('githubToken');
+                localStorage.removeItem('watchlistGistId');
+                document.getElementById('githubToken').value = '';
+                gistId = null;
+                setSyncStatus('Token and Gist ID cleared from storage', 'warning');
+                showNotification('Stored credentials cleared!', 'info');
             }
         }
     </script>

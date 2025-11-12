@@ -59,6 +59,23 @@ Each folder provides multiple ways to open TradingView charts:
 - Tag buttons highlight when active
 - **Clean Display**: Exchange prefixes (NSE:, BSE:) are hidden from UI to save space while maintaining full functionality
 
+### 📦 Data Sync & Backup
+Multiple ways to backup and sync your data across devices:
+
+**💾 Local Backup (Export/Import):**
+- **Export Data**: Download your watchlists as a JSON file
+- **Import Data**: Upload a previously exported backup file
+- Complete offline functionality
+- Manual sync by sharing the backup file
+
+**☁️ GitHub Gist Sync:**
+- Sync data across devices using GitHub Gist (free, unlimited storage)
+- **Upload to Cloud**: Push your data to a private GitHub Gist
+- **Download from Cloud**: Pull data from any device using Gist ID
+- Automatic Gist ID saving for easy subsequent syncs
+- Optional GitHub token for private gists (stored locally)
+- Token and Gist ID persist across sessions
+
 ## How to Use
 
 1. **Open the webpage**: Open `tradingview-links.html` in any modern web browser
@@ -87,6 +104,21 @@ Each folder provides multiple ways to open TradingView charts:
    - Add more folders by pasting new data
    - Delete entire folders with the "Delete" button
    - Clear input box after adding folders
+
+7. **Backup and sync your data**:
+
+   **Local Backup:**
+   - Click "Export Data" to download a backup file
+   - Transfer the file to another device (email, cloud, USB)
+   - Click "Import Data" on the other device to restore
+
+   **GitHub Cloud Sync:**
+   - Get a GitHub token (click "?" for instructions)
+   - Enter token in the field (saved automatically)
+   - Click "Upload to Cloud" to sync data
+   - On another device: Click "Download from Cloud"
+   - Enter the Gist ID (or leave empty if previously saved)
+   - Your data syncs across all devices!
 
 ## Data Format
 
@@ -132,6 +164,12 @@ The input format is simple:
 - **Clear Input**: Clears the textarea without affecting saved folders
 - **Clear All Folders**: Removes all saved folders (with confirmation)
 
+### Sync & Backup Controls
+- **Export Data**: Download all data as a JSON backup file
+- **Import Data**: Upload and restore data from a backup file
+- **Upload to Cloud**: Sync data to GitHub Gist (requires token)
+- **Download from Cloud**: Retrieve data from GitHub Gist (requires Gist ID)
+
 ### Folder Controls
 - **Open All**: Opens all symbols in the folder simultaneously
 - **Open 2 at a time**: Opens symbols in batches of 2 with manual progression
@@ -164,3 +202,48 @@ The input format is simple:
 - **Symbol Removal**: Removing a symbol permanently deletes it from the folder
 - **Batch Opening**: The "Open 2 at a time" feature helps prevent overwhelming your browser with too many tabs at once
 - **Browser Compatibility**: Works with all modern browsers that support localStorage
+
+### Sync & Backup Notes
+
+**Export/Import:**
+- Backup files are named with timestamp (e.g., `watchlist-backup-2025-01-12T15-30-45.json`)
+- Import replaces all existing data (confirmation required)
+- Files can be shared via any method (email, WhatsApp, cloud storage)
+
+**GitHub Gist Sync:**
+- Token is stored locally in browser (never sent anywhere except GitHub)
+- Gist ID is saved after first upload for easy subsequent syncs
+- Private gists are recommended (default)
+- Free unlimited storage with GitHub account
+- First upload creates new gist, subsequent uploads update the same gist
+- Multiple devices can sync to the same Gist ID
+- Download works even without token (for public gists)
+
+## Security Features
+
+### Data Protection
+- **File Size Limits**: 10MB maximum for import/download (prevents browser issues)
+- **Data Validation**: Comprehensive validation of imported data structure
+- **File Type Verification**: Only .json files accepted for import
+- **XSS Protection**: All user data sanitized and inserted safely into DOM
+- **No External Dependencies**: Zero third-party scripts or tracking
+
+### Token Security
+- **Minimal Permissions**: Only `gist` scope required for GitHub token
+- **Local Storage**: Token stored in browser localStorage (OS-encrypted)
+- **Clear Token Feature**: One-click button to remove stored credentials
+- **Private Gists**: Default to private for your data security
+- **Revocable**: Tokens can be instantly revoked at github.com/settings/tokens
+
+### Privacy
+- **No Tracking**: Zero analytics or external tracking
+- **No Server**: Fully client-side application
+- **Offline-First**: Works completely offline after initial load
+- **Your Data Only**: Data never sent to third parties
+
+### Best Practices
+1. Only grant `gist` permission to GitHub token
+2. Use "Clear Stored Token" on shared/public computers
+3. Keep regular offline backups (Export Data)
+4. Use private gists (default) for sensitive watchlists
+5. Revoke token immediately if compromised
