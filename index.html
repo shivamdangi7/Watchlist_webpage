@@ -351,6 +351,14 @@
         .folder.compact-view .symbol-card {
             padding: 8px;
             gap: 4px;
+            position: relative;
+        }
+
+        /* Golden glow for symbols with notes in compact mode */
+        .folder.compact-view .symbol-card.has-note .symbol-btn {
+            box-shadow: 0 0 8px rgba(253, 214, 99, 0.4);
+            border: 1px solid rgba(253, 214, 99, 0.3);
+            border-radius: 6px;
         }
 
         .folder.compact-view .symbol-btn {
@@ -369,6 +377,62 @@
 
         .folder.compact-view .symbol-note-preview {
             display: none;
+        }
+
+        /* Note hover tooltip in compact mode */
+        .folder.compact-view .symbol-note-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2c2c2c;
+            border: 1px solid #fdd663;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: #e8eaed;
+            line-height: 1.4;
+            z-index: 1000;
+            margin-top: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .folder.compact-view .symbol-card:hover .symbol-note-tooltip {
+            opacity: 1;
+        }
+
+        /* Edit mode overlay in compact view */
+        .folder.compact-view.edit-mode .symbol-card .symbol-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(30, 30, 30, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            border-radius: 8px;
+            z-index: 10;
+        }
+
+        .folder.compact-view.edit-mode .symbol-card:hover .symbol-controls {
+            opacity: 1;
+        }
+
+        /* Show note and remove buttons in edit mode overlay */
+        .folder.compact-view.edit-mode .symbol-note-btn,
+        .folder.compact-view.edit-mode .symbol-remove {
+            display: block;
+            position: relative;
         }
 
         /* Detailed View Styles */
