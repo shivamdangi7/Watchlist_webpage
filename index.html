@@ -194,6 +194,8 @@
         .folder.collapsed .folder-content {
             max-height: 0;
             opacity: 0;
+            pointer-events: none;
+            overflow: hidden;
         }
 
         .folder-controls {
@@ -978,7 +980,8 @@
 
                     displayFolders();
                 } catch (e) {
-                    console.error('Error loading saved folders:', e);
+                    // Error loading folders - reset to empty
+                    folders = [];
                 }
             }
         }
@@ -1537,17 +1540,14 @@
         }
 
         function openBatch(folderIndex) {
-            console.log('openBatch called for folder', folderIndex);
             const folder = folders[folderIndex];
 
             if (!folder) {
-                console.error('Folder not found at index', folderIndex);
                 return;
             }
 
             // Force reset if batch is stuck (safety mechanism)
             if (folder.batchRunning) {
-                console.warn('Batch already running for folder', folderIndex, '- Force resetting...');
                 folder.batchRunning = false;
                 folder.batchIndex = 0;
             }
@@ -1559,8 +1559,6 @@
             const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
             const stopBtn = document.getElementById(`stop-btn-${folderIndex}`);
             const statusDiv = document.getElementById(`status-${folderIndex}`);
-
-            console.log('Elements found:', { batchBtn: !!batchBtn, stopBtn: !!stopBtn, statusDiv: !!statusDiv });
 
             if (batchBtn) batchBtn.style.display = 'none';
             if (stopBtn) stopBtn.style.display = 'inline-block';
@@ -1576,7 +1574,6 @@
             const batchSize = getBatchSize();
 
             if (!statusDiv) {
-                console.error('Status div not found for folder', folderIndex);
                 return;
             }
 
@@ -1954,16 +1951,13 @@
             if (!token) {
                 const savedToken = localStorage.getItem('githubToken');
                 if (savedToken) {
-                    console.log('Using saved token from localStorage');
                     return savedToken;
                 }
-                console.log('No token found');
                 return null;
             }
 
             // Save token to localStorage for future use
             localStorage.setItem('githubToken', token);
-            console.log('Token saved to localStorage');
             return token;
         }
 
@@ -1996,7 +1990,6 @@
                     alert('❌ Token is invalid or expired!\n\nPlease:\n1. Generate a new token at github.com/settings/tokens\n2. Make sure to select "gist" scope\n3. Copy the entire token');
                 }
             } catch (err) {
-                console.error('Token test error:', err);
                 setSyncStatus('✗ Token test failed', 'error');
                 alert(`Token test failed: ${err.message}`);
             }
@@ -2082,10 +2075,6 @@
         async function downloadFromGist(gistIdToDownload) {
             const token = getGithubToken();
 
-            console.log('=== DOWNLOAD DEBUG ===');
-            console.log('Gist ID:', gistIdToDownload);
-            console.log('Has Token:', !!token);
-
             setSyncStatus('Downloading from GitHub Gist...', 'info');
 
             try {
@@ -2096,24 +2085,16 @@
                 // Add token if available (optional for public gists)
                 if (token) {
                     headers['Authorization'] = `token ${token}`;
-                    console.log('Token added to headers');
                 }
 
                 const url = `https://api.github.com/gists/${gistIdToDownload}`;
-                console.log('Fetching URL:', url);
 
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: headers
                 });
 
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-
                 if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error('Error response body:', errorBody);
-
                     if (response.status === 404) {
                         throw new Error('Gist not found. Please check the Gist ID.');
                     }
@@ -2123,19 +2104,12 @@
                     if (response.status === 403) {
                         throw new Error('Access forbidden. Token may need "gist" permission.');
                     }
-                    throw new Error(`GitHub API error: ${response.status} - ${errorBody}`);
+                    throw new Error(`GitHub API error: ${response.status}`);
                 }
 
                 const gist = await response.json();
-                console.log('Gist received:', gist);
-                console.log('Files in gist:', Object.keys(gist.files));
-
                 const filename = Object.keys(gist.files)[0];
-                console.log('Using file:', filename);
-
                 const content = gist.files[filename].content;
-                console.log('Content length:', content.length);
-                console.log('Content preview (first 200 chars):', content.substring(0, 200));
 
                 // Security: Check content size before parsing (max 10MB)
                 const MAX_CONTENT_SIZE = 10 * 1024 * 1024;
@@ -2144,16 +2118,11 @@
                 }
 
                 const imported = JSON.parse(content);
-                console.log('Parsed data:', imported);
-                console.log('Number of folders:', imported.length);
 
                 // Security: Comprehensive data validation
                 if (!validateImportedData(imported)) {
-                    console.error('Validation failed!');
                     throw new Error('Invalid data structure in gist');
                 }
-
-                console.log('Validation passed!');
 
                 const confirmMsg = `Download will replace all existing data with ${imported.length} folder(s). Continue?`;
                 if (confirm(confirmMsg)) {
@@ -2164,14 +2133,11 @@
                     displayFolders();
                     setSyncStatus(`✓ Downloaded ${imported.length} folder(s) successfully!`, 'success');
                     showNotification('Data downloaded from GitHub Gist!', 'success');
-                    console.log('Download complete!');
                 }
 
             } catch (err) {
-                console.error('Download error details:', err);
-                console.error('Error stack:', err.stack);
                 setSyncStatus(`✗ Download failed: ${err.message}`, 'error');
-                alert(`Failed to download from GitHub:\n${err.message}\n\nCheck browser console (F12) for details.`);
+                alert(`Failed to download from GitHub:\n${err.message}`);
             }
         }
 
