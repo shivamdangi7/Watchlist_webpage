@@ -1195,8 +1195,13 @@
             const batchSize = parseInt(select.value);
             localStorage.setItem('batchSize', batchSize.toString());
 
-            // Update all batch button texts
-            displayFolders();
+            // Update all batch button texts without re-rendering
+            folders.forEach((folder, folderIndex) => {
+                const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
+                if (batchBtn && !folder.batchRunning) {
+                    batchBtn.textContent = `Open ${batchSize} at a time`;
+                }
+            });
 
             showNotification(`Batch size set to ${batchSize} symbols`, 'info');
         }
@@ -1560,7 +1565,66 @@
             }
 
             saveFolders();
-            displayFolders();
+
+            // Update only the tag button for this specific symbol without re-rendering everything
+            updateSymbolTagButton(folderIndex, symbolIndex);
+        }
+
+        function updateSymbolTagButton(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            // Find the symbol card and tag button
+            const symbolCard = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+            if (!symbolCard) return;
+
+            const tagBtn = symbolCard.querySelector('.tag-dropdown-btn');
+            if (!tagBtn) return;
+
+            // Define tags array
+            const tags = [
+                { name: 'red', emoji: '📕', label: 'Red' },
+                { name: 'blue', emoji: '📘', label: 'Blue' },
+                { name: 'green', emoji: '📗', label: 'Green' },
+                { name: 'orange', emoji: '📙', label: 'Orange' },
+                { name: 'purple', emoji: '📓', label: 'Purple' }
+            ];
+
+            const currentTag = symbolObj.tags && symbolObj.tags.length > 0 ? symbolObj.tags[0] : null;
+
+            // Update button appearance
+            if (currentTag) {
+                const tagInfo = tags.find(t => t.name === currentTag);
+                if (tagInfo) {
+                    tagBtn.textContent = tagInfo.emoji;
+                }
+                // Update card tag class
+                symbolCard.className = 'symbol-card tagged-' + currentTag;
+            } else {
+                tagBtn.textContent = '🔖';
+                // Remove tag classes
+                symbolCard.className = 'symbol-card';
+            }
+
+            // Update dropdown menu to show active tag
+            const dropdownMenu = document.getElementById(`tag-menu-${folderIndex}-${symbolIndex}`);
+            if (dropdownMenu) {
+                const options = dropdownMenu.querySelectorAll('.tag-option');
+                options.forEach(option => {
+                    option.classList.remove('active');
+                });
+
+                if (currentTag) {
+                    const activeOption = Array.from(options).find(opt => {
+                        const emoji = opt.querySelector('.emoji').textContent;
+                        const tagInfo = tags.find(t => t.emoji === emoji);
+                        return tagInfo && tagInfo.name === currentTag;
+                    });
+                    if (activeOption) {
+                        activeOption.classList.add('active');
+                    }
+                }
+            }
         }
 
         function removeTag(folderIndex, symbolIndex) {
@@ -1568,7 +1632,9 @@
             const symbolObj = folder.symbols[symbolIndex];
             symbolObj.tags = [];
             saveFolders();
-            displayFolders();
+
+            // Update only the tag button without re-rendering everything
+            updateSymbolTagButton(folderIndex, symbolIndex);
         }
 
         function toggleDropdown(folderIndex, symbolIndex) {
@@ -1796,6 +1862,9 @@
             const newMode = currentMode === 'compact' ? 'detailed' : 'compact';
 
             localStorage.setItem('watchlistViewMode', newMode);
+
+            // Save current batch state before re-rendering
+            saveFolders();
 
             // Re-render all folders with new view mode
             displayFolders();
