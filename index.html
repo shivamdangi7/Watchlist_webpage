@@ -84,7 +84,7 @@
         }
 
         .btn-compact {
-            padding: 6px 14px !important;
+            padding: 5px 10px !important;
             font-size: 12px !important;
             border-radius: 16px !important;
             margin: 0 !important;
@@ -189,6 +189,10 @@
             overflow: visible;
             transition: max-height 0.3s ease, opacity 0.3s ease;
             opacity: 1;
+        }
+
+        .folder.collapsed {
+            padding: 16px 24px;
         }
 
         .folder.collapsed .folder-content {
@@ -775,6 +779,14 @@
                 border-radius: 12px !important;
             }
 
+            /* Stack folder management on mobile */
+            #folderManagement {
+                width: 100%;
+                margin-left: 0 !important;
+                margin-top: 6px;
+                justify-content: flex-start !important;
+            }
+
             .folder {
                 padding: 14px;
                 margin-bottom: 14px;
@@ -948,39 +960,41 @@
 
         <div class="input-section" style="margin-bottom: 12px;">
             <textarea id="clipboardInput" placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2" style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
-            <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-primary btn-compact" onclick="parseData()">Add Folder</button>
-                <button class="btn-primary btn-compact" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear Input</button>
+
+            <!-- Compact unified button bar -->
+            <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; font-size: 12px;">
+                <!-- Data Management Group -->
+                <button class="btn-primary btn-compact" onclick="parseData()">Add</button>
+                <button class="btn-primary btn-compact" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear</button>
                 <button class="btn-primary btn-compact" onclick="clearAllFolders()" style="background: #f28b82; color: #000;">Clear All</button>
 
-                <!-- Sync buttons inline -->
-                <button class="btn-primary btn-compact" onclick="exportData()" style="background: #81c995; margin-left: auto;">💾 Export</button>
-                <label for="importFile" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;">📥 Import</label>
+                <!-- Separator -->
+                <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
+
+                <!-- Backup Group -->
+                <button class="btn-primary btn-compact" onclick="exportData()" style="background: #81c995;">💾</button>
+                <label for="importFile" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;">📥</label>
                 <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
+                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;">☁️</button>
 
-                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;">☁️ Sync</button>
-            </div>
-        </div>
+                <!-- Folder View Controls (shown when folders exist) -->
+                <div id="folderManagement" style="display: none; margin-left: auto; display: flex; gap: 6px; align-items: center;">
+                    <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
-        <!-- Folder Management Controls -->
-        <div id="folderManagement" style="display: none; margin-bottom: 8px;">
-            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
-                <button class="btn-primary btn-compact" onclick="expandAll()" style="background: #81c995;">▼ Expand All</button>
-                <button class="btn-primary btn-compact" onclick="collapseAll()" style="background: #fcad70;">▶ Collapse All</button>
+                    <button class="btn-primary btn-compact" onclick="expandAll()" style="background: #5f6368; color: #e8eaed;" title="Expand All">▼</button>
+                    <button class="btn-primary btn-compact" onclick="collapseAll()" style="background: #5f6368; color: #e8eaed;" title="Collapse All">▶</button>
 
-                <!-- Batch Size Setting -->
-                <div style="display: flex; gap: 4px; align-items: center;">
-                    <label style="font-size: 11px; color: #9aa0a6; white-space: nowrap;">Open:</label>
-                    <select id="batchSizeSelect" onchange="updateBatchSize()" style="padding: 4px 8px; background: #232323; border: 1px solid #2c2c2c; border-radius: 8px; color: #e8eaed; font-size: 11px; cursor: pointer;">
-                        <option value="2">2 at a time</option>
-                        <option value="3">3 at a time</option>
-                        <option value="5">5 at a time</option>
-                        <option value="10">10 at a time</option>
+                    <!-- Batch Size -->
+                    <select id="batchSizeSelect" onchange="updateBatchSize()" style="padding: 4px 6px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 11px; cursor: pointer;" title="Batch open size">
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="5">5x</option>
+                        <option value="10">10x</option>
                     </select>
-                </div>
 
-                <!-- View Mode Toggle -->
-                <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()" style="background: #c58af9; margin-left: auto;">📋 Compact</button>
+                    <!-- View Mode -->
+                    <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()" style="background: #c58af9;" title="Toggle view mode">📋</button>
+                </div>
             </div>
         </div>
 
@@ -1203,7 +1217,7 @@
             // Show/hide folder management buttons
             const folderManagement = document.getElementById('folderManagement');
             if (folders.length > 0) {
-                folderManagement.style.display = 'block';
+                folderManagement.style.display = 'flex';
             } else {
                 folderManagement.style.display = 'none';
             }
@@ -1213,10 +1227,10 @@
             const viewModeBtn = document.getElementById('viewModeBtn');
             if (viewModeBtn) {
                 if (viewMode === 'compact') {
-                    viewModeBtn.textContent = '📋 Compact';
+                    viewModeBtn.textContent = '📋';
                     viewModeBtn.style.background = '#c58af9';
                 } else {
-                    viewModeBtn.textContent = '📊 Detailed';
+                    viewModeBtn.textContent = '📊';
                     viewModeBtn.style.background = '#8ab4f8';
                 }
             }
