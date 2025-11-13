@@ -923,6 +923,7 @@
             <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;">
                 <input type="password" id="githubToken" placeholder="GitHub Token" style="flex: 1; min-width: 150px; padding: 6px 10px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 12px;">
                 <button class="btn-primary btn-compact" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed;">?</button>
+                <button class="btn-primary btn-compact" onclick="testGithubToken()" style="background: #81c995; color: #000;">Test Token</button>
                 <button class="btn-primary btn-compact" onclick="uploadToGist()" style="background: #c58af9;">Upload</button>
                 <button class="btn-primary btn-compact" onclick="showDownloadDialog()" style="background: #fcad70;">Download</button>
                 <button class="btn-primary btn-compact" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed; font-size: 11px;">Clear Token</button>
@@ -968,6 +969,13 @@
             if (saved) {
                 try {
                     folders = JSON.parse(saved);
+
+                    // Reset batch running flags on page load
+                    folders.forEach(folder => {
+                        folder.batchRunning = false;
+                        folder.batchIndex = 0;
+                    });
+
                     displayFolders();
                 } catch (e) {
                     console.error('Error loading saved folders:', e);
@@ -1529,23 +1537,36 @@
         }
 
         function openBatch(folderIndex) {
+            console.log('openBatch called for folder', folderIndex);
             const folder = folders[folderIndex];
 
-            if (folder.batchRunning) {
+            if (!folder) {
+                console.error('Folder not found at index', folderIndex);
                 return;
+            }
+
+            // Force reset if batch is stuck (safety mechanism)
+            if (folder.batchRunning) {
+                console.warn('Batch already running for folder', folderIndex, '- Force resetting...');
+                folder.batchRunning = false;
+                folder.batchIndex = 0;
             }
 
             folder.batchRunning = true;
             folder.batchIndex = 0;
 
             // Update UI
-            document.getElementById(`batch-btn-${folderIndex}`).style.display = 'none';
-            document.getElementById(`stop-btn-${folderIndex}`).style.display = 'inline-block';
-
+            const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
+            const stopBtn = document.getElementById(`stop-btn-${folderIndex}`);
             const statusDiv = document.getElementById(`status-${folderIndex}`);
-            statusDiv.style.display = 'block';
 
-            // Open first 2
+            console.log('Elements found:', { batchBtn: !!batchBtn, stopBtn: !!stopBtn, statusDiv: !!statusDiv });
+
+            if (batchBtn) batchBtn.style.display = 'none';
+            if (stopBtn) stopBtn.style.display = 'inline-block';
+            if (statusDiv) statusDiv.style.display = 'block';
+
+            // Open first batch
             openNextBatch(folderIndex);
         }
 
@@ -1553,6 +1574,11 @@
             const folder = folders[folderIndex];
             const statusDiv = document.getElementById(`status-${folderIndex}`);
             const batchSize = getBatchSize();
+
+            if (!statusDiv) {
+                console.error('Status div not found for folder', folderIndex);
+                return;
+            }
 
             if (folder.batchIndex >= folder.symbols.length) {
                 // All done
@@ -1577,12 +1603,14 @@
             // Show next button
             if (folder.batchIndex < folder.symbols.length) {
                 const nextBtn = document.getElementById(`batch-btn-${folderIndex}`);
-                nextBtn.textContent = `Next ${batchSize}`;
-                nextBtn.style.display = 'inline-block';
-                nextBtn.onclick = () => {
-                    nextBtn.style.display = 'none';
-                    openNextBatch(folderIndex);
-                };
+                if (nextBtn) {
+                    nextBtn.textContent = `Next ${batchSize}`;
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.onclick = () => {
+                        nextBtn.style.display = 'none';
+                        openNextBatch(folderIndex);
+                    };
+                }
             } else {
                 stopBatch(folderIndex);
                 statusDiv.textContent = '✅ All symbols opened!';
@@ -1599,15 +1627,23 @@
 
             // Update UI
             const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
-            batchBtn.textContent = `Open ${batchSize} at a time`;
-            batchBtn.style.display = 'inline-block';
-            batchBtn.onclick = () => openBatch(folderIndex);
+            const stopBtn = document.getElementById(`stop-btn-${folderIndex}`);
 
-            document.getElementById(`stop-btn-${folderIndex}`).style.display = 'none';
+            if (batchBtn) {
+                batchBtn.textContent = `Open ${batchSize} at a time`;
+                batchBtn.style.display = 'inline-block';
+                batchBtn.onclick = () => openBatch(folderIndex);
+            }
+
+            if (stopBtn) {
+                stopBtn.style.display = 'none';
+            }
 
             if (folder.batchIndex < folder.symbols.length) {
                 const statusDiv = document.getElementById(`status-${folderIndex}`);
-                statusDiv.textContent = `Stopped at ${folder.batchIndex} of ${folder.symbols.length} symbols.`;
+                if (statusDiv) {
+                    statusDiv.textContent = `Stopped at ${folder.batchIndex} of ${folder.symbols.length} symbols.`;
+                }
             }
         }
 
@@ -1918,14 +1954,52 @@
             if (!token) {
                 const savedToken = localStorage.getItem('githubToken');
                 if (savedToken) {
+                    console.log('Using saved token from localStorage');
                     return savedToken;
                 }
+                console.log('No token found');
                 return null;
             }
 
             // Save token to localStorage for future use
             localStorage.setItem('githubToken', token);
+            console.log('Token saved to localStorage');
             return token;
+        }
+
+        // Test if the token is valid
+        async function testGithubToken() {
+            const token = getGithubToken();
+
+            if (!token) {
+                alert('Please enter a GitHub token first!');
+                return;
+            }
+
+            setSyncStatus('Testing token...', 'info');
+
+            try {
+                // Test token by getting user info
+                const response = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    setSyncStatus(`✓ Token valid! Logged in as: ${user.login}`, 'success');
+                    alert(`✅ Token is valid!\n\nLogged in as: ${user.login}\n\nYou can now upload/download gists.`);
+                } else {
+                    setSyncStatus('✗ Token is invalid!', 'error');
+                    alert('❌ Token is invalid or expired!\n\nPlease:\n1. Generate a new token at github.com/settings/tokens\n2. Make sure to select "gist" scope\n3. Copy the entire token');
+                }
+            } catch (err) {
+                console.error('Token test error:', err);
+                setSyncStatus('✗ Token test failed', 'error');
+                alert(`Token test failed: ${err.message}`);
+            }
         }
 
         async function uploadToGist() {
@@ -2008,6 +2082,10 @@
         async function downloadFromGist(gistIdToDownload) {
             const token = getGithubToken();
 
+            console.log('=== DOWNLOAD DEBUG ===');
+            console.log('Gist ID:', gistIdToDownload);
+            console.log('Has Token:', !!token);
+
             setSyncStatus('Downloading from GitHub Gist...', 'info');
 
             try {
@@ -2018,23 +2096,46 @@
                 // Add token if available (optional for public gists)
                 if (token) {
                     headers['Authorization'] = `token ${token}`;
+                    console.log('Token added to headers');
                 }
 
-                const response = await fetch(`https://api.github.com/gists/${gistIdToDownload}`, {
+                const url = `https://api.github.com/gists/${gistIdToDownload}`;
+                console.log('Fetching URL:', url);
+
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: headers
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
                 if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error('Error response body:', errorBody);
+
                     if (response.status === 404) {
                         throw new Error('Gist not found. Please check the Gist ID.');
                     }
-                    throw new Error('Failed to download from GitHub');
+                    if (response.status === 401) {
+                        throw new Error('Authentication failed. Please check your GitHub token.');
+                    }
+                    if (response.status === 403) {
+                        throw new Error('Access forbidden. Token may need "gist" permission.');
+                    }
+                    throw new Error(`GitHub API error: ${response.status} - ${errorBody}`);
                 }
 
                 const gist = await response.json();
+                console.log('Gist received:', gist);
+                console.log('Files in gist:', Object.keys(gist.files));
+
                 const filename = Object.keys(gist.files)[0];
+                console.log('Using file:', filename);
+
                 const content = gist.files[filename].content;
+                console.log('Content length:', content.length);
+                console.log('Content preview (first 200 chars):', content.substring(0, 200));
 
                 // Security: Check content size before parsing (max 10MB)
                 const MAX_CONTENT_SIZE = 10 * 1024 * 1024;
@@ -2043,11 +2144,16 @@
                 }
 
                 const imported = JSON.parse(content);
+                console.log('Parsed data:', imported);
+                console.log('Number of folders:', imported.length);
 
                 // Security: Comprehensive data validation
                 if (!validateImportedData(imported)) {
+                    console.error('Validation failed!');
                     throw new Error('Invalid data structure in gist');
                 }
+
+                console.log('Validation passed!');
 
                 const confirmMsg = `Download will replace all existing data with ${imported.length} folder(s). Continue?`;
                 if (confirm(confirmMsg)) {
@@ -2058,21 +2164,25 @@
                     displayFolders();
                     setSyncStatus(`✓ Downloaded ${imported.length} folder(s) successfully!`, 'success');
                     showNotification('Data downloaded from GitHub Gist!', 'success');
+                    console.log('Download complete!');
                 }
 
             } catch (err) {
-                console.error('Download error:', err);
+                console.error('Download error details:', err);
+                console.error('Error stack:', err.stack);
                 setSyncStatus(`✗ Download failed: ${err.message}`, 'error');
-                alert(`Failed to download from GitHub:\n${err.message}`);
+                alert(`Failed to download from GitHub:\n${err.message}\n\nCheck browser console (F12) for details.`);
             }
         }
 
         function showDownloadDialog() {
             const currentGistId = localStorage.getItem('watchlistGistId');
-            let message = 'Enter Gist ID to download:';
+            let message = '📥 Download from Cloud\n\nEnter your GIST ID (NOT the token):';
 
             if (currentGistId) {
-                message += `\n\n(Leave empty to use saved Gist ID: ${currentGistId})`;
+                message += `\n\n(Leave empty to use saved Gist ID:\n${currentGistId})`;
+            } else {
+                message += `\n\nℹ️ To find your Gist ID:\n1. Go to github.com/gists\n2. Open your watchlist gist\n3. Copy the ID from URL (e.g., abc123xyz789)`;
             }
 
             const inputGistId = prompt(message, '');
@@ -2085,7 +2195,7 @@
             const gistIdToUse = inputGistId.trim() || currentGistId;
 
             if (!gistIdToUse) {
-                alert('Please enter a Gist ID!');
+                alert('⚠️ Please enter a Gist ID!\n\nGist ID is different from Token.\nFind it at: github.com/gists');
                 return;
             }
 
