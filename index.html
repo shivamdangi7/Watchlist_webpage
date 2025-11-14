@@ -2165,7 +2165,14 @@ Lesson: Should have waited for pullback instead of chasing...
                 return;
             }
 
-            const dataStr = JSON.stringify(folders, null, 2);
+            // Export everything including journal and rule book
+            const exportData = {
+                folders: folders,
+                tradingRulebook: localStorage.getItem('tradingRulebook') || '',
+                tradingJournal: localStorage.getItem('tradingJournal') || ''
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -2177,7 +2184,7 @@ Lesson: Should have waited for pullback instead of chasing...
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
-            showNotification('Data exported successfully!', 'success');
+            showNotification('All data exported (folders + journal + rules)!', 'success');
         }
 
         function importData(event) {
@@ -2204,17 +2211,41 @@ Lesson: Should have waited for pullback instead of chasing...
                 try {
                     const imported = JSON.parse(e.target.result);
 
-                    // Security: Comprehensive data validation
-                    if (!validateImportedData(imported)) {
+                    // Check if this is new format (with journal and rulebook) or old format (just folders array)
+                    let foldersData, rulebook, journal;
+
+                    if (Array.isArray(imported)) {
+                        // Old format - just folders
+                        foldersData = imported;
+                        rulebook = '';
+                        journal = '';
+                    } else if (imported.folders && Array.isArray(imported.folders)) {
+                        // New format - includes journal and rulebook
+                        foldersData = imported.folders;
+                        rulebook = imported.tradingRulebook || '';
+                        journal = imported.tradingJournal || '';
+                    } else {
                         throw new Error('Invalid data structure');
                     }
 
-                    const confirmMsg = `This will replace all existing data with ${imported.length} folder(s). Continue?`;
+                    // Security: Comprehensive data validation
+                    if (!validateImportedData(foldersData)) {
+                        throw new Error('Invalid data structure');
+                    }
+
+                    // Prepare confirmation message
+                    let itemsToImport = [`${foldersData.length} folder(s)`];
+                    if (rulebook.trim()) itemsToImport.push('Rule Book');
+                    if (journal.trim()) itemsToImport.push('Journal');
+
+                    const confirmMsg = `This will replace all existing data:\n\n• ${itemsToImport.join('\n• ')}\n\nContinue?`;
                     if (confirm(confirmMsg)) {
-                        folders = imported;
+                        folders = foldersData;
+                        localStorage.setItem('tradingRulebook', rulebook);
+                        localStorage.setItem('tradingJournal', journal);
                         saveFolders();
                         displayFolders();
-                        showNotification(`Imported ${imported.length} folder(s) successfully!`, 'success');
+                        showNotification(`Imported ${itemsToImport.join(', ')} successfully!`, 'success');
                     }
                 } catch (err) {
                     alert('Invalid file format! Please select a valid backup file.');
@@ -2376,7 +2407,10 @@ Lesson: Should have waited for pullback instead of chasing...
             setSyncStatus('Uploading to GitHub Gist...', 'info');
 
             try {
-                const data = JSON.stringify(folders, null, 2);
+                // Prepare all data
+                const foldersData = JSON.stringify(folders, null, 2);
+                const rulebook = localStorage.getItem('tradingRulebook') || '';
+                const journal = localStorage.getItem('tradingJournal') || '';
                 const timestamp = new Date().toISOString();
 
                 const gistData = {
@@ -2384,7 +2418,13 @@ Lesson: Should have waited for pullback instead of chasing...
                     public: false,
                     files: {
                         'watchlist-data.json': {
-                            content: data
+                            content: foldersData
+                        },
+                        'trading-rulebook.txt': {
+                            content: rulebook
+                        },
+                        'trading-journal.txt': {
+                            content: journal
                         }
                     }
                 };
@@ -2474,31 +2514,59 @@ Lesson: Should have waited for pullback instead of chasing...
                 }
 
                 const gist = await response.json();
-                const filename = Object.keys(gist.files)[0];
-                const content = gist.files[filename].content;
+
+                // Extract all files
+                const watchlistFile = gist.files['watchlist-data.json'];
+                const rulebookFile = gist.files['trading-rulebook.txt'];
+                const journalFile = gist.files['trading-journal.txt'];
+
+                if (!watchlistFile) {
+                    throw new Error('Watchlist data not found in gist');
+                }
+
+                const watchlistContent = watchlistFile.content;
 
                 // Security: Check content size before parsing (max 10MB)
                 const MAX_CONTENT_SIZE = 10 * 1024 * 1024;
-                if (content.length > MAX_CONTENT_SIZE) {
+                if (watchlistContent.length > MAX_CONTENT_SIZE) {
                     throw new Error('Gist content too large (max 10MB)');
                 }
 
-                const imported = JSON.parse(content);
+                const imported = JSON.parse(watchlistContent);
 
                 // Security: Comprehensive data validation
                 if (!validateImportedData(imported)) {
                     throw new Error('Invalid data structure in gist');
                 }
 
-                const confirmMsg = `Download will replace all existing data with ${imported.length} folder(s). Continue?`;
+                // Prepare summary message
+                let itemsToDownload = [`${imported.length} folder(s)`];
+                if (rulebookFile && rulebookFile.content.trim()) {
+                    itemsToDownload.push('Rule Book');
+                }
+                if (journalFile && journalFile.content.trim()) {
+                    itemsToDownload.push('Journal');
+                }
+
+                const confirmMsg = `Download will replace all existing data:\n\n${itemsToDownload.join('\n• ')}\n\nContinue?`;
                 if (confirm(confirmMsg)) {
+                    // Import folders
                     folders = imported;
                     gistId = gistIdToDownload;
                     localStorage.setItem('watchlistGistId', gistId);
                     saveFolders();
+
+                    // Import rule book and journal
+                    if (rulebookFile) {
+                        localStorage.setItem('tradingRulebook', rulebookFile.content);
+                    }
+                    if (journalFile) {
+                        localStorage.setItem('tradingJournal', journalFile.content);
+                    }
+
                     displayFolders();
-                    setSyncStatus(`✓ Downloaded ${imported.length} folder(s) successfully!`, 'success');
-                    showNotification('Data downloaded from GitHub Gist!', 'success');
+                    setSyncStatus(`✓ Downloaded successfully! (${itemsToDownload.join(', ')})`, 'success');
+                    showNotification('All data downloaded from GitHub Gist!', 'success');
                 }
 
             } catch (err) {
