@@ -995,6 +995,9 @@
 
                     <!-- View Mode -->
                     <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()" style="background: #c58af9;" title="Toggle view mode">📋</button>
+
+                    <!-- Journal Button -->
+                    <button class="btn-primary btn-compact" onclick="openJournalModal()" style="background: #fdd663; color: #000;" title="Trading Journal & Rules">📖</button>
                 </div>
             </div>
         </div>
@@ -1032,6 +1035,56 @@
             <div class="note-modal-buttons">
                 <button class="btn-primary btn-compact" onclick="deleteNote()" style="background: #f28b82;">Delete Note</button>
                 <button class="btn-primary btn-compact" onclick="saveNote()" style="background: #fdd663; color: #000;">Save Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Modal -->
+    <div id="journalModal" class="note-modal">
+        <div class="note-modal-content" style="max-width: 800px;">
+            <div class="note-modal-header">
+                <div class="note-modal-title">📖 Trading Journal & Rule Book</div>
+                <button class="note-modal-close" onclick="closeJournalModal()">Close</button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px;">
+                    <button class="btn-primary btn-compact" id="rulebookTabBtn" onclick="switchJournalTab('rulebook')" style="background: #fdd663; color: #000;">📋 Rule Book</button>
+                    <button class="btn-primary btn-compact" id="journalTabBtn" onclick="switchJournalTab('journal')" style="background: #5f6368; color: #e8eaed;">📝 Journal</button>
+                </div>
+
+                <!-- Rule Book Section -->
+                <div id="rulebookSection">
+                    <div style="color: #9aa0a6; font-size: 12px; margin-bottom: 8px;">Write your trading rules and strategies here</div>
+                    <textarea id="rulebookTextarea" class="note-textarea" placeholder="Example:
+1. Never risk more than 2% per trade
+2. Always use stop loss
+3. Follow the trend
+4. Wait for confirmation
+5. Don't trade against major news
+..." style="min-height: 300px;"></textarea>
+                </div>
+
+                <!-- Journal Section -->
+                <div id="journalSection" style="display: none;">
+                    <div style="color: #9aa0a6; font-size: 12px; margin-bottom: 8px;">Record your trades, observations, and learnings</div>
+                    <textarea id="journalTextarea" class="note-textarea" placeholder="Example:
+[Date: 2024-01-15]
+Entry: NSE:RELIANCE @ 2500
+Exit: 2550
+P/L: +50 points
+Notes: Clean breakout above resistance. Good volume confirmation.
+
+[Date: 2024-01-16]
+Entry: NSE:TCS @ 3800
+Exit: 3780 (Stop loss hit)
+P/L: -20 points
+Lesson: Should have waited for pullback instead of chasing...
+" style="min-height: 300px;"></textarea>
+                </div>
+            </div>
+            <div class="note-modal-buttons">
+                <button class="btn-primary btn-compact" onclick="clearCurrentJournalTab()" style="background: #f28b82;">Clear</button>
+                <button class="btn-primary btn-compact" onclick="saveJournal()" style="background: #fdd663; color: #000;">💾 Save</button>
             </div>
         </div>
     </div>
@@ -1541,15 +1594,49 @@
             const symbolObj = folder.symbols[symbolIndex];
 
             if (confirm(`Remove ${getDisplayName(symbolObj.name)} from this folder?`)) {
+                // Remove the symbol from the array
                 folder.symbols.splice(symbolIndex, 1);
 
-                // Adjust batchIndex if we removed a symbol before the current position
+                // Adjust batchIndex if we removed a symbol before or at the current position
                 if (folder.batchIndex > symbolIndex) {
                     folder.batchIndex--;
                 }
 
                 saveFolders();
-                displayFolders();
+
+                // Remove the symbol card from DOM without full re-render
+                const symbolCard = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+                if (symbolCard) {
+                    symbolCard.remove();
+                }
+
+                // Re-index remaining symbol cards to maintain correct IDs
+                const folderDiv = document.getElementById(`folder-${folderIndex}`);
+                if (folderDiv) {
+                    const symbolsGrid = folderDiv.querySelector('.symbols-grid');
+                    if (symbolsGrid) {
+                        const cards = symbolsGrid.querySelectorAll('.symbol-card');
+                        cards.forEach((card, newIndex) => {
+                            // Update card ID and all child element IDs
+                            if (newIndex >= symbolIndex) {
+                                card.id = `symbol-${folderIndex}-${newIndex}`;
+
+                                // Update tag dropdown menu ID
+                                const tagMenu = card.querySelector('.tag-dropdown-menu');
+                                if (tagMenu) {
+                                    tagMenu.id = `tag-menu-${folderIndex}-${newIndex}`;
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Update batch status if it exists
+                const statusDiv = document.getElementById(`status-${folderIndex}`);
+                if (statusDiv && folder.batchRunning) {
+                    statusDiv.textContent = `Opened ${folder.batchIndex} of ${folder.symbols.length} symbols. Click "Next ${getBatchSize()}" to continue.`;
+                }
+
                 showNotification('Symbol removed!', 'info');
             }
         }
@@ -1980,6 +2067,86 @@
         document.getElementById('noteModal').addEventListener('click', (e) => {
             if (e.target.id === 'noteModal') {
                 closeNoteModal();
+            }
+        });
+
+        // ========== JOURNAL & RULE BOOK FUNCTIONS ==========
+
+        let currentJournalTab = 'rulebook';
+
+        function openJournalModal() {
+            // Load saved data
+            const rulebook = localStorage.getItem('tradingRulebook') || '';
+            const journal = localStorage.getItem('tradingJournal') || '';
+
+            document.getElementById('rulebookTextarea').value = rulebook;
+            document.getElementById('journalTextarea').value = journal;
+
+            // Reset to rulebook tab
+            switchJournalTab('rulebook');
+
+            document.getElementById('journalModal').classList.add('show');
+        }
+
+        function closeJournalModal() {
+            document.getElementById('journalModal').classList.remove('show');
+        }
+
+        function switchJournalTab(tab) {
+            currentJournalTab = tab;
+
+            const rulebookSection = document.getElementById('rulebookSection');
+            const journalSection = document.getElementById('journalSection');
+            const rulebookTabBtn = document.getElementById('rulebookTabBtn');
+            const journalTabBtn = document.getElementById('journalTabBtn');
+
+            if (tab === 'rulebook') {
+                rulebookSection.style.display = 'block';
+                journalSection.style.display = 'none';
+                rulebookTabBtn.style.background = '#fdd663';
+                rulebookTabBtn.style.color = '#000';
+                journalTabBtn.style.background = '#5f6368';
+                journalTabBtn.style.color = '#e8eaed';
+            } else {
+                rulebookSection.style.display = 'none';
+                journalSection.style.display = 'block';
+                rulebookTabBtn.style.background = '#5f6368';
+                rulebookTabBtn.style.color = '#e8eaed';
+                journalTabBtn.style.background = '#fdd663';
+                journalTabBtn.style.color = '#000';
+            }
+        }
+
+        function saveJournal() {
+            const rulebook = document.getElementById('rulebookTextarea').value;
+            const journal = document.getElementById('journalTextarea').value;
+
+            localStorage.setItem('tradingRulebook', rulebook);
+            localStorage.setItem('tradingJournal', journal);
+
+            showNotification('Journal saved!', 'success');
+        }
+
+        function clearCurrentJournalTab() {
+            if (currentJournalTab === 'rulebook') {
+                if (confirm('Clear all trading rules? This cannot be undone.')) {
+                    document.getElementById('rulebookTextarea').value = '';
+                    localStorage.setItem('tradingRulebook', '');
+                    showNotification('Rule book cleared!', 'info');
+                }
+            } else {
+                if (confirm('Clear all journal entries? This cannot be undone.')) {
+                    document.getElementById('journalTextarea').value = '';
+                    localStorage.setItem('tradingJournal', '');
+                    showNotification('Journal cleared!', 'info');
+                }
+            }
+        }
+
+        // Close journal modal when clicking outside
+        document.getElementById('journalModal').addEventListener('click', (e) => {
+            if (e.target.id === 'journalModal') {
+                closeJournalModal();
             }
         });
 
