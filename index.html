@@ -1542,6 +1542,12 @@
 
             if (confirm(`Remove ${getDisplayName(symbolObj.name)} from this folder?`)) {
                 folder.symbols.splice(symbolIndex, 1);
+
+                // Adjust batchIndex if we removed a symbol before the current position
+                if (folder.batchIndex > symbolIndex) {
+                    folder.batchIndex--;
+                }
+
                 saveFolders();
                 displayFolders();
                 showNotification('Symbol removed!', 'info');
@@ -1624,6 +1630,45 @@
                     if (activeOption) {
                         activeOption.classList.add('active');
                     }
+                }
+            }
+        }
+
+        function updateSymbolNoteDisplay(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            // Find the symbol card
+            const symbolCard = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+            if (!symbolCard) return;
+
+            // Update note button
+            const noteBtn = symbolCard.querySelector('.symbol-note-btn');
+            if (noteBtn) {
+                if (symbolObj.note && symbolObj.note.trim()) {
+                    noteBtn.classList.add('has-note');
+                    symbolCard.classList.add('has-note');
+                } else {
+                    noteBtn.classList.remove('has-note');
+                    symbolCard.classList.remove('has-note');
+                }
+            }
+
+            // Update note preview (for detailed view)
+            let notePreview = symbolCard.querySelector('.symbol-note-preview');
+
+            if (symbolObj.note && symbolObj.note.trim()) {
+                if (!notePreview) {
+                    // Create note preview if it doesn't exist
+                    notePreview = document.createElement('div');
+                    notePreview.className = 'symbol-note-preview';
+                    symbolCard.appendChild(notePreview);
+                }
+                notePreview.textContent = symbolObj.note;
+            } else {
+                // Remove note preview if note is empty
+                if (notePreview) {
+                    notePreview.remove();
                 }
             }
         }
@@ -1904,7 +1949,10 @@
 
             symbolObj.note = note;
             saveFolders();
-            displayFolders();
+
+            // Update only the note button and preview without full re-render
+            updateSymbolNoteDisplay(folderIndex, symbolIndex);
+
             closeNoteModal();
             showNotification(note ? 'Note saved!' : 'Note cleared!', 'success');
         }
@@ -1919,7 +1967,10 @@
 
                 symbolObj.note = '';
                 saveFolders();
-                displayFolders();
+
+                // Update only the note button and preview without full re-render
+                updateSymbolNoteDisplay(folderIndex, symbolIndex);
+
                 closeNoteModal();
                 showNotification('Note deleted!', 'info');
             }
