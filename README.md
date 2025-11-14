@@ -1,84 +1,129 @@
-# TradingView Link Manager
+# TradingView Watchlist Manager
 
-A web-based tool for managing and opening TradingView chart links for multiple stock symbols organized in folders.
+A comprehensive web-based tool for managing TradingView watchlists with advanced organization features, batch opening, journaling, and cloud sync capabilities.
 
 ## Features
 
 ### 📋 Clipboard Data Parsing
 - Paste formatted stock data into the textarea
-- Format: `### Date/Folder Name, NSE:SYMBOL1, NSE:SYMBOL2, BSE:SYMBOL3`
+- Format: `### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2, BSE:SYMBOL3`
 - Automatically extracts folder names and stock symbols
-- Supports both NSE and BSE exchanges
+- Supports all TradingView exchanges (NSE, BSE, etc.)
 
 ### 💾 Persistent Storage
-- All folders are automatically saved to browser's localStorage
-- Folders persist across browser sessions
-- Your watchlists are preserved even after closing the page
+- All data automatically saved to browser's localStorage
+- Watchlists, notes, journal, and rules persist across browser sessions
+- Your data is preserved even after closing the page
 
-### ➕ Multiple Folder Management
-- Add multiple folders by pasting new data
-- Folders are cached - they don't get replaced when adding new ones
+### 📁 Folder Management
+- Add multiple folders by pasting formatted data
 - Update existing folders by pasting data with the same folder name
 - Delete individual folders with the "Delete" button
-- Clear all folders at once with "Clear All Folders" button
+- Clear all folders at once with "Clear All" button
+- **Collapse/Expand folders** to manage screen space
+- Expand All (▼) / Collapse All (▶) buttons for quick folder management
+
+### 🎨 View Modes
+Switch between two display modes:
+- **📊 Detailed View**: Shows full symbol information with note previews
+- **📋 Compact View**: Space-efficient grid with hover tooltips for notes
+  - Smaller cards for more symbols on screen
+  - Note tooltips appear on hover
+  - Edit controls appear on hover in edit mode
+  - Golden glow for symbols with notes
 
 ### 🏷️ Color Tagging System
 Organize your symbols with 5 color tags:
-- **Red, Blue, Green, Orange, Purple** tags available for each symbol
-- Click tag buttons below each symbol to assign/remove tags
-- Only one tag per symbol (clicking a new tag replaces the old one)
-- Symbol cards display colored borders based on their assigned tag
-- Tag counts are shown in the "Open by Tag" section
+- **Red, Blue, Green, Orange, Purple** tags available
+- Click the 🔖 icon on each symbol to assign tags
+- Only one tag per symbol
+- Symbol cards display colored borders based on their tag
+- Tag count badges shown in folder headers
+- Click tag badges to open all symbols with that tag
 
-### 🗑️ Symbol Management
-- **Remove individual symbols**: Each symbol has an "✕" button to remove it from the folder
-- Confirmation dialog prevents accidental deletions
-- Removed symbols are permanently deleted from the folder
+### 📝 Stock Notes
+- Add notes to individual stocks
+- Click the 📝 icon (appears in Edit mode)
+- Notes displayed as preview in detailed view
+- Golden glow indicator for symbols with notes in compact view
+- Notes sync across devices via cloud backup
+
+### 📖 Trading Journal & Rule Book
+Built-in journaling system with two tabs:
+- **📋 Rule Book**: Write and maintain your trading rules and strategies
+- **📝 Journal**: Record trades, observations, and learnings
+- Large text area with example templates
+- Auto-save to localStorage
+- Syncs with cloud backup
+- Access via 📖 button in toolbar
 
 ### 🔗 Smart Link Opening
-Each folder provides multiple ways to open TradingView charts:
+Multiple ways to open TradingView charts:
 
-1. **Individual Symbol Buttons**: Click any symbol name to open its TradingView chart
-2. **Open All**: Opens all symbols in the folder at once in separate tabs
-3. **Open by Tag**: Opens all symbols with a specific color tag
-   - Buttons appear only for tags that have symbols assigned
-   - Shows count of symbols for each tag
-   - Opens all tagged symbols in one click
-4. **Open 2 at a time**:
-   - Opens 2 symbols at a time
-   - Shows progress tracking
-   - Click "Next 2" to continue opening the next batch
-   - Helps avoid browser tab overload
-   - Can stop the process anytime with "Stop" button
+1. **Individual Symbols**: Click any symbol name to open its chart
+2. **Open All**: Opens all symbols in the folder at once
+3. **Open by Tag**: Click tag badges (e.g., "📕 4") to open all symbols with that tag
+4. **Batch Opening**:
+   - Configurable batch sizes: 2x, 3x, 5x, or 10x
+   - Opens symbols in controlled batches
+   - Click "Next N" to continue to next batch
+   - Progress tracking: "Opened X of Y symbols"
+   - Stop button to pause batch opening
+   - **Progress preserved** during notes/editing/removal
+
+### ✏️ Edit Mode
+Toggle edit mode per folder:
+- Shows note (📝) and remove (✕) buttons
+- Edit button changes to "Done" when active
+- In compact view, controls appear on hover with overlay
+- Add/edit notes without losing batch progress
+- Remove symbols without resetting your position
+
+### 🗑️ Symbol Management
+- Remove individual symbols via ✕ button (in Edit mode)
+- Confirmation dialog prevents accidental deletions
+- **Batch progress preserved** when removing symbols
+- Automatic index adjustment for remaining symbols
 
 ### ✅ Visual Feedback
-- Symbol cards display colored borders matching their assigned tag
-- Success notifications when folders/symbols are added/deleted/tagged
-- Real-time progress tracking for batch opening
-- Confirmation dialogs for destructive actions (delete/remove)
-- Tag buttons highlight when active
-- **Clean Display**: Exchange prefixes (NSE:, BSE:) are hidden from UI to save space while maintaining full functionality
+- Clean, modern AMOLED dark theme
+- Symbol cards with colored borders matching tags
+- Success/info notifications for all actions
+- Real-time progress tracking
+- Confirmation dialogs for destructive actions
+- Exchange prefixes (NSE:, BSE:) hidden in UI for cleaner display
 
 ### 📦 Data Sync & Backup
-Multiple ways to backup and sync your data across devices:
+Complete backup and sync functionality:
 
 **💾 Local Backup (Export/Import):**
-- **Export Data**: Download your watchlists as a JSON file
-- **Import Data**: Upload a previously exported backup file
-- Complete offline functionality
-- Manual sync by sharing the backup file
+- **Export**: Download complete backup as JSON
+  - Includes: folders, symbols, tags, notes, journal, and rule book
+  - Timestamped filename
+- **Import**: Upload backup file to restore
+  - Backward compatible with old format (folders only)
+  - Shows summary before importing
+- Transfer files via email, USB, cloud storage, etc.
 
 **☁️ GitHub Gist Sync:**
-- Sync data across devices using GitHub Gist (free, unlimited storage)
-- **Upload to Cloud**: Push your data to a private GitHub Gist
-- **Download from Cloud**: Pull data from any device using Gist ID
-- Automatic Gist ID saving for easy subsequent syncs
-- Optional GitHub token for private gists (stored locally)
-- Token and Gist ID persist across sessions
+- Sync all data across devices using free GitHub Gist
+- **Upload**: Creates 3 files in your private Gist:
+  - `watchlist-data.json` - Folders with symbols, tags, and notes
+  - `trading-rulebook.txt` - Your trading rules
+  - `trading-journal.txt` - Your trade journal
+- **Download**: Restore all data from any device
+- Auto-saves Gist ID for easy subsequent syncs
+- Token stored locally and persists across sessions
+- Test token validity before syncing
+
+### 🎯 Minecraft-Style Favicon
+- Custom pixelated brown dirt block favicon
+- Minecraft aesthetic design
+- Appears in browser tabs, bookmarks, and history
 
 ## How to Use
 
-1. **Open the webpage**: Open `tradingview-links.html` in any modern web browser
+1. **Open the webpage**: Open `index.html` in any modern web browser
 
 2. **Paste your data**:
    ```
@@ -86,43 +131,51 @@ Multiple ways to backup and sync your data across devices:
    ### 12 Nov 2025,NSE:RELINFRA, NSE:KIRLPNU, BSE:TEXRAIL
    ```
 
-3. **Click "Add Folder"**: Your folders will appear below with all symbols as clickable buttons
+3. **Click "Add"**: Your folders will appear with all symbols
 
-4. **Tag your symbols** (optional):
-   - Click the color tag buttons below each symbol
-   - Assign Red, Blue, Green, Orange, or Purple tags
-   - Use tags to categorize symbols by strategy, sector, etc.
+4. **Organize with tags** (optional):
+   - Click 🔖 icon on any symbol
+   - Select a color tag from dropdown menu
+   - Use tags to categorize by strategy, sector, risk, etc.
 
-5. **Choose your opening method**:
-   - Click individual symbol names to open charts
-   - Use "Open All" for quick access to all charts
-   - Use tag buttons (e.g., "Red (4)") to open all symbols with that tag
-   - Use "Open 2 at a time" for controlled batch opening
+5. **Add notes to symbols**:
+   - Click "Edit" button on folder
+   - Click 📝 icon on any symbol
+   - Write your analysis, targets, stop loss, etc.
+   - Click "Save Note"
 
-6. **Manage your symbols and folders**:
-   - Click "✕" next to any symbol to remove it
-   - Add more folders by pasting new data
-   - Delete entire folders with the "Delete" button
-   - Clear input box after adding folders
+6. **Choose opening method**:
+   - Click symbol names for individual charts
+   - Use "Open All" for all symbols
+   - Click tag badges (e.g., "📕 4") for tagged symbols
+   - Use batch opening (select 2x/3x/5x/10x from dropdown)
 
-7. **Backup and sync your data**:
+7. **Manage view and layout**:
+   - Use ▼/▶ to expand/collapse all folders
+   - Switch between 📊 Detailed and 📋 Compact view
+   - Adjust batch size (2x, 3x, 5x, 10x)
+
+8. **Track your trading**:
+   - Click 📖 to open Trading Journal & Rule Book
+   - Write rules in Rule Book tab
+   - Record trades in Journal tab
+   - Click "Save" to store locally
+
+9. **Backup and sync**:
 
    **Local Backup:**
-   - Click "Export Data" to download a backup file
-   - Transfer the file to another device (email, cloud, USB)
-   - Click "Import Data" on the other device to restore
+   - Click 💾 to export all data
+   - Click 📥 to import from backup file
 
-   **GitHub Cloud Sync:**
-   - Get a GitHub token (click "?" for instructions)
-   - Enter token in the field (saved automatically)
-   - Click "Upload to Cloud" to sync data
-   - On another device: Click "Download from Cloud"
-   - Enter the Gist ID (or leave empty if previously saved)
-   - Your data syncs across all devices!
+   **Cloud Sync:**
+   - Click ☁️ to open sync panel
+   - Get GitHub token (click ? for instructions)
+   - Click "Upload" to sync to cloud
+   - On other device: Click "Download" and enter Gist ID
+   - All data (folders, notes, journal, rules) syncs!
 
 ## Data Format
 
-The input format is simple:
 ```
 ### FolderName, EXCHANGE:SYMBOL1, EXCHANGE:SYMBOL2, EXCHANGE:SYMBOL3
 ```
@@ -130,120 +183,162 @@ The input format is simple:
 - Line must start with `###`
 - First item after `###` is the folder name
 - Remaining items are stock symbols in format `EXCHANGE:SYMBOL`
-- Supported exchanges: NSE, BSE, and others supported by TradingView
+- Comma-separated values
 
 ## Example
 
 ```
-### 11 Nov 2025,NSE:URBANCO, NSE:RUPA, NSE:SEAMECLTD, NSE:PREMEXPLN, NSE:STERTOOLS, NSE:MADRASFERT
-### 12 Nov 2025,NSE:RELINFRA, NSE:KIRLPNU, BSE:TEXRAIL, NSE:MOTHERSON
+### Momentum Plays,NSE:RELIANCE, NSE:TCS, NSE:INFY, NSE:HDFCBANK
+### Breakout Watch,NSE:TATASTEEL, NSE:JSWSTEEL, BSE:SAIL
+### Long Term Holdings,NSE:ITC, NSE:HINDUNILVR
 ```
 
 ## Technical Details
 
 - **Technology**: Pure HTML, CSS, and JavaScript (no external dependencies)
 - **Storage**: Browser localStorage API
-- **Compatibility**: Works with all modern browsers
+- **Compatibility**: All modern browsers
 - **Offline**: Fully functional offline after initial load
-- **Design**: Modern AMOLED dark theme based on Material Design guidelines
+- **File Size**: ~2400 lines of code
+- **Design**: Modern AMOLED dark theme
   - Pure black background (#000000) for AMOLED screens
-  - Material Design elevation colors (#121212, #1e1e1e, #232323)
-  - Soft, eye-friendly accent colors (Google Blue #8ab4f8, Green #81c995, Red #f28b82, Orange #fcad70, Purple #c58af9)
+  - Material Design elevation colors
+  - Soft, eye-friendly accent colors
   - Optimized for performance - no GPU-intensive effects
-- **Responsive Design**: Fully optimized for mobile devices
-  - Reduced padding and spacing on mobile (768px and below)
-  - Full-width buttons for easier tapping
-  - Compact layout to minimize vertical space usage
-  - 2-column symbol grid on small screens (480px and below)
-  - Touch-friendly button sizes and spacing
+
+### Responsive Design
+Fully optimized for mobile devices:
+- Reduced padding and spacing on mobile (≤768px)
+- Full-width buttons for easier tapping
+- Compact layout to minimize scrolling
+- 2-column symbol grid on small screens (≤480px)
+- Touch-friendly button sizes
+- Stacked controls on mobile
 
 ## Button Controls
 
-### Main Controls
-- **Add Folder**: Parses the textarea and adds folders to your list
-- **Clear Input**: Clears the textarea without affecting saved folders
-- **Clear All Folders**: Removes all saved folders (with confirmation)
+### Main Toolbar
+- **Add**: Parse textarea and add folders
+- **Clear**: Clear textarea without affecting saved folders
+- **Clear All**: Remove all folders (with confirmation)
+- **💾**: Export all data to JSON file
+- **📥**: Import data from backup file
+- **☁️**: Toggle GitHub Gist sync panel
 
-### Sync & Backup Controls
-- **Export Data**: Download all data as a JSON backup file
-- **Import Data**: Upload and restore data from a backup file
-- **Upload to Cloud**: Sync data to GitHub Gist (requires token)
-- **Download from Cloud**: Retrieve data from GitHub Gist (requires Gist ID)
+### Folder Management (appears when folders exist)
+- **▼**: Expand all folders
+- **▶**: Collapse all folders
+- **2x/3x/5x/10x**: Select batch opening size
+- **📊/📋**: Toggle between Detailed and Compact view
+- **📖**: Open Trading Journal & Rule Book
 
-### Folder Controls
-- **Open All**: Opens all symbols in the folder simultaneously
-- **Open 2 at a time**: Opens symbols in batches of 2 with manual progression
-- **Stop**: Stops the batch opening process
-- **Delete**: Removes the specific folder (with confirmation)
+### Per Folder Controls
+- **Folder Name**: Click to collapse/expand folder
+- **Open All**: Open all symbols at once
+- **Open N at a time**: Batch opening with selected size
+- **Next N**: Continue to next batch (appears during batch mode)
+- **Stop**: Stop batch opening
+- **Edit**: Toggle edit mode (shows note/remove buttons)
+- **Delete**: Remove entire folder (with confirmation)
+- **Tag Badges** (e.g., 📕 4): Open all symbols with that tag
 
-### Tag Controls (per folder)
-- **Red (N)**: Opens all symbols tagged with Red
-- **Blue (N)**: Opens all symbols tagged with Blue
-- **Green (N)**: Opens all symbols tagged with Green
-- **Orange (N)**: Opens all symbols tagged with Orange
-- **Purple (N)**: Opens all symbols tagged with Purple
-- N indicates the number of symbols with that tag
-
-### Symbol Controls (per symbol)
-- **Symbol Name Button**: Click to open the symbol's TradingView chart
-- **✕ Button**: Remove the symbol from the folder
-- **Color Tag Buttons**: Click to assign/change the symbol's tag color
+### Per Symbol Controls
+- **Symbol Name**: Click to open TradingView chart
+- **🔖**: Tag dropdown menu (assign/change color tag)
+- **📝**: Add/edit note (visible in Edit mode)
+- **✕**: Remove symbol (visible in Edit mode)
 
 ## Notes
 
-- **Persistence**: All folders, symbols, and tags are automatically saved to localStorage and persist across browser sessions
-- **Folder Updates**: If you paste data for a folder that already exists, it updates the symbols while preserving existing tags
-- **Tag Organization**: Use color tags to categorize symbols by:
-  - Trading strategy (e.g., Red = Breakout, Blue = Trend Following)
-  - Sector or industry grouping
-  - Risk level or position size
-  - Any custom categorization system you prefer
-- **One Tag Per Symbol**: Each symbol can only have one color tag at a time
-- **Symbol Removal**: Removing a symbol permanently deletes it from the folder
-- **Batch Opening**: The "Open 2 at a time" feature helps prevent overwhelming your browser with too many tabs at once
-- **Browser Compatibility**: Works with all modern browsers that support localStorage
+### General
+- **Auto-save**: All changes save to localStorage automatically
+- **Folder Updates**: Pasting existing folder name updates symbols while preserving tags and notes
+- **Clean Display**: Exchange prefixes hidden in UI but maintained in data
+- **Browser Compatibility**: Works with Chrome, Firefox, Safari, Edge
 
-### Sync & Backup Notes
+### Tag Organization
+Use color tags to categorize by:
+- Trading strategy (Red = Breakout, Blue = Swing, etc.)
+- Sector grouping
+- Risk level or position size
+- Time horizon (Short-term, Medium-term, Long-term)
+- Any custom system you prefer
+
+### Batch Opening
+- Progress tracking shows "Opened X of Y symbols"
+- **Progress preserved** when adding notes or removing symbols
+- Stop button appears during batch operation
+- Automatic index adjustment when symbols removed
+- Prevents browser tab overload
+
+### Notes System
+- Add rich text notes to any symbol
+- Notes preserved during folder updates
+- Golden glow indicator in compact view
+- Note preview in detailed view
+- Notes sync via cloud backup
+
+### Sync & Backup
 
 **Export/Import:**
-- Backup files are named with timestamp (e.g., `watchlist-backup-2025-01-12T15-30-45.json`)
-- Import replaces all existing data (confirmation required)
-- Files can be shared via any method (email, WhatsApp, cloud storage)
+- Files named with timestamp: `watchlist-backup-2025-01-15T14-30-45.json`
+- Import shows summary before replacing data
+- Backward compatible with old format
+- Transfer via any method (email, cloud, USB)
 
 **GitHub Gist Sync:**
-- Token is stored locally in browser (never sent anywhere except GitHub)
-- Gist ID is saved after first upload for easy subsequent syncs
-- Private gists are recommended (default)
-- Free unlimited storage with GitHub account
-- First upload creates new gist, subsequent uploads update the same gist
-- Multiple devices can sync to the same Gist ID
-- Download works even without token (for public gists)
+- Token stored locally (OS-encrypted via browser)
+- Gist ID saved after first upload
+- Private gists recommended (default)
+- Free unlimited storage with GitHub
+- Updates same gist on subsequent uploads
+- Multiple devices sync to same Gist ID
+- Download works without token for public gists
+- Includes all data: folders, notes, journal, rules
 
 ## Security Features
 
 ### Data Protection
-- **File Size Limits**: 10MB maximum for import/download (prevents browser issues)
-- **Data Validation**: Comprehensive validation of imported data structure
-- **File Type Verification**: Only .json files accepted for import
-- **XSS Protection**: All user data sanitized and inserted safely into DOM
-- **No External Dependencies**: Zero third-party scripts or tracking
+- **File Size Limits**: 10MB max for import/download
+- **Data Validation**: Comprehensive validation of imported data
+- **File Type Verification**: Only .json files accepted
+- **No External Dependencies**: Zero third-party scripts
+- **No Tracking**: Zero analytics or external tracking
 
 ### Token Security
-- **Minimal Permissions**: Only `gist` scope required for GitHub token
-- **Local Storage**: Token stored in browser localStorage (OS-encrypted)
-- **Clear Token Feature**: One-click button to remove stored credentials
-- **Private Gists**: Default to private for your data security
-- **Revocable**: Tokens can be instantly revoked at github.com/settings/tokens
+- **Minimal Permissions**: Only `gist` scope required
+- **Local Storage**: Token stored in browser localStorage
+- **Clear Token**: One-click credential removal
+- **Private Gists**: Default to private
+- **Revocable**: Instantly revoke at github.com/settings/tokens
 
 ### Privacy
-- **No Tracking**: Zero analytics or external tracking
 - **No Server**: Fully client-side application
-- **Offline-First**: Works completely offline after initial load
+- **Offline-First**: Works completely offline
 - **Your Data Only**: Data never sent to third parties
+- **Local Processing**: All operations in browser
 
 ### Best Practices
 1. Only grant `gist` permission to GitHub token
 2. Use "Clear Stored Token" on shared/public computers
-3. Keep regular offline backups (Export Data)
-4. Use private gists (default) for sensitive watchlists
+3. Keep regular offline backups (💾 Export)
+4. Use private gists (default) for sensitive data
 5. Revoke token immediately if compromised
+6. Test token validity before first sync
+
+## Development
+
+- **File**: `index.html` (single file application)
+- **No Build Process**: Direct browser execution
+- **No Dependencies**: Pure vanilla JavaScript
+- **ES6+**: Modern JavaScript features
+- **localStorage API**: For data persistence
+- **Fetch API**: For GitHub Gist integration
+
+## License
+
+Free to use and modify for personal or commercial purposes.
+
+## Credits
+
+Built with vanilla JavaScript, HTML, and CSS. No frameworks, no dependencies, no nonsense.
