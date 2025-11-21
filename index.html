@@ -193,7 +193,14 @@
         }
 
         .folder.collapsed {
-            padding: 16px 24px;
+            padding: 12px 24px;
+            margin-bottom: 12px;
+        }
+
+        .folder.collapsed .folder-header {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .folder.collapsed .folder-content {
@@ -201,6 +208,7 @@
             opacity: 0;
             pointer-events: none;
             overflow: hidden;
+            margin-top: 0;
         }
 
         .folder-controls {
