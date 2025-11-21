@@ -949,6 +949,36 @@
                 margin-left: auto !important;
             }
 
+            /* GitHub Sync Panel buttons on mobile - uniform with other buttons */
+            #syncPanel {
+                padding: 10px !important;
+            }
+
+            #syncPanel > div {
+                gap: 3px !important;
+            }
+
+            #syncPanel .btn-primary.btn-compact {
+                min-width: 30px !important;
+                max-width: 30px !important;
+                width: 30px !important;
+                height: 30px !important;
+                padding: 0 !important;
+                font-size: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 8px !important;
+                flex-shrink: 0 !important;
+            }
+
+            #syncPanel input[type="password"] {
+                min-width: 80px !important;
+                flex: 1 !important;
+                font-size: 11px !important;
+                padding: 6px 8px !important;
+            }
+
             .tag-filters {
                 margin: 12px 0;
                 padding: 10px 12px;
@@ -1111,10 +1141,10 @@
                 <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
                 <!-- Backup Group -->
-                <button class="btn-primary btn-compact" onclick="exportData()" style="background: #81c995;">💾</button>
-                <label for="importFile" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;">📥</label>
+                <button class="btn-primary btn-compact" onclick="exportData()" style="background: #81c995;" title="Export data to file">💾</button>
+                <label for="importFile" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;" title="Import data from file">📥</label>
                 <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
-                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;">☁️</button>
+                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;" title="Toggle GitHub sync panel">☁️</button>
 
                 <!-- Folder View Controls (shown when folders exist) -->
                 <div id="folderManagement" style="display: none; margin-left: auto; display: flex; gap: 6px; align-items: center;">
@@ -1144,11 +1174,26 @@
         <div id="syncPanel" style="display: none; margin-bottom: 12px; padding: 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px;">
             <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;">
                 <input type="password" id="githubToken" placeholder="GitHub Token" style="flex: 1; min-width: 150px; padding: 6px 10px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 12px;">
-                <button class="btn-primary btn-compact" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed;">?</button>
-                <button class="btn-primary btn-compact" onclick="testGithubToken()" style="background: #81c995; color: #000;">Test Token</button>
-                <button class="btn-primary btn-compact" onclick="uploadToGist()" style="background: #c58af9;">Upload</button>
-                <button class="btn-primary btn-compact" onclick="showDownloadDialog()" style="background: #fcad70;">Download</button>
-                <button class="btn-primary btn-compact" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed; font-size: 11px;">Clear Token</button>
+                <button class="btn-primary btn-compact" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed;" title="Help">
+                    <span class="btn-text-desktop">?</span>
+                    <span class="btn-text-mobile">❓</span>
+                </button>
+                <button class="btn-primary btn-compact" onclick="testGithubToken()" style="background: #81c995; color: #000;" title="Test Token">
+                    <span class="btn-text-desktop">Test Token</span>
+                    <span class="btn-text-mobile">✓</span>
+                </button>
+                <button class="btn-primary btn-compact" onclick="uploadToGist()" style="background: #c58af9;" title="Upload to Gist">
+                    <span class="btn-text-desktop">Upload</span>
+                    <span class="btn-text-mobile">⬆️</span>
+                </button>
+                <button class="btn-primary btn-compact" onclick="showDownloadDialog()" style="background: #fcad70;" title="Download from Gist">
+                    <span class="btn-text-desktop">Download</span>
+                    <span class="btn-text-mobile">⬇️</span>
+                </button>
+                <button class="btn-primary btn-compact" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed;" title="Clear stored token">
+                    <span class="btn-text-desktop">Clear Token</span>
+                    <span class="btn-text-mobile">🔄</span>
+                </button>
             </div>
             <div id="tokenHelp" style="display: none; background: #232323; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px; color: #9aa0a6; line-height: 1.4;">
                 <strong style="color: #fdd663;">Get Token:</strong> <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ab4f8;">github.com/settings/tokens</a> → Generate (classic) → Select <code style="background: #1e1e1e; padding: 1px 3px;">gist</code> scope
@@ -1508,20 +1553,20 @@ Lesson: Should have waited for pullback instead of chasing...
                 // Check if mobile
                 const isMobile = window.innerWidth <= 768;
                 openAllBtn.textContent = isMobile ? '🚀' : 'Open All';
-                openAllBtn.title = 'Open All';
+                openAllBtn.title = 'Open all symbols in this folder';
                 openAllBtn.onclick = () => openAll(folderIndex);
 
                 const openBatchBtn = document.createElement('button');
                 openBatchBtn.className = 'btn-control btn-open-batch';
                 openBatchBtn.textContent = isMobile ? `⏩${batchSize}` : `Open ${batchSize}`;
-                openBatchBtn.title = `Open ${batchSize} at a time`;
+                openBatchBtn.title = `Open ${batchSize} symbols at a time`;
                 openBatchBtn.id = `batch-btn-${folderIndex}`;
                 openBatchBtn.onclick = () => openBatch(folderIndex);
 
                 const stopBtn = document.createElement('button');
                 stopBtn.className = 'btn-control btn-stop';
                 stopBtn.textContent = isMobile ? '⏸️' : 'Stop';
-                stopBtn.title = 'Stop';
+                stopBtn.title = 'Stop batch opening';
                 stopBtn.style.display = 'none';
                 stopBtn.id = `stop-btn-${folderIndex}`;
                 stopBtn.onclick = () => stopBatch(folderIndex);
@@ -1529,14 +1574,14 @@ Lesson: Should have waited for pullback instead of chasing...
                 const editBtn = document.createElement('button');
                 editBtn.className = 'btn-control btn-edit-mode';
                 editBtn.textContent = isMobile ? '✏️' : 'Edit';
-                editBtn.title = 'Edit';
+                editBtn.title = 'Edit mode - Add notes or remove symbols';
                 editBtn.id = `edit-btn-${folderIndex}`;
                 editBtn.onclick = () => toggleEditMode(folderIndex);
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-control btn-delete';
                 deleteBtn.textContent = isMobile ? '🗑️' : 'Delete';
-                deleteBtn.title = 'Delete';
+                deleteBtn.title = 'Delete this folder';
                 deleteBtn.onclick = () => deleteFolder(folderIndex);
 
                 controls.appendChild(openAllBtn);
