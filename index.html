@@ -2413,20 +2413,31 @@ Lesson: Should have waited for pullback instead of chasing...
                 const journal = localStorage.getItem('tradingJournal') || '';
                 const timestamp = new Date().toISOString();
 
+                // Build files object - only include non-empty files
+                const files = {
+                    'watchlist-data.json': {
+                        content: foldersData
+                    }
+                };
+
+                // Only add rulebook if it has content
+                if (rulebook.trim()) {
+                    files['trading-rulebook.txt'] = {
+                        content: rulebook
+                    };
+                }
+
+                // Only add journal if it has content
+                if (journal.trim()) {
+                    files['trading-journal.txt'] = {
+                        content: journal
+                    };
+                }
+
                 const gistData = {
                     description: `TradingView Watchlist - Last updated: ${timestamp}`,
                     public: false,
-                    files: {
-                        'watchlist-data.json': {
-                            content: foldersData
-                        },
-                        'trading-rulebook.txt': {
-                            content: rulebook
-                        },
-                        'trading-journal.txt': {
-                            content: journal
-                        }
-                    }
+                    files: files
                 };
 
                 let response;
