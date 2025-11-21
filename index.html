@@ -2124,7 +2124,12 @@ Lesson: Should have waited for pullback instead of chasing...
             localStorage.setItem('tradingRulebook', rulebook);
             localStorage.setItem('tradingJournal', journal);
 
-            showNotification('Journal saved!', 'success');
+            // Show appropriate message based on current tab
+            if (currentJournalTab === 'rulebook') {
+                showNotification('Rule Book saved!', 'success');
+            } else {
+                showNotification('Journal saved!', 'success');
+            }
         }
 
         function clearCurrentJournalTab() {
@@ -2442,7 +2447,7 @@ Lesson: Should have waited for pullback instead of chasing...
 
                 let response;
                 if (gistId) {
-                    // Update existing gist
+                    // Try to update existing gist
                     response = await fetch(`https://api.github.com/gists/${gistId}`, {
                         method: 'PATCH',
                         headers: {
@@ -2452,6 +2457,24 @@ Lesson: Should have waited for pullback instead of chasing...
                         },
                         body: JSON.stringify(gistData)
                     });
+
+                    // If gist not found (404), create a new one instead
+                    if (response.status === 404) {
+                        console.log('Previous gist not found, creating new one...');
+                        setSyncStatus('Previous gist not found, creating new one...', 'info');
+                        gistId = null; // Reset gist ID
+                        localStorage.removeItem('watchlistGistId');
+
+                        response = await fetch('https://api.github.com/gists', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/vnd.github.v3+json'
+                            },
+                            body: JSON.stringify(gistData)
+                        });
+                    }
                 } else {
                     // Create new gist
                     response = await fetch('https://api.github.com/gists', {
