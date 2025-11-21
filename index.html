@@ -749,8 +749,24 @@
         }
 
 
+        /* Desktop: Show text, hide emoji */
+        .btn-text-mobile {
+            display: none;
+        }
+        .btn-text-desktop {
+            display: inline;
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
+            /* Mobile: Show emoji, hide text */
+            .btn-text-mobile {
+                display: inline;
+            }
+            .btn-text-desktop {
+                display: none;
+            }
+
             body {
                 padding: 8px;
             }
@@ -797,35 +813,140 @@
             }
 
             .folder {
-                padding: 14px;
-                margin-bottom: 14px;
+                padding: 10px 12px;
+                margin-bottom: 10px;
                 border-radius: 8px;
             }
 
+            .folder.collapsed {
+                padding: 8px 12px;
+                margin-bottom: 8px;
+            }
+
             .folder-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-                padding-bottom: 12px;
-                margin-bottom: 12px;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+                flex-wrap: wrap;
+            }
+
+            .folder-name-wrapper {
+                flex: 1;
+                min-width: 100%;
+                order: 1;
             }
 
             .folder-name {
-                font-size: 16px;
+                font-size: 15px;
                 width: 100%;
             }
 
             .folder-controls {
                 width: 100%;
                 gap: 6px;
+                flex-wrap: wrap;
+                order: 2;
             }
 
             .btn-control {
-                flex: 1;
-                min-width: calc(50% - 3px);
                 padding: 8px 12px;
-                font-size: 12px;
-                border-radius: 16px;
+                font-size: 11px;
+                border-radius: 14px;
+                white-space: nowrap;
+            }
+
+            .btn-open-all {
+                flex: 1;
+                min-width: calc(25% - 5px);
+            }
+
+            .btn-open-batch {
+                flex: 1;
+                min-width: calc(25% - 5px);
+            }
+
+            .btn-stop {
+                flex: 1;
+                min-width: calc(25% - 5px);
+            }
+
+            .btn-edit-mode {
+                flex: 1;
+                min-width: calc(25% - 5px);
+            }
+
+            .btn-delete {
+                flex: 1;
+                min-width: calc(25% - 5px);
+            }
+
+            /* Mobile: Uniform nicely rounded toolbar buttons - smaller to fit on one line */
+            .btn-primary.btn-compact {
+                min-width: 30px !important;
+                max-width: 30px !important;
+                width: 30px !important;
+                height: 30px !important;
+                padding: 0 !important;
+                font-size: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 8px !important;
+                flex-shrink: 0 !important;
+            }
+
+            /* Folder management buttons - same rounded shape */
+            #folderManagement .btn-primary.btn-compact {
+                min-width: 30px !important;
+                max-width: 30px !important;
+                width: 30px !important;
+                height: 30px !important;
+                border-radius: 8px !important;
+                flex-shrink: 0 !important;
+            }
+
+            /* Batch size select - same rounded shape */
+            #batchSizeSelect {
+                min-width: 30px !important;
+                max-width: 30px !important;
+                width: 30px !important;
+                height: 30px !important;
+                padding: 0 !important;
+                font-size: 9px !important;
+                text-align: center !important;
+                border-radius: 8px !important;
+                flex-shrink: 0 !important;
+            }
+
+            /* Label for import button - same size */
+            label.btn-primary.btn-compact {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex-shrink: 0 !important;
+            }
+
+            /* Reduce gap in button container on mobile - prevent wrapping */
+            .input-section > div {
+                gap: 3px !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+            }
+
+            /* Separator on mobile - thinner */
+            .input-section > div > div[style*="width: 1px"] {
+                margin: 0 1px !important;
+                width: 1px !important;
+                flex-shrink: 0 !important;
+            }
+
+            /* Folder management container - align to right edge */
+            #folderManagement {
+                gap: 3px !important;
+                flex-shrink: 0 !important;
+                margin-left: auto !important;
             }
 
             .tag-filters {
@@ -973,9 +1094,18 @@
             <!-- Compact unified button bar -->
             <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; font-size: 12px;">
                 <!-- Data Management Group -->
-                <button class="btn-primary btn-compact" onclick="parseData()">Add</button>
-                <button class="btn-primary btn-compact" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;">Clear</button>
-                <button class="btn-primary btn-compact" onclick="clearAllFolders()" style="background: #f28b82; color: #000;">Clear All</button>
+                <button class="btn-primary btn-compact btn-add" onclick="parseData()" title="Add folders">
+                    <span class="btn-text-desktop">Add</span>
+                    <span class="btn-text-mobile">➕</span>
+                </button>
+                <button class="btn-primary btn-compact btn-clear" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;" title="Clear input">
+                    <span class="btn-text-desktop">Clear</span>
+                    <span class="btn-text-mobile">🧹</span>
+                </button>
+                <button class="btn-primary btn-compact btn-clear-all" onclick="clearAllFolders()" style="background: #f28b82; color: #000;" title="Clear all folders">
+                    <span class="btn-text-desktop">Clear All</span>
+                    <span class="btn-text-mobile">🗑️</span>
+                </button>
 
                 <!-- Separator -->
                 <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
@@ -1258,10 +1388,11 @@ Lesson: Should have waited for pullback instead of chasing...
             localStorage.setItem('batchSize', batchSize.toString());
 
             // Update all batch button texts without re-rendering
+            const isMobile = window.innerWidth <= 768;
             folders.forEach((folder, folderIndex) => {
                 const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
                 if (batchBtn && !folder.batchRunning) {
-                    batchBtn.textContent = `Open ${batchSize} at a time`;
+                    batchBtn.textContent = isMobile ? `⏩${batchSize}` : `Open ${batchSize}`;
                 }
             });
 
@@ -1374,31 +1505,38 @@ Lesson: Should have waited for pullback instead of chasing...
 
                 const openAllBtn = document.createElement('button');
                 openAllBtn.className = 'btn-control btn-open-all';
-                openAllBtn.textContent = 'Open All';
+                // Check if mobile
+                const isMobile = window.innerWidth <= 768;
+                openAllBtn.textContent = isMobile ? '🚀' : 'Open All';
+                openAllBtn.title = 'Open All';
                 openAllBtn.onclick = () => openAll(folderIndex);
 
                 const openBatchBtn = document.createElement('button');
                 openBatchBtn.className = 'btn-control btn-open-batch';
-                openBatchBtn.textContent = `Open ${batchSize} at a time`;
+                openBatchBtn.textContent = isMobile ? `⏩${batchSize}` : `Open ${batchSize}`;
+                openBatchBtn.title = `Open ${batchSize} at a time`;
                 openBatchBtn.id = `batch-btn-${folderIndex}`;
                 openBatchBtn.onclick = () => openBatch(folderIndex);
 
                 const stopBtn = document.createElement('button');
                 stopBtn.className = 'btn-control btn-stop';
-                stopBtn.textContent = 'Stop';
+                stopBtn.textContent = isMobile ? '⏸️' : 'Stop';
+                stopBtn.title = 'Stop';
                 stopBtn.style.display = 'none';
                 stopBtn.id = `stop-btn-${folderIndex}`;
                 stopBtn.onclick = () => stopBatch(folderIndex);
 
                 const editBtn = document.createElement('button');
                 editBtn.className = 'btn-control btn-edit-mode';
-                editBtn.textContent = 'Edit';
+                editBtn.textContent = isMobile ? '✏️' : 'Edit';
+                editBtn.title = 'Edit';
                 editBtn.id = `edit-btn-${folderIndex}`;
                 editBtn.onclick = () => toggleEditMode(folderIndex);
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-control btn-delete';
-                deleteBtn.textContent = 'Delete';
+                deleteBtn.textContent = isMobile ? '🗑️' : 'Delete';
+                deleteBtn.title = 'Delete';
                 deleteBtn.onclick = () => deleteFolder(folderIndex);
 
                 controls.appendChild(openAllBtn);
@@ -1906,13 +2044,14 @@ Lesson: Should have waited for pullback instead of chasing...
             const folder = folders[folderIndex];
             folder.batchRunning = false;
             const batchSize = getBatchSize();
+            const isMobile = window.innerWidth <= 768;
 
             // Update UI
             const batchBtn = document.getElementById(`batch-btn-${folderIndex}`);
             const stopBtn = document.getElementById(`stop-btn-${folderIndex}`);
 
             if (batchBtn) {
-                batchBtn.textContent = `Open ${batchSize} at a time`;
+                batchBtn.textContent = isMobile ? `⏩${batchSize}` : `Open ${batchSize}`;
                 batchBtn.style.display = 'inline-block';
                 batchBtn.onclick = () => openBatch(folderIndex);
             }
@@ -1942,17 +2081,18 @@ Lesson: Should have waited for pullback instead of chasing...
         function toggleEditMode(folderIndex) {
             const folderDiv = document.getElementById(`folder-${folderIndex}`);
             const editBtn = document.getElementById(`edit-btn-${folderIndex}`);
+            const isMobile = window.innerWidth <= 768;
 
             if (folderDiv.classList.contains('edit-mode')) {
                 // Exit edit mode
                 folderDiv.classList.remove('edit-mode');
                 editBtn.classList.remove('active');
-                editBtn.textContent = 'Edit';
+                editBtn.textContent = isMobile ? '✏️' : 'Edit';
             } else {
                 // Enter edit mode
                 folderDiv.classList.add('edit-mode');
                 editBtn.classList.add('active');
-                editBtn.textContent = 'Done';
+                editBtn.textContent = isMobile ? '✅' : 'Done';
             }
         }
 
