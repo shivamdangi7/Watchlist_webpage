@@ -329,6 +329,41 @@
         .tag-filter-btn.purple { border-color: #c58af9; color: #c58af9; }
         .tag-filter-btn.purple:hover { background: #c58af9; color: #000; }
 
+        /* Global Tags Section */
+        .global-tags-container {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .global-tag-btn {
+            padding: 4px 10px;
+            border: 1px solid;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .global-tag-btn.red { border-color: #f28b82; color: #f28b82; }
+        .global-tag-btn.red:hover { background: #f28b82; color: #000; }
+
+        .global-tag-btn.blue { border-color: #8ab4f8; color: #8ab4f8; }
+        .global-tag-btn.blue:hover { background: #8ab4f8; color: #000; }
+
+        .global-tag-btn.green { border-color: #81c995; color: #81c995; }
+        .global-tag-btn.green:hover { background: #81c995; color: #000; }
+
+        .global-tag-btn.orange { border-color: #fcad70; color: #fcad70; }
+        .global-tag-btn.orange:hover { background: #fcad70; color: #000; }
+
+        .global-tag-btn.purple { border-color: #c58af9; color: #c58af9; }
+        .global-tag-btn.purple:hover { background: #c58af9; color: #000; }
+
         .symbols-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -825,6 +860,17 @@
                 justify-content: flex-start !important;
             }
 
+            /* Global tags on mobile */
+            .global-tags-container {
+                padding: 0;
+                gap: 4px;
+            }
+
+            .global-tag-btn {
+                padding: 3px 8px;
+                font-size: 11px;
+            }
+
             .folder {
                 padding: 10px 12px;
                 margin-bottom: 10px;
@@ -1159,6 +1205,13 @@
                 <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
                 <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;" title="Toggle GitHub sync panel">☁️</button>
 
+                <!-- Divider -->
+                <div id="globalTagsDivider" style="display: none; width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
+
+                <!-- Global Tags (shown when folders exist) -->
+                <div id="globalTagsContainer" class="global-tags-container" style="display: none;">
+                </div>
+
                 <!-- Folder View Controls (shown when folders exist) -->
                 <div id="folderManagement" style="display: none; margin-left: auto; display: flex; gap: 6px; align-items: center;">
                     <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
@@ -1472,10 +1525,17 @@ Lesson: Should have waited for pullback instead of chasing...
 
             // Show/hide folder management buttons
             const folderManagement = document.getElementById('folderManagement');
+            const globalTagsContainer = document.getElementById('globalTagsContainer');
+            const globalTagsDivider = document.getElementById('globalTagsDivider');
             if (folders.length > 0) {
                 folderManagement.style.display = 'flex';
+                updateGlobalTags();
+                globalTagsContainer.style.display = 'inline-flex';
+                globalTagsDivider.style.display = 'block';
             } else {
                 folderManagement.style.display = 'none';
+                globalTagsContainer.style.display = 'none';
+                globalTagsDivider.style.display = 'none';
             }
 
             // Update view mode button text
@@ -1875,6 +1935,9 @@ Lesson: Should have waited for pullback instead of chasing...
                     statusDiv.textContent = `Opened ${folder.batchIndex} of ${folder.symbols.length} symbols. Click "Next ${getBatchSize()}" to continue.`;
                 }
 
+                // Update global tags count
+                updateGlobalTags();
+
                 showNotification('Symbol removed!', 'info');
             }
         }
@@ -1900,6 +1963,9 @@ Lesson: Should have waited for pullback instead of chasing...
 
             // Update only the tag button for this specific symbol without re-rendering everything
             updateSymbolTagButton(folderIndex, symbolIndex);
+
+            // Update global tags count
+            updateGlobalTags();
         }
 
         function updateSymbolTagButton(folderIndex, symbolIndex) {
@@ -2339,6 +2405,94 @@ Lesson: Should have waited for pullback instead of chasing...
             displayFolders();
 
             showNotification(`Switched to ${newMode === 'compact' ? 'Compact' : 'Detailed'} view!`, 'info');
+        }
+
+        // ========== GLOBAL TAGS FUNCTIONS ==========
+
+        function updateGlobalTags() {
+            const container = document.getElementById('globalTagsContainer');
+            if (!container) return;
+
+            // Count tags across all folders
+            const tagCounts = {
+                red: 0,
+                blue: 0,
+                green: 0,
+                orange: 0,
+                purple: 0
+            };
+
+            folders.forEach(folder => {
+                folder.symbols.forEach(symbolObj => {
+                    // Check if symbol has tags (array)
+                    if (symbolObj.tags && symbolObj.tags.length > 0) {
+                        const tag = symbolObj.tags[0]; // Only one tag per symbol
+                        if (tagCounts.hasOwnProperty(tag)) {
+                            tagCounts[tag]++;
+                        }
+                    }
+                });
+            });
+
+            // Tag definitions
+            const tagDefs = [
+                { name: 'red', emoji: '📕' },
+                { name: 'blue', emoji: '📘' },
+                { name: 'green', emoji: '📗' },
+                { name: 'orange', emoji: '📙' },
+                { name: 'purple', emoji: '📓' }
+            ];
+
+            // Clear and rebuild
+            container.innerHTML = '';
+
+            // Only show tags that have symbols
+            tagDefs.forEach(tag => {
+                const count = tagCounts[tag.name];
+                if (count > 0) {
+                    const btn = document.createElement('button');
+                    btn.className = `global-tag-btn ${tag.name}`;
+                    btn.textContent = `${tag.emoji} ${count}`;
+                    btn.title = `Open all ${count} ${tag.name} tagged symbols`;
+                    btn.onclick = () => openAllSymbolsByTag(tag.name);
+                    container.appendChild(btn);
+                }
+            });
+        }
+
+        function openAllSymbolsByTag(tagName) {
+            // Collect all symbols with this tag across all folders
+            const symbolsToOpen = [];
+
+            folders.forEach(folder => {
+                folder.symbols.forEach(symbolObj => {
+                    // Check if symbol has this tag
+                    if (symbolObj.tags && symbolObj.tags.includes(tagName)) {
+                        symbolsToOpen.push(symbolObj.name);
+                    }
+                });
+            });
+
+            if (symbolsToOpen.length === 0) {
+                showNotification(`No symbols with ${tagName} tag found!`, 'info');
+                return;
+            }
+
+            // Open all symbols
+            symbolsToOpen.forEach(symbol => {
+                const url = `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`;
+                window.open(url, '_blank');
+            });
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            showNotification(`Opened ${symbolsToOpen.length} ${tagEmojis[tagName]} ${tagName} tagged symbols!`, 'success');
         }
 
         // ========== NOTE FUNCTIONS ==========
