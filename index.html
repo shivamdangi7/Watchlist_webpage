@@ -97,25 +97,38 @@
 
         .folder {
             background: #1e1e1e;
-            border: 1px solid #2c2c2c;
+            border: 0.5px solid #2c2c2c;
             border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            cursor: move;
+            transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
         }
 
         .folder:hover {
             border-color: #3c4043;
         }
 
+        .folder.dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+            cursor: grabbing;
+        }
+
+        .folder.drag-over {
+            border-top: 3px solid #fdd663;
+            margin-top: 3px;
+        }
+
         .folder-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
             gap: 12px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #2c2c2c;
+            padding-bottom: 12px;
+            border-bottom: 0.5px solid #2c2c2c;
         }
 
         .folder-name {
@@ -193,8 +206,8 @@
         }
 
         .folder.collapsed {
-            padding: 12px 24px;
-            margin-bottom: 12px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
         }
 
         .folder.collapsed .folder-header {
@@ -267,7 +280,7 @@
             padding: 12px 16px;
             background: #232323;
             border-radius: 8px;
-            border: 1px solid #2c2c2c;
+            border: 0.5px solid #2c2c2c;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -325,7 +338,7 @@
 
         .symbol-card {
             background: #232323;
-            border: 1.5px solid #2c2c2c;
+            border: 0.5px solid #2c2c2c;
             border-radius: 8px;
             padding: 10px;
             position: relative;
@@ -1489,6 +1502,15 @@ Lesson: Should have waited for pullback instead of chasing...
                 const folderDiv = document.createElement('div');
                 folderDiv.className = 'folder';
                 folderDiv.id = `folder-${folderIndex}`;
+                folderDiv.draggable = true;
+                folderDiv.dataset.folderIndex = folderIndex;
+
+                // Add drag and drop event listeners
+                folderDiv.addEventListener('dragstart', handleDragStart);
+                folderDiv.addEventListener('dragend', handleDragEnd);
+                folderDiv.addEventListener('dragover', handleDragOver);
+                folderDiv.addEventListener('drop', handleDrop);
+                folderDiv.addEventListener('dragleave', handleDragLeave);
 
                 // Folder header
                 const header = document.createElement('div');
@@ -2244,6 +2266,62 @@ Lesson: Should have waited for pullback instead of chasing...
                 }
             });
             saveFolders();
+        }
+
+        // ========== DRAG AND DROP REORDERING ==========
+
+        let draggedFolderIndex = null;
+
+        function handleDragStart(e) {
+            draggedFolderIndex = parseInt(e.currentTarget.dataset.folderIndex);
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            // Remove all drag-over classes
+            document.querySelectorAll('.folder').forEach(folder => {
+                folder.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+
+            const dropTargetIndex = parseInt(e.currentTarget.dataset.folderIndex);
+
+            if (draggedFolderIndex !== null && draggedFolderIndex !== dropTargetIndex) {
+                // Remove dragged folder from array
+                const draggedFolder = folders.splice(draggedFolderIndex, 1)[0];
+
+                // Insert at new position
+                folders.splice(dropTargetIndex, 0, draggedFolder);
+
+                // Save and re-render
+                saveFolders();
+                displayFolders();
+
+                showNotification('Folder order updated!', 'success');
+            }
+
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
         }
 
         // ========== VIEW MODE TOGGLE ==========
