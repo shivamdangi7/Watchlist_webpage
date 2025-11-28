@@ -1347,8 +1347,8 @@ Lesson: Should have waited for pullback instead of chasing...
                                 folders[existingIndex].batchRunning = false;
                                 folders[existingIndex].openedSymbols = [];
                             } else {
-                                // Add new folder
-                                folders.push({
+                                // Add new folder at the beginning (top)
+                                folders.unshift({
                                     name: folderName,
                                     symbols: symbols.map(sym => ({ name: sym, tags: [] })),
                                     batchIndex: 0,
