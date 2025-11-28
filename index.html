@@ -364,6 +364,56 @@
         .global-tag-btn.purple { border-color: #c58af9; color: #c58af9; }
         .global-tag-btn.purple:hover { background: #c58af9; color: #000; }
 
+        /* Search Mode Styling */
+        .search-mode {
+            border: 2px solid #fdd663 !important;
+            background: #2a2a2a !important;
+        }
+
+        .search-info {
+            font-size: 12px;
+            color: #fdd663;
+            padding: 4px 8px;
+            background: rgba(253, 214, 99, 0.1);
+            border-radius: 6px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        /* Search Highlighting */
+        .search-highlight {
+            background: rgba(253, 214, 99, 0.4);
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .search-match {
+            border: 2px solid #fdd663 !important;
+            box-shadow: 0 0 8px rgba(253, 214, 99, 0.4);
+        }
+
+        .search-hidden {
+            display: none !important;
+        }
+
+        .folder.search-no-match {
+            display: none !important;
+        }
+
+        .search-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9aa0a6;
+            font-size: 14px;
+        }
+
+        .search-empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
         .symbols-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1178,7 +1228,16 @@
         <h1>📈 TradingView Watchlist Manager</h1>
 
         <div class="input-section" style="margin-bottom: 12px;">
-            <textarea id="clipboardInput" placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2" style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
+            <textarea id="clipboardInput" placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2&#10;or type to search symbols/folders (ESC to clear)" style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+                <div id="searchInfo" class="search-info" style="display: none; margin-top: 0;"></div>
+                <button id="searchNotesToggle" class="btn-primary btn-compact" onclick="toggleSearchInNotes()" style="display: none; background: #5f6368; font-size: 11px; padding: 4px 8px;" title="Toggle search in notes">
+                    <span id="searchNotesIcon">📝</span> Notes: <span id="searchNotesStatus">OFF</span>
+                </button>
+                <button id="preserveStateToggle" class="btn-primary btn-compact" onclick="togglePreserveState()" style="display: none; background: #81c995; color: #000; font-size: 11px; padding: 4px 8px;" title="Toggle preserve folder state">
+                    <span id="preserveStateIcon">💾</span> Preserve: <span id="preserveStateStatus">ON</span>
+                </button>
+            </div>
 
             <!-- Compact unified button bar -->
             <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; font-size: 12px;">
@@ -2559,6 +2618,426 @@ Lesson: Should have waited for pullback instead of chasing...
                 closeNoteModal();
             }
         });
+
+        // ========== SEARCH FUNCTIONALITY ==========
+
+        let searchDebounceTimer = null;
+        let isSearchMode = false;
+        let searchInNotes = false;
+        let preserveFolderState = true; // Toggle for preserving folder state
+        let foldersStateBeforeSearch = {}; // Store folder collapsed state before search
+
+        // Listen to textarea input for search
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('clipboardInput');
+
+            // Global keyboard shortcut: '/' to focus search
+            document.addEventListener('keydown', function(e) {
+                // Only trigger if not already in an input/textarea
+                if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                    e.preventDefault();
+                    textarea.focus();
+                    showNotification('Press ESC to exit search', 'info');
+                }
+            });
+
+            textarea.addEventListener('input', function(e) {
+                const value = e.target.value.trim();
+
+                // Clear any existing debounce timer
+                if (searchDebounceTimer) {
+                    clearTimeout(searchDebounceTimer);
+                }
+
+                // Check if this looks like search (doesn't start with ###)
+                if (value && !value.startsWith('###')) {
+                    // Debounce search by 200ms
+                    searchDebounceTimer = setTimeout(() => {
+                        performSearch(value);
+                    }, 200);
+                } else if (value === '') {
+                    // Clear search when textarea is empty
+                    clearSearch();
+                } else {
+                    // User is typing folder syntax, not searching
+                    clearSearch();
+                }
+            });
+
+            // Keyboard shortcuts
+            textarea.addEventListener('keydown', function(e) {
+                // ESC key - clear search
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    textarea.value = '';
+                    clearSearch();
+                    showNotification('Search cleared!', 'info');
+                }
+
+                // Enter key - open first matching symbol
+                if (e.key === 'Enter' && isSearchMode) {
+                    e.preventDefault();
+                    openFirstMatch();
+                }
+            });
+        });
+
+        function performSearch(query) {
+            if (!query || folders.length === 0) {
+                clearSearch();
+                return;
+            }
+
+            // Save folder states before first search
+            if (!isSearchMode) {
+                foldersStateBeforeSearch = {};
+                folders.forEach((folder, folderIndex) => {
+                    const folderDiv = document.getElementById(`folder-${folderIndex}`);
+                    if (folderDiv) {
+                        foldersStateBeforeSearch[folderIndex] = folderDiv.classList.contains('collapsed');
+                    }
+                });
+            }
+
+            isSearchMode = true;
+            const textarea = document.getElementById('clipboardInput');
+            const searchInfo = document.getElementById('searchInfo');
+            const notesToggle = document.getElementById('searchNotesToggle');
+            const preserveToggle = document.getElementById('preserveStateToggle');
+
+            // Add search mode styling
+            textarea.classList.add('search-mode');
+
+            // Show toggle buttons
+            notesToggle.style.display = 'inline-block';
+            preserveToggle.style.display = 'inline-block';
+
+            // Simple search query - case insensitive
+            const searchQuery = query.toLowerCase();
+
+            let totalMatches = 0;
+            let foldersWithMatches = 0;
+
+            // Define tag emojis for matching
+            const tagEmojis = {
+                'red': '📕',
+                'blue': '📘',
+                'green': '📗',
+                'orange': '📙',
+                'purple': '📓'
+            };
+
+            folders.forEach((folder, folderIndex) => {
+                const folderDiv = document.getElementById(`folder-${folderIndex}`);
+                if (!folderDiv) return;
+
+                const folderName = folder.name.toLowerCase();
+                let folderHasMatch = false;
+                let symbolMatches = 0;
+
+                // Check if folder name matches
+                const folderNameMatches = folderName.includes(searchQuery);
+
+                // If folder name matches, expand and show all symbols
+                if (folderNameMatches) {
+                    folderHasMatch = true;
+                    folderDiv.classList.remove('collapsed', 'search-no-match');
+
+                    // Highlight folder name
+                    highlightFolderName(folderIndex, searchQuery);
+
+                    // Show all symbols in matched folder
+                    folder.symbols.forEach((symbolObj, symbolIndex) => {
+                        const card = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+                        if (card) {
+                            card.classList.remove('search-hidden');
+                            card.classList.add('search-match');
+                            symbolMatches++;
+                        }
+                    });
+                } else {
+                    // Check individual symbols
+                    folder.symbols.forEach((symbolObj, symbolIndex) => {
+                        const card = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+                        if (!card) return;
+
+                        const symbolName = getDisplayName(symbolObj.name).toLowerCase();
+                        const fullSymbolName = symbolObj.name.toLowerCase();
+
+                        let matches = false;
+
+                        // Check symbol name match
+                        if (symbolName.includes(searchQuery) || fullSymbolName.includes(searchQuery)) {
+                            matches = true;
+                        }
+
+                        // Check if searching by tag color name
+                        if (symbolObj.tags && symbolObj.tags.length > 0) {
+                            const symbolTag = symbolObj.tags[0];
+                            if (symbolTag.toLowerCase().includes(searchQuery)) {
+                                matches = true;
+                            }
+                        }
+
+                        // Check notes if enabled
+                        if (searchInNotes && symbolObj.note) {
+                            const noteText = symbolObj.note.toLowerCase();
+                            if (noteText.includes(searchQuery)) {
+                                matches = true;
+                            }
+                        }
+
+                        if (matches) {
+                            card.classList.remove('search-hidden');
+                            card.classList.add('search-match');
+
+                            // Highlight matching text in symbol name
+                            highlightSymbolName(folderIndex, symbolIndex, searchQuery);
+
+                            folderHasMatch = true;
+                            symbolMatches++;
+                        } else {
+                            card.classList.add('search-hidden');
+                            card.classList.remove('search-match');
+                        }
+                    });
+
+                    // Remove folder name highlight if not matched
+                    clearFolderNameHighlight(folderIndex);
+                }
+
+                // Show/hide folder based on matches
+                if (folderHasMatch) {
+                    folderDiv.classList.remove('collapsed', 'search-no-match');
+                    foldersWithMatches++;
+                    totalMatches += symbolMatches;
+                } else {
+                    folderDiv.classList.add('search-no-match');
+                }
+            });
+
+            // Show search info
+            if (totalMatches > 0) {
+                searchInfo.textContent = `🔍 Found ${totalMatches} symbol(s) in ${foldersWithMatches} folder(s) • Press ESC to clear • Press ENTER to open first match`;
+                searchInfo.style.display = 'inline-block';
+
+                // Hide empty state if it exists
+                const emptyState = document.getElementById('searchEmptyState');
+                if (emptyState) emptyState.remove();
+            } else {
+                searchInfo.textContent = `🔍 No results found for "${query}" • Press ESC to clear`;
+                searchInfo.style.display = 'inline-block';
+
+                // Show empty state
+                showEmptySearchState(query);
+            }
+        }
+
+        function highlightFolderName(folderIndex, query) {
+            const folderNameText = document.getElementById(`folder-name-text-${folderIndex}`);
+            if (!folderNameText) return;
+
+            const folder = folders[folderIndex];
+            const folderName = folder.name;
+            const lowerName = folderName.toLowerCase();
+            const lowerQuery = query.toLowerCase();
+
+            if (lowerName.includes(lowerQuery)) {
+                const startIndex = lowerName.indexOf(lowerQuery);
+                const endIndex = startIndex + lowerQuery.length;
+
+                const before = folderName.substring(0, startIndex);
+                const match = folderName.substring(startIndex, endIndex);
+                const after = folderName.substring(endIndex);
+
+                folderNameText.innerHTML = `${before}<span class="search-highlight">${match}</span>${after}`;
+            }
+        }
+
+        function clearFolderNameHighlight(folderIndex) {
+            const folderNameText = document.getElementById(`folder-name-text-${folderIndex}`);
+            if (!folderNameText) return;
+
+            const folder = folders[folderIndex];
+            folderNameText.textContent = folder.name;
+        }
+
+        function highlightSymbolName(folderIndex, symbolIndex, query) {
+            const card = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+            if (!card) return;
+
+            const symbolBtn = card.querySelector('.symbol-btn');
+            if (!symbolBtn) return;
+
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+            const displayName = getDisplayName(symbolObj.name);
+            const lowerName = displayName.toLowerCase();
+            const lowerQuery = query.toLowerCase();
+
+            if (lowerName.includes(lowerQuery)) {
+                const startIndex = lowerName.indexOf(lowerQuery);
+                const endIndex = startIndex + lowerQuery.length;
+
+                const before = displayName.substring(0, startIndex);
+                const match = displayName.substring(startIndex, endIndex);
+                const after = displayName.substring(endIndex);
+
+                symbolBtn.innerHTML = `${before}<span class="search-highlight">${match}</span>${after}`;
+            }
+        }
+
+        function clearSearch() {
+            isSearchMode = false;
+            const textarea = document.getElementById('clipboardInput');
+            const searchInfo = document.getElementById('searchInfo');
+            const notesToggle = document.getElementById('searchNotesToggle');
+            const preserveToggle = document.getElementById('preserveStateToggle');
+
+            // Remove search mode styling
+            textarea.classList.remove('search-mode');
+            searchInfo.style.display = 'none';
+            notesToggle.style.display = 'none';
+            preserveToggle.style.display = 'none';
+
+            // Remove empty state
+            const emptyState = document.getElementById('searchEmptyState');
+            if (emptyState) emptyState.remove();
+
+            // Clear all highlights and show all folders/symbols
+            folders.forEach((folder, folderIndex) => {
+                const folderDiv = document.getElementById(`folder-${folderIndex}`);
+                if (!folderDiv) return;
+
+                folderDiv.classList.remove('search-no-match');
+
+                // Handle folder state based on preserve toggle
+                if (preserveFolderState) {
+                    // PRESERVE MODE (ON): Restore to state before search
+                    if (foldersStateBeforeSearch.hasOwnProperty(folderIndex)) {
+                        const wasCollapsed = foldersStateBeforeSearch[folderIndex];
+                        if (wasCollapsed) {
+                            folderDiv.classList.add('collapsed');
+                        } else {
+                            folderDiv.classList.remove('collapsed');
+                        }
+                    }
+                } else {
+                    // CURRENT STATE MODE (OFF): Keep folders in their current expanded/collapsed state
+                    // Do nothing - leave folders as they are currently displayed
+                }
+
+                // Clear folder name highlight
+                clearFolderNameHighlight(folderIndex);
+
+                // Clear symbol highlights
+                folder.symbols.forEach((symbolObj, symbolIndex) => {
+                    const card = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+                    if (!card) return;
+
+                    card.classList.remove('search-hidden', 'search-match');
+
+                    // Restore original symbol name
+                    const symbolBtn = card.querySelector('.symbol-btn');
+                    if (symbolBtn) {
+                        symbolBtn.textContent = getDisplayName(symbolObj.name);
+                    }
+                });
+            });
+
+            // Clear saved folder states
+            foldersStateBeforeSearch = {};
+        }
+
+        function openFirstMatch() {
+            // Find first visible symbol
+            for (let folderIndex = 0; folderIndex < folders.length; folderIndex++) {
+                const folder = folders[folderIndex];
+                for (let symbolIndex = 0; symbolIndex < folder.symbols.length; symbolIndex++) {
+                    const card = document.getElementById(`symbol-${folderIndex}-${symbolIndex}`);
+                    if (card && !card.classList.contains('search-hidden')) {
+                        openSymbol(folderIndex, symbolIndex);
+                        showNotification(`Opened ${getDisplayName(folder.symbols[symbolIndex].name)}!`, 'success');
+                        return;
+                    }
+                }
+            }
+        }
+
+        function showEmptySearchState(query) {
+            const container = document.getElementById('foldersContainer');
+
+            // Remove existing empty state
+            const existing = document.getElementById('searchEmptyState');
+            if (existing) existing.remove();
+
+            // Create empty state
+            const emptyState = document.createElement('div');
+            emptyState.id = 'searchEmptyState';
+            emptyState.className = 'search-empty-state';
+            emptyState.innerHTML = `
+                <div class="icon">🔍</div>
+                <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">No results found</div>
+                <div>No symbols or folders match "${query}"</div>
+                <div style="margin-top: 12px; font-size: 12px;">
+                    Try: <br>
+                    • Searching for partial names (e.g., "REL" for RELIANCE)<br>
+                    • Typing tag colors: red, blue, green, orange, purple<br>
+                    • Typing folder names or dates<br>
+                    • Toggling "Search Notes" if searching note content<br>
+                    • Checking your spelling
+                </div>
+            `;
+            container.appendChild(emptyState);
+        }
+
+        function toggleSearchInNotes() {
+            searchInNotes = !searchInNotes;
+            const statusSpan = document.getElementById('searchNotesStatus');
+            const iconSpan = document.getElementById('searchNotesIcon');
+            const toggleBtn = document.getElementById('searchNotesToggle');
+
+            if (searchInNotes) {
+                statusSpan.textContent = 'ON';
+                toggleBtn.style.background = '#81c995';
+                toggleBtn.style.color = '#000';
+                iconSpan.textContent = '📝✓';
+                showNotification('Notes search enabled!', 'success');
+            } else {
+                statusSpan.textContent = 'OFF';
+                toggleBtn.style.background = '#5f6368';
+                toggleBtn.style.color = '#e8eaed';
+                iconSpan.textContent = '📝';
+                showNotification('Notes search disabled!', 'info');
+            }
+
+            // Re-run search if in search mode
+            const textarea = document.getElementById('clipboardInput');
+            if (isSearchMode && textarea.value.trim()) {
+                performSearch(textarea.value.trim());
+            }
+        }
+
+        function togglePreserveState() {
+            preserveFolderState = !preserveFolderState;
+            const statusSpan = document.getElementById('preserveStateStatus');
+            const iconSpan = document.getElementById('preserveStateIcon');
+            const toggleBtn = document.getElementById('preserveStateToggle');
+
+            if (preserveFolderState) {
+                statusSpan.textContent = 'ON';
+                toggleBtn.style.background = '#81c995';
+                toggleBtn.style.color = '#000';
+                iconSpan.textContent = '💾✓';
+                showNotification('Preserve state enabled - folders will restore to pre-search state', 'success');
+            } else {
+                statusSpan.textContent = 'OFF';
+                toggleBtn.style.background = '#5f6368';
+                toggleBtn.style.color = '#e8eaed';
+                iconSpan.textContent = '📂';
+                showNotification('Preserve state disabled - folders will keep current state', 'info');
+            }
+        }
 
         // ========== JOURNAL & RULE BOOK FUNCTIONS ==========
 
