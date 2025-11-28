@@ -1510,11 +1510,36 @@ Lesson: Should have waited for pullback instead of chasing...
                 // Add folder name text
                 const folderNameText = document.createElement('span');
                 folderNameText.textContent = folder.name;
+                folderNameText.id = `folder-name-text-${folderIndex}`;
+                folderNameText.className = 'folder-name-text';
 
                 folderName.appendChild(collapseIcon);
                 folderName.appendChild(folderNameText);
 
+                // Create input for editing folder name (hidden by default)
+                const folderNameInput = document.createElement('input');
+                folderNameInput.type = 'text';
+                folderNameInput.value = folder.name;
+                folderNameInput.id = `folder-name-input-${folderIndex}`;
+                folderNameInput.className = 'folder-name-input';
+                folderNameInput.style.display = 'none';
+                folderNameInput.style.flex = '1';
+                folderNameInput.style.padding = '4px 8px';
+                folderNameInput.style.background = '#232323';
+                folderNameInput.style.border = '1px solid #fdd663';
+                folderNameInput.style.borderRadius = '4px';
+                folderNameInput.style.color = '#e8eaed';
+                folderNameInput.style.fontSize = '16px';
+                folderNameInput.onblur = () => saveFolderName(folderIndex);
+                folderNameInput.onkeypress = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        saveFolderName(folderIndex);
+                    }
+                };
+
                 folderNameWrapper.appendChild(folderName);
+                folderNameWrapper.appendChild(folderNameInput);
 
                 // Add tag badges next to folder name
                 const tagCounts = {};
@@ -2126,6 +2151,8 @@ Lesson: Should have waited for pullback instead of chasing...
         function toggleEditMode(folderIndex) {
             const folderDiv = document.getElementById(`folder-${folderIndex}`);
             const editBtn = document.getElementById(`edit-btn-${folderIndex}`);
+            const folderNameText = document.getElementById(`folder-name-text-${folderIndex}`);
+            const folderNameInput = document.getElementById(`folder-name-input-${folderIndex}`);
             const isMobile = window.innerWidth <= 768;
 
             if (folderDiv.classList.contains('edit-mode')) {
@@ -2133,12 +2160,50 @@ Lesson: Should have waited for pullback instead of chasing...
                 folderDiv.classList.remove('edit-mode');
                 editBtn.classList.remove('active');
                 editBtn.textContent = isMobile ? '✏️' : 'Edit';
+
+                // Hide input, show text
+                if (folderNameInput && folderNameText) {
+                    folderNameInput.style.display = 'none';
+                    folderNameText.parentElement.style.display = 'flex';
+                }
             } else {
                 // Enter edit mode
                 folderDiv.classList.add('edit-mode');
                 editBtn.classList.add('active');
                 editBtn.textContent = isMobile ? '✅' : 'Done';
+
+                // Show input, hide text (without selecting the text)
+                if (folderNameInput && folderNameText) {
+                    folderNameText.parentElement.style.display = 'none';
+                    folderNameInput.style.display = 'block';
+                }
             }
+        }
+
+        function saveFolderName(folderIndex) {
+            const folderNameInput = document.getElementById(`folder-name-input-${folderIndex}`);
+            const folderNameText = document.getElementById(`folder-name-text-${folderIndex}`);
+
+            if (!folderNameInput || !folderNameText) return;
+
+            const newName = folderNameInput.value.trim();
+
+            if (newName === '') {
+                showNotification('Folder name cannot be empty!', 'error');
+                folderNameInput.value = folders[folderIndex].name;
+                return;
+            }
+
+            // Update folder name
+            folders[folderIndex].name = newName;
+            folderNameText.textContent = newName;
+            saveFolders();
+
+            // Switch back to display mode
+            folderNameInput.style.display = 'none';
+            folderNameText.parentElement.style.display = 'flex';
+
+            showNotification('Folder name updated!', 'success');
         }
 
         // ========== COLLAPSE/EXPAND FUNCTIONS ==========
