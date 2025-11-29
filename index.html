@@ -2644,14 +2644,17 @@ Lesson: Should have waited for pullback instead of chasing...
 
         let searchDebounceTimer = null;
         let isSearchMode = false;
-        let searchInNotes = false;
-        let preserveFolderState = true; // Toggle for preserving folder state
+        let searchInNotes = localStorage.getItem('searchInNotes') === 'true' || false;
+        let preserveFolderState = localStorage.getItem('preserveFolderState') !== 'false'; // Default true
         let foldersStateBeforeSearch = {}; // Store folder collapsed state before search
         let foldersWithMatchesDuringSearch = new Set(); // Track folders that had matches
 
         // Listen to textarea input for search
         document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.getElementById('clipboardInput');
+
+            // Initialize search toggle button states from localStorage
+            initializeSearchToggles();
 
             // Global keyboard shortcut: '/' to focus search
             document.addEventListener('keydown', function(e) {
@@ -3028,26 +3031,11 @@ Lesson: Should have waited for pullback instead of chasing...
 
         function toggleSearchInNotes() {
             searchInNotes = !searchInNotes;
-            const statusSpan = document.getElementById('searchNotesStatus');
-            const iconSpan = document.getElementById('searchNotesIcon');
-            const mobileIconSpan = document.getElementById('searchNotesMobileIcon');
-            const toggleBtn = document.getElementById('searchNotesToggle');
 
-            if (searchInNotes) {
-                statusSpan.textContent = 'ON';
-                toggleBtn.style.background = '#81c995';
-                toggleBtn.style.color = '#000';
-                iconSpan.textContent = '📝✓';
-                mobileIconSpan.textContent = '📝✓';
-                showNotification('Notes search enabled!', 'success');
-            } else {
-                statusSpan.textContent = 'OFF';
-                toggleBtn.style.background = '#5f6368';
-                toggleBtn.style.color = '#e8eaed';
-                iconSpan.textContent = '📝';
-                mobileIconSpan.textContent = '📝';
-                showNotification('Notes search disabled!', 'info');
-            }
+            // Save to localStorage
+            localStorage.setItem('searchInNotes', searchInNotes);
+
+            updateSearchNotesUI();
 
             // Re-run search if in search mode
             const textarea = document.getElementById('clipboardInput');
@@ -3056,12 +3044,45 @@ Lesson: Should have waited for pullback instead of chasing...
             }
         }
 
+        function updateSearchNotesUI() {
+            const statusSpan = document.getElementById('searchNotesStatus');
+            const iconSpan = document.getElementById('searchNotesIcon');
+            const mobileIconSpan = document.getElementById('searchNotesMobileIcon');
+            const toggleBtn = document.getElementById('searchNotesToggle');
+
+            if (!statusSpan || !toggleBtn) return; // Not yet initialized
+
+            if (searchInNotes) {
+                statusSpan.textContent = 'ON';
+                toggleBtn.style.background = '#81c995';
+                toggleBtn.style.color = '#000';
+                iconSpan.textContent = '📝✓';
+                mobileIconSpan.textContent = '📝✓';
+            } else {
+                statusSpan.textContent = 'OFF';
+                toggleBtn.style.background = '#5f6368';
+                toggleBtn.style.color = '#e8eaed';
+                iconSpan.textContent = '📝';
+                mobileIconSpan.textContent = '📝';
+            }
+        }
+
         function togglePreserveState() {
             preserveFolderState = !preserveFolderState;
+
+            // Save to localStorage
+            localStorage.setItem('preserveFolderState', preserveFolderState);
+
+            updatePreserveStateUI();
+        }
+
+        function updatePreserveStateUI() {
             const statusSpan = document.getElementById('preserveStateStatus');
             const iconSpan = document.getElementById('preserveStateIcon');
             const mobileIconSpan = document.getElementById('preserveStateMobileIcon');
             const toggleBtn = document.getElementById('preserveStateToggle');
+
+            if (!statusSpan || !toggleBtn) return; // Not yet initialized
 
             if (preserveFolderState) {
                 statusSpan.textContent = 'ON';
@@ -3069,15 +3090,19 @@ Lesson: Should have waited for pullback instead of chasing...
                 toggleBtn.style.color = '#000';
                 iconSpan.textContent = '💾✓';
                 mobileIconSpan.textContent = '💾✓';
-                showNotification('Preserve state enabled - folders will restore to pre-search state', 'success');
             } else {
                 statusSpan.textContent = 'OFF';
                 toggleBtn.style.background = '#5f6368';
                 toggleBtn.style.color = '#e8eaed';
                 iconSpan.textContent = '📂';
                 mobileIconSpan.textContent = '📂';
-                showNotification('Preserve state disabled - folders will keep current state', 'info');
             }
+        }
+
+        function initializeSearchToggles() {
+            // Restore UI states from loaded variables
+            updateSearchNotesUI();
+            updatePreserveStateUI();
         }
 
         // ========== JOURNAL & RULE BOOK FUNCTIONS ==========
