@@ -2626,6 +2626,7 @@ Lesson: Should have waited for pullback instead of chasing...
         let searchInNotes = false;
         let preserveFolderState = true; // Toggle for preserving folder state
         let foldersStateBeforeSearch = {}; // Store folder collapsed state before search
+        let foldersWithMatchesDuringSearch = new Set(); // Track folders that had matches
 
         // Listen to textarea input for search
         document.addEventListener('DOMContentLoaded', function() {
@@ -2717,6 +2718,9 @@ Lesson: Should have waited for pullback instead of chasing...
 
             let totalMatches = 0;
             let foldersWithMatches = 0;
+
+            // Clear previous match tracking
+            foldersWithMatchesDuringSearch.clear();
 
             // Define tag emojis for matching
             const tagEmojis = {
@@ -2811,6 +2815,9 @@ Lesson: Should have waited for pullback instead of chasing...
                     folderDiv.classList.remove('collapsed', 'search-no-match');
                     foldersWithMatches++;
                     totalMatches += symbolMatches;
+
+                    // Track this folder as having matches
+                    foldersWithMatchesDuringSearch.add(folderIndex);
                 } else {
                     folderDiv.classList.add('search-no-match');
                 }
@@ -2923,8 +2930,14 @@ Lesson: Should have waited for pullback instead of chasing...
                         }
                     }
                 } else {
-                    // CURRENT STATE MODE (OFF): Keep folders in their current expanded/collapsed state
-                    // Do nothing - leave folders as they are currently displayed
+                    // CURRENT STATE MODE (OFF): Keep only folders with matches expanded, collapse others
+                    if (foldersWithMatchesDuringSearch.has(folderIndex)) {
+                        // This folder had matches during search - keep it expanded
+                        folderDiv.classList.remove('collapsed');
+                    } else {
+                        // This folder had no matches - collapse it
+                        folderDiv.classList.add('collapsed');
+                    }
                 }
 
                 // Clear folder name highlight
@@ -2945,8 +2958,9 @@ Lesson: Should have waited for pullback instead of chasing...
                 });
             });
 
-            // Clear saved folder states
+            // Clear saved folder states and match tracking
             foldersStateBeforeSearch = {};
+            foldersWithMatchesDuringSearch.clear();
         }
 
         function openFirstMatch() {
