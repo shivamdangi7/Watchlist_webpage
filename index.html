@@ -1325,8 +1325,9 @@
             </div>
 
             <!-- Compact unified button bar -->
+            <!-- [Add] [Clear] • [☁️] [📖] • 📕 2 📘 4 📗 3 📙 1 📓 3 • [▼] [3x ▼] [📋] [⚙️] -->
             <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; font-size: 12px;">
-                <!-- Data Management Group -->
+                <!-- Group 1: Add & Clear -->
                 <button class="btn-primary btn-compact btn-add" onclick="parseData()" title="Add folders">
                     <span class="btn-text-desktop">Add</span>
                     <span class="btn-text-mobile">➕</span>
@@ -1335,33 +1336,27 @@
                     <span class="btn-text-desktop">Clear</span>
                     <span class="btn-text-mobile">🧹</span>
                 </button>
-                <button class="btn-primary btn-compact btn-clear-all" onclick="clearAllFolders()" style="background: #f28b82; color: #000;" title="Clear all folders">
-                    <span class="btn-text-desktop">Clear All</span>
-                    <span class="btn-text-mobile">🗑️</span>
-                </button>
 
                 <!-- Separator -->
                 <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
-                <!-- Backup Group -->
-                <button class="btn-primary btn-compact" onclick="exportData()" style="background: #81c995;" title="Export data to file">💾</button>
-                <label for="importFile" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;" title="Import data from file">📥</label>
-                <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
+                <!-- Group 2: GitHub Sync & Journal -->
                 <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;" title="Toggle GitHub sync panel">☁️</button>
+                <button class="btn-primary btn-compact" onclick="openJournalModal()" style="background: #fdd663; color: #000;" title="Trading Journal & Rules">📖</button>
 
-                <!-- Divider -->
+                <!-- Divider (shown when folders exist) -->
                 <div id="globalTagsDivider" style="display: none; width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
-                <!-- Global Tags (shown when folders exist) -->
+                <!-- Group 3: Global Tags (shown when folders exist) -->
                 <div id="globalTagsContainer" class="global-tags-container" style="display: none;">
                 </div>
 
-                <!-- Folder View Controls (shown when folders exist) -->
+                <!-- Group 4: Folder View Controls (shown when folders exist) -->
                 <div id="folderManagement" style="display: none; margin-left: auto; display: flex; gap: 6px; align-items: center;">
                     <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
-                    <button class="btn-primary btn-compact" onclick="expandAll()" style="background: #5f6368; color: #e8eaed;" title="Expand All">▼</button>
-                    <button class="btn-primary btn-compact" onclick="collapseAll()" style="background: #5f6368; color: #e8eaed;" title="Collapse All">▶</button>
+                    <!-- Toggle Collapse/Expand Button -->
+                    <button class="btn-primary btn-compact" id="toggleCollapseBtn" onclick="toggleAllFolders()" style="background: #5f6368; color: #e8eaed;" title="Toggle Collapse/Expand All">▼</button>
 
                     <!-- Batch Size -->
                     <select id="batchSizeSelect" onchange="updateBatchSize()" style="padding: 4px 6px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 11px; cursor: pointer;" title="Batch open size">
@@ -1374,8 +1369,8 @@
                     <!-- View Mode -->
                     <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()" style="background: #c58af9;" title="Toggle view mode">📋</button>
 
-                    <!-- Journal Button -->
-                    <button class="btn-primary btn-compact" onclick="openJournalModal()" style="background: #fdd663; color: #000;" title="Trading Journal & Rules">📖</button>
+                    <!-- Settings Button -->
+                    <button class="btn-primary btn-compact" onclick="openSettingsModal()" style="background: #5f6368; color: #e8eaed;" title="Settings">⚙️</button>
                 </div>
             </div>
         </div>
@@ -1433,6 +1428,45 @@
     </div>
 
     <!-- Journal Modal -->
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="note-modal">
+        <div class="note-modal-content" style="max-width: 500px;">
+            <div class="note-modal-header">
+                <div class="note-modal-title">⚙️ Settings</div>
+                <button class="note-modal-close" onclick="closeSettingsModal()">Close</button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Backup & Restore Section -->
+                    <div style="padding: 12px; background: #1e1e1e; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: #e8eaed;">💾 Backup & Restore</div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn-primary btn-compact" onclick="exportData(); closeSettingsModal();" style="background: #81c995;">
+                                <span class="btn-text-desktop">💾 Export Data</span>
+                                <span class="btn-text-mobile">💾</span>
+                            </button>
+                            <label for="importFileSettings" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;">
+                                <span class="btn-text-desktop">📥 Import Data</span>
+                                <span class="btn-text-mobile">📥</span>
+                            </label>
+                            <input type="file" id="importFileSettings" accept=".json" onchange="importData(event); closeSettingsModal();" style="display: none;">
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div style="padding: 12px; background: #1e1e1e; border: 1px solid #f28b82; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: #f28b82;">⚠️ Danger Zone</div>
+                        <button class="btn-primary btn-compact" onclick="clearAllFolders(); closeSettingsModal();" style="background: #f28b82; color: #000;">
+                            <span class="btn-text-desktop">🗑️ Clear All Folders</span>
+                            <span class="btn-text-mobile">🗑️</span>
+                        </button>
+                        <div style="font-size: 11px; color: #9aa0a6; margin-top: 6px;">This will delete all folders and symbols</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="journalModal" class="note-modal">
         <div class="note-modal-content" style="max-width: 800px;">
             <div class="note-modal-header">
@@ -2572,6 +2606,7 @@ Lesson: Should have waited for pullback instead of chasing...
             }
 
             saveFolders();
+            updateToggleButtonState();
         }
 
         function collapseAll() {
@@ -2583,6 +2618,7 @@ Lesson: Should have waited for pullback instead of chasing...
                 }
             });
             saveFolders();
+            updateToggleButtonState();
         }
 
         function expandAll() {
@@ -2594,6 +2630,25 @@ Lesson: Should have waited for pullback instead of chasing...
                 }
             });
             saveFolders();
+            updateToggleButtonState();
+        }
+
+        function updateToggleButtonState() {
+            const toggleBtn = document.getElementById('toggleCollapseBtn');
+            if (!toggleBtn) return;
+
+            // Check if all folders are collapsed
+            const allCollapsed = folders.every(folder => folder.collapsed);
+
+            if (allCollapsed) {
+                toggleBtn.textContent = '▶';
+                toggleBtn.title = 'Expand All';
+                allFoldersCollapsed = true;
+            } else {
+                toggleBtn.textContent = '▼';
+                toggleBtn.title = 'Collapse All';
+                allFoldersCollapsed = false;
+            }
         }
 
         // ========== DRAG AND DROP REORDERING ==========
@@ -3529,6 +3584,45 @@ Lesson: Should have waited for pullback instead of chasing...
                 closeJournalModal();
             }
         });
+
+        // ========== SETTINGS MODAL ==========
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.add('show');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        // Close settings modal when clicking outside
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'settingsModal') {
+                closeSettingsModal();
+            }
+        });
+
+        // ========== TOGGLE ALL FOLDERS ==========
+
+        let allFoldersCollapsed = false;
+
+        function toggleAllFolders() {
+            const toggleBtn = document.getElementById('toggleCollapseBtn');
+
+            if (allFoldersCollapsed) {
+                // Expand all
+                expandAll();
+                toggleBtn.textContent = '▼';
+                toggleBtn.title = 'Collapse All';
+                allFoldersCollapsed = false;
+            } else {
+                // Collapse all
+                collapseAll();
+                toggleBtn.textContent = '▶';
+                toggleBtn.title = 'Expand All';
+                allFoldersCollapsed = true;
+            }
+        }
 
         // ========== SYNC PANEL TOGGLE ==========
 
