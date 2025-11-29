@@ -1456,6 +1456,11 @@
                     <!-- Danger Zone -->
                     <div style="padding: 12px; background: #1e1e1e; border: 1px solid #f28b82; border-radius: 8px;">
                         <div style="font-weight: 600; margin-bottom: 8px; color: #f28b82;">⚠️ Danger Zone</div>
+                        <button class="btn-primary btn-compact" onclick="consolidateTaggedSymbols(); closeSettingsModal();" style="background: #fbbc04; color: #000; margin-bottom: 8px;">
+                            <span class="btn-text-desktop">🏷️ Consolidate Tagged Symbols</span>
+                            <span class="btn-text-mobile">🏷️</span>
+                        </button>
+                        <div style="font-size: 11px; color: #9aa0a6; margin-bottom: 12px;">Keep only tagged symbols in one folder, remove everything else</div>
                         <button class="btn-primary btn-compact" onclick="clearAllFolders(); closeSettingsModal();" style="background: #f28b82; color: #000;">
                             <span class="btn-text-desktop">🗑️ Clear All Folders</span>
                             <span class="btn-text-mobile">🗑️</span>
@@ -1556,6 +1561,10 @@ Lesson: Should have waited for pullback instead of chasing...
         </div>
         <div class="context-menu-item" onclick="folderContextMenuAction('rename')">
             <span>📝</span> Rename Folder
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="folderContextMenuAction('removeNonTagged')" style="color: #fbbc04;">
+            <span>🏷️</span> Remove Non-Tagged 
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" onclick="folderContextMenuAction('delete')" style="color: #f28b82;">
@@ -1679,6 +1688,49 @@ Lesson: Should have waited for pullback instead of chasing...
                 saveFolders();
                 displayFolders();
                 showNotification('All folders cleared!', 'info');
+            }
+        }
+
+        function consolidateTaggedSymbols() {
+            // Collect all tagged symbols from all folders
+            const allTaggedSymbols = [];
+            let totalSymbols = 0;
+
+            folders.forEach(folder => {
+                totalSymbols += folder.symbols.length;
+                folder.symbols.forEach(symbol => {
+                    if (symbol.tags && symbol.tags.length > 0) {
+                        allTaggedSymbols.push({
+                            name: symbol.name,
+                            tags: [...symbol.tags],
+                            note: symbol.note || ''
+                        });
+                    }
+                });
+            });
+
+            if (allTaggedSymbols.length === 0) {
+                showNotification('No tagged symbols found to consolidate!', 'info');
+                return;
+            }
+
+            const nonTaggedCount = totalSymbols - allTaggedSymbols.length;
+
+            if (confirm(`This will:\n• Remove ${nonTaggedCount} non-tagged symbol${nonTaggedCount !== 1 ? 's' : ''}\n• Delete all existing folders\n• Create 1 new folder with ${allTaggedSymbols.length} tagged symbol${allTaggedSymbols.length !== 1 ? 's' : ''}\n\nThis cannot be undone. Continue?`)) {
+                // Create new folder with all tagged symbols
+                folders = [{
+                    name: 'Tagged Symbols',
+                    symbols: allTaggedSymbols,
+                    collapsed: false,
+                    batchIndex: 0,
+                    batchRunning: false,
+                    openedSymbols: []
+                }];
+
+                saveFolders();
+                displayFolders();
+                updateGlobalTags();
+                showNotification(`Consolidated ${allTaggedSymbols.length} tagged symbols into 1 folder!`, 'success');
             }
         }
 
@@ -2532,6 +2584,36 @@ Lesson: Should have waited for pullback instead of chasing...
             }
         }
 
+        function removeNonTaggedSymbols(folderIndex) {
+            const folder = folders[folderIndex];
+            const originalCount = folder.symbols.length;
+
+            // Count how many symbols have tags
+            const taggedCount = folder.symbols.filter(symbol => symbol.tags && symbol.tags.length > 0).length;
+            const nonTaggedCount = originalCount - taggedCount;
+
+            if (nonTaggedCount === 0) {
+                showNotification('No non-tagged symbols to remove!', 'info');
+                return;
+            }
+
+            if (confirm(`Remove ${nonTaggedCount} non-tagged symbol${nonTaggedCount > 1 ? 's' : ''} from "${folder.name}"?\n\n${taggedCount} tagged symbol${taggedCount > 1 ? 's' : ''} will remain.`)) {
+                // Filter out symbols without tags
+                folder.symbols = folder.symbols.filter(symbol => symbol.tags && symbol.tags.length > 0);
+
+                // Reset batch operation state
+                folder.batchIndex = 0;
+                folder.batchRunning = false;
+                folder.openedSymbols = [];
+
+                saveFolders();
+                displayFolders();
+                updateGlobalTags();
+
+                showNotification(`Removed ${nonTaggedCount} non-tagged symbol${nonTaggedCount > 1 ? 's' : ''}!`, 'success');
+            }
+        }
+
         function toggleEditMode(folderIndex) {
             const folderDiv = document.getElementById(`folder-${folderIndex}`);
             const editBtn = document.getElementById(`edit-btn-${folderIndex}`);
@@ -3025,6 +3107,10 @@ Lesson: Should have waited for pullback instead of chasing...
                         folderNameInput.focus();
                         folderNameInput.select();
                     }
+                    break;
+
+                case 'removeNonTagged':
+                    removeNonTaggedSymbols(folderIndex);
                     break;
 
                 case 'delete':
