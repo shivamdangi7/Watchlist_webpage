@@ -921,6 +921,13 @@
                 font-size: 11px;
             }
 
+            /* Search info on mobile */
+            .search-info {
+                font-size: 10px !important;
+                width: 100%;
+                margin-bottom: 4px;
+            }
+
             .folder {
                 padding: 10px 12px;
                 margin-bottom: 10px;
@@ -1232,10 +1239,12 @@
             <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
                 <div id="searchInfo" class="search-info" style="display: none; margin-top: 0;"></div>
                 <button id="searchNotesToggle" class="btn-primary btn-compact" onclick="toggleSearchInNotes()" style="display: none; background: #5f6368; font-size: 11px; padding: 4px 8px;" title="Toggle search in notes">
-                    <span id="searchNotesIcon">📝</span> Notes: <span id="searchNotesStatus">OFF</span>
+                    <span class="btn-text-desktop"><span id="searchNotesIcon">📝</span> Notes: <span id="searchNotesStatus">OFF</span></span>
+                    <span class="btn-text-mobile" id="searchNotesMobileIcon">📝</span>
                 </button>
                 <button id="preserveStateToggle" class="btn-primary btn-compact" onclick="togglePreserveState()" style="display: none; background: #81c995; color: #000; font-size: 11px; padding: 4px 8px;" title="Toggle preserve folder state">
-                    <span id="preserveStateIcon">💾</span> Preserve: <span id="preserveStateStatus">ON</span>
+                    <span class="btn-text-desktop"><span id="preserveStateIcon">💾</span> Preserve: <span id="preserveStateStatus">ON</span></span>
+                    <span class="btn-text-mobile" id="preserveStateMobileIcon">💾</span>
                 </button>
             </div>
 
@@ -1355,9 +1364,15 @@
                 <button class="note-modal-close" onclick="closeJournalModal()">Close</button>
             </div>
             <div style="margin-bottom: 16px;">
-                <div style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px;">
-                    <button class="btn-primary btn-compact" id="rulebookTabBtn" onclick="switchJournalTab('rulebook')" style="background: #fdd663; color: #000;">📋 Rule Book</button>
-                    <button class="btn-primary btn-compact" id="journalTabBtn" onclick="switchJournalTab('journal')" style="background: #5f6368; color: #e8eaed;">📝 Journal</button>
+                <div class="journal-tabs-container" style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px;">
+                    <button class="btn-primary btn-compact journal-tab-btn" id="rulebookTabBtn" onclick="switchJournalTab('rulebook')" style="background: #fdd663; color: #000;">
+                        <span class="btn-text-desktop">📋 Rule Book</span>
+                        <span class="btn-text-mobile">📋</span>
+                    </button>
+                    <button class="btn-primary btn-compact journal-tab-btn" id="journalTabBtn" onclick="switchJournalTab('journal')" style="background: #5f6368; color: #e8eaed;">
+                        <span class="btn-text-desktop">📝 Journal</span>
+                        <span class="btn-text-mobile">📝</span>
+                    </button>
                 </div>
 
                 <!-- Rule Book Section -->
@@ -1391,8 +1406,14 @@ Lesson: Should have waited for pullback instead of chasing...
                 </div>
             </div>
             <div class="note-modal-buttons">
-                <button class="btn-primary btn-compact" onclick="clearCurrentJournalTab()" style="background: #f28b82;">Clear</button>
-                <button class="btn-primary btn-compact" onclick="saveJournal()" style="background: #fdd663; color: #000;">💾 Save</button>
+                <button class="btn-primary btn-compact" onclick="clearCurrentJournalTab()" style="background: #f28b82;">
+                    <span class="btn-text-desktop">Clear</span>
+                    <span class="btn-text-mobile">🗑️</span>
+                </button>
+                <button class="btn-primary btn-compact" onclick="saveJournal()" style="background: #fdd663; color: #000;">
+                    <span class="btn-text-desktop">💾 Save</span>
+                    <span class="btn-text-mobile">💾</span>
+                </button>
             </div>
         </div>
     </div>
@@ -3009,6 +3030,7 @@ Lesson: Should have waited for pullback instead of chasing...
             searchInNotes = !searchInNotes;
             const statusSpan = document.getElementById('searchNotesStatus');
             const iconSpan = document.getElementById('searchNotesIcon');
+            const mobileIconSpan = document.getElementById('searchNotesMobileIcon');
             const toggleBtn = document.getElementById('searchNotesToggle');
 
             if (searchInNotes) {
@@ -3016,12 +3038,14 @@ Lesson: Should have waited for pullback instead of chasing...
                 toggleBtn.style.background = '#81c995';
                 toggleBtn.style.color = '#000';
                 iconSpan.textContent = '📝✓';
+                mobileIconSpan.textContent = '📝✓';
                 showNotification('Notes search enabled!', 'success');
             } else {
                 statusSpan.textContent = 'OFF';
                 toggleBtn.style.background = '#5f6368';
                 toggleBtn.style.color = '#e8eaed';
                 iconSpan.textContent = '📝';
+                mobileIconSpan.textContent = '📝';
                 showNotification('Notes search disabled!', 'info');
             }
 
@@ -3036,6 +3060,7 @@ Lesson: Should have waited for pullback instead of chasing...
             preserveFolderState = !preserveFolderState;
             const statusSpan = document.getElementById('preserveStateStatus');
             const iconSpan = document.getElementById('preserveStateIcon');
+            const mobileIconSpan = document.getElementById('preserveStateMobileIcon');
             const toggleBtn = document.getElementById('preserveStateToggle');
 
             if (preserveFolderState) {
@@ -3043,12 +3068,14 @@ Lesson: Should have waited for pullback instead of chasing...
                 toggleBtn.style.background = '#81c995';
                 toggleBtn.style.color = '#000';
                 iconSpan.textContent = '💾✓';
+                mobileIconSpan.textContent = '💾✓';
                 showNotification('Preserve state enabled - folders will restore to pre-search state', 'success');
             } else {
                 statusSpan.textContent = 'OFF';
                 toggleBtn.style.background = '#5f6368';
                 toggleBtn.style.color = '#e8eaed';
                 iconSpan.textContent = '📂';
+                mobileIconSpan.textContent = '📂';
                 showNotification('Preserve state disabled - folders will keep current state', 'info');
             }
         }
