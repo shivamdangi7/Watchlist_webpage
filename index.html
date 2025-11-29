@@ -1304,6 +1304,7 @@
                 font-size: 11px;
             }
         }
+
     </style>
 </head>
 <body>
@@ -1435,54 +1436,84 @@
                 <div class="note-modal-title">⚙️ Settings</div>
                 <button class="note-modal-close" onclick="closeSettingsModal()">Close</button>
             </div>
-            <div style="margin-bottom: 16px;">
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="padding: 8px 0; margin-bottom: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+
                     <!-- Backup & Restore Section -->
-                    <div style="padding: 12px; background: #1e1e1e; border-radius: 8px;">
-                        <div style="font-weight: 600; margin-bottom: 8px; color: #e8eaed;">💾 Backup & Restore</div>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="btn-primary btn-compact" onclick="exportData(); closeSettingsModal();" style="background: #81c995;">
-                                <span class="btn-text-desktop">💾 Export Data</span>
-                                <span class="btn-text-mobile">💾</span>
+                    <div style="padding: 0; background: transparent;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 4px;">
+                            <div style="width: 48px; height: 48px; background: #5f6368; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                💾
+                            </div>
+                            <div style="font-weight: 600; color: #e8eaed; font-size: 16px;">Backup & Restore</div>
+                        </div>
+                        <div style="margin-left: 0; display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn-primary btn-compact" onclick="exportData(); closeSettingsModal();" style="background: #81c995; padding: 12px 24px; font-size: 14px; font-weight: 500; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                                💾 Export
                             </button>
-                            <label for="importFileSettings" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer;">
-                                <span class="btn-text-desktop">📥 Import Data</span>
-                                <span class="btn-text-mobile">📥</span>
+                            <label for="importFileSettings" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer; padding: 12px 24px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px;">
+                                📥 Import
                             </label>
                             <input type="file" id="importFileSettings" accept=".json" onchange="importData(event); closeSettingsModal();" style="display: none;">
                         </div>
                     </div>
 
                     <!-- Merge Preferences -->
-                    <div style="padding: 12px; background: #1e1e1e; border-radius: 8px;">
-                        <div style="font-weight: 600; margin-bottom: 8px; color: #e8eaed;">🔄 Duplicate Merge Settings</div>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #232323; border-radius: 6px; user-select: none;">
-                            <input type="checkbox" id="includeFolderNamesCheckbox" onchange="toggleIncludeFolderNames()" style="width: 18px; height: 18px; cursor: pointer;">
-                            <div style="flex: 1;">
-                                <div style="font-size: 13px; font-weight: 500; color: #e8eaed;">Include folder names in merged notes</div>
-                                <div style="font-size: 11px; color: #9aa0a6; margin-top: 2px;">When merging duplicates, prefix notes with [Folder Name]</div>
+                    <div style="padding: 0; background: transparent;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 4px;">
+                            <div style="width: 48px; height: 48px; background: #8ab4f8; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                🔄
                             </div>
-                        </label>
+                            <div style="font-weight: 600; color: #e8eaed; font-size: 16px;">Duplicate Merge Settings</div>
+                        </div>
+                        <div style="margin-left: 0; padding-left: 4px;">
+                            <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="includeFolderNamesCheckbox" onchange="toggleIncludeFolderNames()" style="width: 24px; height: 24px; cursor: pointer; flex-shrink: 0; accent-color: #8ab4f8; margin-top: 2px;">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">Include folder names in merged notes</div>
+                                    <div style="font-size: 13px; color: #9aa0a6; line-height: 1.4;">When merging duplicates, prefix notes with [Folder Name]</div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
                     <!-- Danger Zone -->
-                    <div style="padding: 12px; background: #1e1e1e; border: 1px solid #f28b82; border-radius: 8px;">
-                        <div style="font-weight: 600; margin-bottom: 8px; color: #f28b82;">⚠️ Danger Zone</div>
-                        <button class="btn-primary btn-compact" onclick="removeAllDuplicates(); closeSettingsModal();" style="background: #8ab4f8; color: #000; margin-bottom: 8px;">
-                            <span class="btn-text-desktop">🔄 Remove All Duplicates (Smart Merge)</span>
-                            <span class="btn-text-mobile">🔄</span>
-                        </button>
-                        <div style="font-size: 11px; color: #9aa0a6; margin-bottom: 12px;">Intelligently merge duplicate symbols, preserving tags and notes</div>
-                        <button class="btn-primary btn-compact" onclick="consolidateTaggedSymbols(); closeSettingsModal();" style="background: #fbbc04; color: #000; margin-bottom: 8px;">
-                            <span class="btn-text-desktop">🏷️ Consolidate Tagged Symbols</span>
-                            <span class="btn-text-mobile">🏷️</span>
-                        </button>
-                        <div style="font-size: 11px; color: #9aa0a6; margin-bottom: 12px;">Keep only tagged symbols in one folder, remove everything else</div>
-                        <button class="btn-primary btn-compact" onclick="clearAllFolders(); closeSettingsModal();" style="background: #f28b82; color: #000;">
-                            <span class="btn-text-desktop">🗑️ Clear All Folders</span>
-                            <span class="btn-text-mobile">🗑️</span>
-                        </button>
-                        <div style="font-size: 11px; color: #9aa0a6; margin-top: 6px;">This will delete all folders and symbols</div>
+                    <div style="padding: 16px; background: transparent; border: 2px solid #f28b82; border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 0 4px;">
+                            <div style="width: 48px; height: 48px; background: #f28b82; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                ⚠️
+                            </div>
+                            <div style="font-weight: 600; color: #f28b82; font-size: 16px;">Danger Zone</div>
+                        </div>
+                        <div style="margin-left: 0; display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Remove Duplicates -->
+                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;" onclick="removeAllDuplicates(); closeSettingsModal();">
+                                <div style="width: 48px; height: 48px; background: #8ab4f8; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                    🔄
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">Intelligently merge duplicate symbols, preserving tags and notes</div>
+                                </div>
+                            </div>
+                            <!-- Consolidate Tagged -->
+                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;" onclick="consolidateTaggedSymbols(); closeSettingsModal();">
+                                <div style="width: 48px; height: 48px; background: #fbbc04; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                    🏷️
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">Keep only tagged symbols in one folder, remove everything else</div>
+                                </div>
+                            </div>
+                            <!-- Clear All -->
+                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;" onclick="clearAllFolders(); closeSettingsModal();">
+                                <div style="width: 48px; height: 48px; background: #f28b82; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                    🗑️
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">This will delete all folders and symbols</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
