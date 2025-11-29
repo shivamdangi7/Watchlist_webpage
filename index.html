@@ -465,12 +465,7 @@
             position: relative;
         }
 
-        /* Golden glow for symbols with notes in compact mode */
-        .folder.compact-view .symbol-card.has-note .symbol-btn {
-            box-shadow: 0 0 8px rgba(253, 214, 99, 0.4);
-            border: 1px solid rgba(253, 214, 99, 0.3);
-            border-radius: 6px;
-        }
+        /* Removed - replaced with inner glow on card */
 
         .folder.compact-view .symbol-btn {
             font-size: 12px;
@@ -632,6 +627,87 @@
         .symbol-note-btn.has-note:hover {
             background: #fcad70;
             box-shadow: 0 0 12px rgba(253, 214, 99, 0.8);
+        }
+
+        /* Context menu styles */
+        .symbol-context-menu {
+            position: fixed;
+            background: #2c2c2c;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 4px 0;
+            min-width: 160px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            display: none;
+        }
+
+        .symbol-context-menu.show {
+            display: block;
+        }
+
+        .context-menu-item {
+            padding: 8px 16px;
+            color: #e8eaed;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover {
+            background: #3c4043;
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: #3c4043;
+            margin: 4px 0;
+        }
+
+        /* Folder context menu (same styling as symbol context menu) */
+        .folder-context-menu {
+            position: fixed;
+            background: #2c2c2c;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 4px 0;
+            min-width: 160px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            display: none;
+        }
+
+        .folder-context-menu.show {
+            display: block;
+        }
+
+        /* Three-dot menu button for mobile */
+        .folder-menu-btn {
+            background: #5f6368;
+            color: #e8eaed;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .folder-menu-btn:hover {
+            background: #80868b;
+        }
+
+        @media (max-width: 768px) {
+            .folder-menu-btn {
+                display: flex;
+            }
         }
 
         /* Hide note and remove buttons by default */
@@ -1418,6 +1494,41 @@ Lesson: Should have waited for pullback instead of chasing...
         </div>
     </div>
 
+    <!-- Context Menu for Symbols -->
+    <div id="symbolContextMenu" class="symbol-context-menu">
+        <div class="context-menu-item" onclick="contextMenuAction('viewNote')">
+            <span>📝</span> View Note
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('editNote')">
+            <span>✏️</span> Edit Note
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="contextMenuAction('openChart')">
+            <span>📊</span> Open Chart
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('copySymbol')">
+            <span>📋</span> Copy Symbol
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="contextMenuAction('remove')" style="color: #f28b82;">
+            <span>🗑️</span> Remove
+        </div>
+    </div>
+
+    <!-- Folder context menu -->
+    <div id="folderContextMenu" class="folder-context-menu">
+        <div class="context-menu-item" onclick="folderContextMenuAction('edit')">
+            <span>✏️</span> <span id="folderEditModeText">Edit Mode: OFF</span>
+        </div>
+        <div class="context-menu-item" onclick="folderContextMenuAction('rename')">
+            <span>📝</span> Rename Folder
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="folderContextMenuAction('delete')" style="color: #f28b82;">
+            <span>🗑️</span> Delete Folder
+        </div>
+    </div>
+
     <script>
         let folders = [];
         let batchIntervals = {};
@@ -1758,24 +1869,26 @@ Lesson: Should have waited for pullback instead of chasing...
                 stopBtn.id = `stop-btn-${folderIndex}`;
                 stopBtn.onclick = () => stopBatch(folderIndex);
 
-                const editBtn = document.createElement('button');
-                editBtn.className = 'btn-control btn-edit-mode';
-                editBtn.textContent = isMobile ? '✏️' : 'Edit';
-                editBtn.title = 'Edit mode - Add notes or remove symbols';
-                editBtn.id = `edit-btn-${folderIndex}`;
-                editBtn.onclick = () => toggleEditMode(folderIndex);
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn-control btn-delete';
-                deleteBtn.textContent = isMobile ? '🗑️' : 'Delete';
-                deleteBtn.title = 'Delete this folder';
-                deleteBtn.onclick = () => deleteFolder(folderIndex);
+                // Three-dot menu button for mobile (Edit/Delete options)
+                const menuBtn = document.createElement('button');
+                menuBtn.className = 'folder-menu-btn';
+                menuBtn.textContent = '⋮';
+                menuBtn.title = 'Folder options';
+                menuBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    showFolderContextMenu(e, folderIndex);
+                };
 
                 controls.appendChild(openAllBtn);
                 controls.appendChild(openBatchBtn);
                 controls.appendChild(stopBtn);
-                controls.appendChild(editBtn);
-                controls.appendChild(deleteBtn);
+                controls.appendChild(menuBtn);
+
+                // Add right-click context menu to folder header
+                header.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showFolderContextMenu(e, folderIndex);
+                });
 
                 header.appendChild(folderNameWrapper);
                 header.appendChild(controls);
@@ -1793,6 +1906,12 @@ Lesson: Should have waited for pullback instead of chasing...
                     if (symbolObj.tags && symbolObj.tags.length > 0) {
                         card.classList.add(`tagged-${symbolObj.tags[0]}`);
                     }
+
+                    // Add right-click context menu
+                    card.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        showContextMenu(e, folderIndex, symbolIndex);
+                    });
 
                     // Symbol header with name button
                     const symbolHeader = document.createElement('div');
@@ -2639,6 +2758,164 @@ Lesson: Should have waited for pullback instead of chasing...
                 closeNoteModal();
             }
         });
+
+        // ========== CONTEXT MENU FUNCTIONALITY ==========
+
+        let currentContextSymbol = { folderIndex: null, symbolIndex: null };
+
+        function showContextMenu(event, folderIndex, symbolIndex) {
+            const menu = document.getElementById('symbolContextMenu');
+            currentContextSymbol = { folderIndex, symbolIndex };
+
+            // Position the menu at mouse location
+            menu.style.left = `${event.pageX}px`;
+            menu.style.top = `${event.pageY}px`;
+            menu.classList.add('show');
+
+            // Adjust if menu goes off screen
+            setTimeout(() => {
+                const rect = menu.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    menu.style.left = `${event.pageX - rect.width}px`;
+                }
+                if (rect.bottom > window.innerHeight) {
+                    menu.style.top = `${event.pageY - rect.height}px`;
+                }
+            }, 0);
+        }
+
+        function hideContextMenu() {
+            const menu = document.getElementById('symbolContextMenu');
+            menu.classList.remove('show');
+            currentContextSymbol = { folderIndex: null, symbolIndex: null };
+        }
+
+        function contextMenuAction(action) {
+            const { folderIndex, symbolIndex } = currentContextSymbol;
+            if (folderIndex === null || symbolIndex === null) return;
+
+            const folder = folders[folderIndex];
+            const symbolObj = folder.symbols[symbolIndex];
+
+            switch (action) {
+                case 'viewNote':
+                    if (symbolObj.note && symbolObj.note.trim()) {
+                        openNoteModal(folderIndex, symbolIndex);
+                        // Make textarea read-only for view mode
+                        const noteTextarea = document.getElementById('noteTextarea');
+                        noteTextarea.focus();
+                    } else {
+                        showNotification('No note available for this symbol', 'info');
+                    }
+                    break;
+
+                case 'editNote':
+                    openNoteModal(folderIndex, symbolIndex);
+                    break;
+
+                case 'openChart':
+                    openSymbol(folderIndex, symbolIndex);
+                    break;
+
+                case 'copySymbol':
+                    const symbolName = symbolObj.name;
+                    navigator.clipboard.writeText(symbolName).then(() => {
+                        showNotification(`Copied ${getDisplayName(symbolName)}!`, 'success');
+                    }).catch(() => {
+                        showNotification('Failed to copy symbol', 'error');
+                    });
+                    break;
+
+                case 'remove':
+                    removeSymbol(folderIndex, symbolIndex);
+                    break;
+            }
+
+            hideContextMenu();
+        }
+
+        // Hide context menu when clicking elsewhere
+        document.addEventListener('click', () => {
+            hideContextMenu();
+            hideFolderContextMenu();
+        });
+
+        // Hide context menu on scroll
+        document.addEventListener('scroll', () => {
+            hideContextMenu();
+            hideFolderContextMenu();
+        }, true);
+
+        // ========== FOLDER CONTEXT MENU ==========
+
+        let currentContextFolder = null;
+
+        function showFolderContextMenu(event, folderIndex) {
+            const menu = document.getElementById('folderContextMenu');
+            currentContextFolder = folderIndex;
+
+            // Update edit mode text based on current state
+            const folderDiv = document.getElementById(`folder-${folderIndex}`);
+            const isEditMode = folderDiv && folderDiv.classList.contains('edit-mode');
+            const editModeText = document.getElementById('folderEditModeText');
+            if (editModeText) {
+                editModeText.textContent = isEditMode ? 'Edit Mode: ON' : 'Edit Mode: OFF';
+            }
+
+            // Use clientX/clientY for fixed positioning
+            menu.style.left = `${event.clientX}px`;
+            menu.style.top = `${event.clientY}px`;
+            menu.classList.add('show');
+
+            // Adjust if menu goes off screen
+            setTimeout(() => {
+                const rect = menu.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    menu.style.left = `${event.clientX - rect.width}px`;
+                }
+                if (rect.bottom > window.innerHeight) {
+                    menu.style.top = `${event.clientY - rect.height}px`;
+                }
+            }, 0);
+        }
+
+        function hideFolderContextMenu() {
+            const menu = document.getElementById('folderContextMenu');
+            menu.classList.remove('show');
+            currentContextFolder = null;
+        }
+
+        function folderContextMenuAction(action) {
+            if (currentContextFolder === null) return;
+
+            const folderIndex = currentContextFolder;
+
+            switch (action) {
+                case 'edit':
+                    toggleEditMode(folderIndex);
+                    break;
+
+                case 'rename':
+                    // Show the folder name input for editing
+                    const folderNameText = document.getElementById(`folder-name-text-${folderIndex}`);
+                    const folderNameInput = document.getElementById(`folder-name-input-${folderIndex}`);
+
+                    if (folderNameText && folderNameInput) {
+                        folderNameText.style.display = 'none';
+                        folderNameInput.style.display = 'block';
+                        folderNameInput.value = folders[folderIndex].name;
+                        folderNameInput.focus();
+                        folderNameInput.select();
+                    }
+                    break;
+
+                case 'delete':
+                    deleteFolder(folderIndex);
+                    break;
+            }
+
+            hideFolderContextMenu();
+        }
 
         // ========== SEARCH FUNCTIONALITY ==========
 
