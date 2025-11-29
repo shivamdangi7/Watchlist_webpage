@@ -1453,9 +1453,26 @@
                         </div>
                     </div>
 
+                    <!-- Merge Preferences -->
+                    <div style="padding: 12px; background: #1e1e1e; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 8px; color: #e8eaed;">🔄 Duplicate Merge Settings</div>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #232323; border-radius: 6px; user-select: none;">
+                            <input type="checkbox" id="includeFolderNamesCheckbox" onchange="toggleIncludeFolderNames()" style="width: 18px; height: 18px; cursor: pointer;">
+                            <div style="flex: 1;">
+                                <div style="font-size: 13px; font-weight: 500; color: #e8eaed;">Include folder names in merged notes</div>
+                                <div style="font-size: 11px; color: #9aa0a6; margin-top: 2px;">When merging duplicates, prefix notes with [Folder Name]</div>
+                            </div>
+                        </label>
+                    </div>
+
                     <!-- Danger Zone -->
                     <div style="padding: 12px; background: #1e1e1e; border: 1px solid #f28b82; border-radius: 8px;">
                         <div style="font-weight: 600; margin-bottom: 8px; color: #f28b82;">⚠️ Danger Zone</div>
+                        <button class="btn-primary btn-compact" onclick="removeAllDuplicates(); closeSettingsModal();" style="background: #8ab4f8; color: #000; margin-bottom: 8px;">
+                            <span class="btn-text-desktop">🔄 Remove All Duplicates (Smart Merge)</span>
+                            <span class="btn-text-mobile">🔄</span>
+                        </button>
+                        <div style="font-size: 11px; color: #9aa0a6; margin-bottom: 12px;">Intelligently merge duplicate symbols, preserving tags and notes</div>
                         <button class="btn-primary btn-compact" onclick="consolidateTaggedSymbols(); closeSettingsModal();" style="background: #fbbc04; color: #000; margin-bottom: 8px;">
                             <span class="btn-text-desktop">🏷️ Consolidate Tagged Symbols</span>
                             <span class="btn-text-mobile">🏷️</span>
@@ -1732,6 +1749,171 @@ Lesson: Should have waited for pullback instead of chasing...
                 updateGlobalTags();
                 showNotification(`Consolidated ${allTaggedSymbols.length} tagged symbols into 1 folder!`, 'success');
             }
+        }
+
+        // ========== SMART DUPLICATE REMOVAL WITH MERGE ==========
+
+        function getFolderTagPercentage(folder) {
+            if (folder.symbols.length === 0) return 0;
+            const taggedCount = folder.symbols.filter(symbol => symbol.tags && symbol.tags.length > 0).length;
+            return (taggedCount / folder.symbols.length) * 100;
+        }
+
+        function smartMergeSymbols(duplicates, includeFolderNames) {
+            // duplicates is an array of { folderIndex, symbolIndex, folderName, symbol }
+            if (duplicates.length === 0) return null;
+            if (duplicates.length === 1) return duplicates[0];
+
+            // Find the best tag (first tagged occurrence)
+            let bestTag = [];
+            for (const dup of duplicates) {
+                if (dup.symbol.tags && dup.symbol.tags.length > 0) {
+                    bestTag = [...dup.symbol.tags];
+                    break;
+                }
+            }
+
+            // Merge notes (concatenate non-empty notes)
+            const notes = [];
+            for (const dup of duplicates) {
+                const note = (dup.symbol.note || '').trim();
+                if (note) {
+                    if (includeFolderNames) {
+                        notes.push(`[${dup.folderName}] ${note}`);
+                    } else {
+                        notes.push(note);
+                    }
+                }
+            }
+            const mergedNote = notes.join(' | ');
+
+            // Choose the best folder (highest tag percentage)
+            let bestDuplicate = duplicates[0];
+            let highestTagPercentage = getFolderTagPercentage(folders[duplicates[0].folderIndex]);
+
+            for (let i = 1; i < duplicates.length; i++) {
+                const tagPercentage = getFolderTagPercentage(folders[duplicates[i].folderIndex]);
+                if (tagPercentage > highestTagPercentage) {
+                    highestTagPercentage = tagPercentage;
+                    bestDuplicate = duplicates[i];
+                }
+            }
+
+            // Return merged symbol data
+            return {
+                ...bestDuplicate,
+                mergedSymbol: {
+                    name: bestDuplicate.symbol.name,
+                    tags: bestTag,
+                    note: mergedNote
+                }
+            };
+        }
+
+        function removeAllDuplicates() {
+            const includeFolderNames = localStorage.getItem('includeFolderNamesInMerge') === 'true';
+
+            // Step 1: Find all duplicates across folders
+            const symbolMap = {}; // symbolName -> array of { folderIndex, symbolIndex, folderName, symbol }
+
+            folders.forEach((folder, folderIndex) => {
+                folder.symbols.forEach((symbol, symbolIndex) => {
+                    const symbolName = symbol.name;
+                    if (!symbolMap[symbolName]) {
+                        symbolMap[symbolName] = [];
+                    }
+                    symbolMap[symbolName].push({
+                        folderIndex,
+                        symbolIndex,
+                        folderName: folder.name,
+                        symbol: { ...symbol }
+                    });
+                });
+            });
+
+            // Step 2: Identify duplicates (symbols appearing more than once)
+            const duplicateSymbols = [];
+            let totalDuplicateOccurrences = 0;
+
+            for (const symbolName in symbolMap) {
+                const occurrences = symbolMap[symbolName];
+                if (occurrences.length > 1) {
+                    duplicateSymbols.push({
+                        symbolName,
+                        occurrences
+                    });
+                    totalDuplicateOccurrences += occurrences.length;
+                }
+            }
+
+            // Step 3: Check if any duplicates found
+            if (duplicateSymbols.length === 0) {
+                showNotification('No duplicates found!', 'info');
+                return;
+            }
+
+            // Step 4: Show confirmation dialog
+            const duplicateList = duplicateSymbols.map(dup =>
+                `• ${getDisplayName(dup.symbolName)} (${dup.occurrences.length} occurrences → merging to 1)`
+            ).slice(0, 10).join('\n');
+
+            const moreText = duplicateSymbols.length > 10 ? `\n...and ${duplicateSymbols.length - 10} more` : '';
+            const removedCount = totalDuplicateOccurrences - duplicateSymbols.length;
+
+            const confirmMessage = `Found duplicates:\n${duplicateList}${moreText}\n\nThis will:\n• Merge data from ${totalDuplicateOccurrences} symbols into ${duplicateSymbols.length}\n• Remove ${removedCount} duplicate entries\n• Preserve all tags and notes\n\nContinue?`;
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            // Step 5: Process each duplicate set
+            const symbolsToRemove = []; // Array of { folderIndex, symbolIndex }
+
+            duplicateSymbols.forEach(({ symbolName, occurrences }) => {
+                // Merge the duplicates
+                const merged = smartMergeSymbols(occurrences, includeFolderNames);
+
+                if (merged) {
+                    // Update the chosen folder with merged data
+                    folders[merged.folderIndex].symbols[merged.symbolIndex] = merged.mergedSymbol;
+
+                    // Mark all other occurrences for removal
+                    occurrences.forEach(dup => {
+                        if (dup.folderIndex !== merged.folderIndex || dup.symbolIndex !== merged.symbolIndex) {
+                            symbolsToRemove.push({
+                                folderIndex: dup.folderIndex,
+                                symbolIndex: dup.symbolIndex
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Step 6: Remove duplicates (sort by folderIndex and symbolIndex descending to avoid index shifts)
+            symbolsToRemove.sort((a, b) => {
+                if (a.folderIndex !== b.folderIndex) {
+                    return b.folderIndex - a.folderIndex;
+                }
+                return b.symbolIndex - a.symbolIndex;
+            });
+
+            symbolsToRemove.forEach(({ folderIndex, symbolIndex }) => {
+                folders[folderIndex].symbols.splice(symbolIndex, 1);
+            });
+
+            // Step 7: Reset batch states for affected folders
+            folders.forEach(folder => {
+                folder.batchIndex = 0;
+                folder.batchRunning = false;
+                folder.openedSymbols = [];
+            });
+
+            // Step 8: Save and update UI
+            saveFolders();
+            displayFolders();
+            updateGlobalTags();
+
+            showNotification(`Merged ${totalDuplicateOccurrences} symbols into ${duplicateSymbols.length}! Removed ${removedCount} duplicates.`, 'success');
         }
 
         function getDisplayName(symbolName) {
@@ -3675,10 +3857,20 @@ Lesson: Should have waited for pullback instead of chasing...
 
         function openSettingsModal() {
             document.getElementById('settingsModal').classList.add('show');
+            // Initialize checkbox state
+            const includeFolderNames = localStorage.getItem('includeFolderNamesInMerge') === 'true';
+            document.getElementById('includeFolderNamesCheckbox').checked = includeFolderNames;
         }
 
         function closeSettingsModal() {
             document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        function toggleIncludeFolderNames() {
+            const checkbox = document.getElementById('includeFolderNamesCheckbox');
+            localStorage.setItem('includeFolderNamesInMerge', checkbox.checked);
+            const status = checkbox.checked ? 'enabled' : 'disabled';
+            showNotification(`Folder names in merged notes ${status}!`, 'info');
         }
 
         // Close settings modal when clicking outside
