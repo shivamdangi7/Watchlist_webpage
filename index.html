@@ -2134,6 +2134,9 @@ Lesson: Should have waited for pullback instead of chasing...
                     statusDiv.textContent = `Opened ${folder.batchIndex} of ${folder.symbols.length} symbols. Click "Next ${getBatchSize()}" to continue.`;
                 }
 
+                // Update folder tag badges in header
+                updateFolderTagBadges(folderIndex);
+
                 // Update global tags count
                 updateGlobalTags();
 
@@ -2162,6 +2165,9 @@ Lesson: Should have waited for pullback instead of chasing...
 
             // Update only the tag button for this specific symbol without re-rendering everything
             updateSymbolTagButton(folderIndex, symbolIndex);
+
+            // Update folder tag badges in header
+            updateFolderTagBadges(folderIndex);
 
             // Update global tags count
             updateGlobalTags();
@@ -2293,6 +2299,63 @@ Lesson: Should have waited for pullback instead of chasing...
                 closeAllDropdowns();
             }
         });
+
+        function updateFolderTagBadges(folderIndex) {
+            const folder = folders[folderIndex];
+            if (!folder) return;
+
+            // Find the folder name wrapper
+            const folderDiv = document.getElementById(`folder-${folderIndex}`);
+            if (!folderDiv) return;
+
+            const folderNameWrapper = folderDiv.querySelector('.folder-name-wrapper');
+            if (!folderNameWrapper) return;
+
+            // Remove existing tag badges container
+            let tagBadgesDiv = folderNameWrapper.querySelector('.folder-tag-badges');
+            if (tagBadgesDiv) {
+                tagBadgesDiv.remove();
+            }
+
+            // Count tags in this folder
+            const tagCounts = {};
+            folder.symbols.forEach(symbolObj => {
+                if (symbolObj.tags && symbolObj.tags.length > 0) {
+                    const tag = symbolObj.tags[0];
+                    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                }
+            });
+
+            // Define tags array
+            const tags = [
+                { name: 'red', emoji: '📕', label: 'Red' },
+                { name: 'blue', emoji: '📘', label: 'Blue' },
+                { name: 'green', emoji: '📗', label: 'Green' },
+                { name: 'orange', emoji: '📙', label: 'Orange' },
+                { name: 'purple', emoji: '📓', label: 'Purple' }
+            ];
+
+            // Create new tag badges if there are any tags
+            if (Object.keys(tagCounts).length > 0) {
+                tagBadgesDiv = document.createElement('div');
+                tagBadgesDiv.className = 'folder-tag-badges';
+
+                tags.forEach(tagObj => {
+                    if (tagCounts[tagObj.name]) {
+                        const badge = document.createElement('button');
+                        badge.className = `folder-tag-badge ${tagObj.name}`;
+                        badge.textContent = `${tagObj.emoji} ${tagCounts[tagObj.name]}`;
+                        badge.onclick = (e) => {
+                            e.stopPropagation();
+                            openByTag(folderIndex, tagObj.name);
+                        };
+                        tagBadgesDiv.appendChild(badge);
+                    }
+                });
+
+                folderNameWrapper.appendChild(tagBadgesDiv);
+            }
+        }
 
         function openByTag(folderIndex, tag) {
             const folder = folders[folderIndex];
@@ -2488,7 +2551,7 @@ Lesson: Should have waited for pullback instead of chasing...
 
             // Switch back to display mode
             folderNameInput.style.display = 'none';
-            folderNameText.parentElement.style.display = 'flex';
+            folderNameText.style.display = 'inline';
 
             showNotification('Folder name updated!', 'success');
         }
