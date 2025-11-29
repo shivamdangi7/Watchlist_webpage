@@ -1312,7 +1312,7 @@
 
         <div class="input-section" style="margin-bottom: 12px;">
             <textarea id="clipboardInput" placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2&#10;or type to search symbols/folders (ESC to clear)" style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
-            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+            <div id="searchToggleContainer" style="display: none; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
                 <div id="searchInfo" class="search-info" style="display: none; margin-top: 0;"></div>
                 <button id="searchNotesToggle" class="btn-primary btn-compact" onclick="toggleSearchInNotes()" style="display: none; background: #5f6368; font-size: 11px; padding: 4px 8px;" title="Toggle search in notes">
                     <span class="btn-text-desktop"><span id="searchNotesIcon">📝</span> Notes: <span id="searchNotesStatus">OFF</span></span>
@@ -3315,9 +3315,32 @@ Lesson: Should have waited for pullback instead of chasing...
         // Listen to textarea input for search
         document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.getElementById('clipboardInput');
+            const searchToggleContainer = document.getElementById('searchToggleContainer');
 
             // Initialize search toggle button states from localStorage
             initializeSearchToggles();
+
+            // Show search toggle buttons when textarea is focused
+            textarea.addEventListener('focus', function() {
+                // Always show the toggle buttons when textarea is focused
+                searchToggleContainer.style.display = 'flex';
+                // Also show individual buttons
+                const notesToggle = document.getElementById('searchNotesToggle');
+                const preserveToggle = document.getElementById('preserveStateToggle');
+                notesToggle.style.display = 'inline-block';
+                preserveToggle.style.display = 'inline-block';
+            });
+
+            // Hide search toggle buttons when textarea loses focus
+            textarea.addEventListener('blur', function() {
+                // Small delay to allow clicking on the toggle buttons
+                setTimeout(() => {
+                    if (document.activeElement !== textarea &&
+                        !searchToggleContainer.contains(document.activeElement)) {
+                        searchToggleContainer.style.display = 'none';
+                    }
+                }, 150);
+            });
 
             // Global keyboard shortcut: '/' to focus search
             document.addEventListener('keydown', function(e) {
@@ -3389,6 +3412,7 @@ Lesson: Should have waited for pullback instead of chasing...
 
             isSearchMode = true;
             const textarea = document.getElementById('clipboardInput');
+            const searchToggleContainer = document.getElementById('searchToggleContainer');
             const searchInfo = document.getElementById('searchInfo');
             const notesToggle = document.getElementById('searchNotesToggle');
             const preserveToggle = document.getElementById('preserveStateToggle');
@@ -3396,7 +3420,10 @@ Lesson: Should have waited for pullback instead of chasing...
             // Add search mode styling
             textarea.classList.add('search-mode');
 
-            // Show toggle buttons
+            // Show toggle container and buttons when in search mode and textarea is focused
+            if (document.activeElement === textarea) {
+                searchToggleContainer.style.display = 'flex';
+            }
             notesToggle.style.display = 'inline-block';
             preserveToggle.style.display = 'inline-block';
 
@@ -3584,12 +3611,14 @@ Lesson: Should have waited for pullback instead of chasing...
         function clearSearch() {
             isSearchMode = false;
             const textarea = document.getElementById('clipboardInput');
+            const searchToggleContainer = document.getElementById('searchToggleContainer');
             const searchInfo = document.getElementById('searchInfo');
             const notesToggle = document.getElementById('searchNotesToggle');
             const preserveToggle = document.getElementById('preserveStateToggle');
 
             // Remove search mode styling
             textarea.classList.remove('search-mode');
+            searchToggleContainer.style.display = 'none';
             searchInfo.style.display = 'none';
             notesToggle.style.display = 'none';
             preserveToggle.style.display = 'none';
