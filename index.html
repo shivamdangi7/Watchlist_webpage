@@ -1305,7 +1305,26 @@
             }
         }
 
-    </style>
+    
+/* Pinned folder styles and pin button */
+.pin-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 8px;
+    line-height: 1;
+}
+@media (max-width: 600px) {
+  .pin-btn { display: none !important; }
+}
+
+
+.folder.pinned {
+    border: 2px solid gold;
+    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.12);
+}
+</style>
 </head>
 <body>
     <div class="container">
@@ -1701,7 +1720,8 @@ Lesson: Should have waited for pullback instead of chasing...
                                     symbols: symbols.map(sym => ({ name: sym, tags: [] })),
                                     batchIndex: 0,
                                     batchRunning: false,
-                                    openedSymbols: []
+                                    openedSymbols: [],
+                                    pinned: false
                                 });
                                 newFoldersAdded++;
                             }
@@ -1730,16 +1750,28 @@ Lesson: Should have waited for pullback instead of chasing...
             document.getElementById('clipboardInput').value = '';
         }
 
-        function clearAllFolders() {
-            if (confirm('Are you sure you want to clear all folders? This cannot be undone.')) {
+        
+function clearAllFolders() {
+            // Keep pinned folders and clear others
+            const pinned = folders.filter(f => f.pinned);
+            if (pinned.length > 0) {
+                const pinnedNames = pinned.map(f => f.name).join(', ');
+                if (!confirm(`There are ${pinned.length} pinned folder(s): ${pinnedNames}.\n\nDo you want to clear all other folders and keep the pinned ones?`)) {
+                    return;
+                }
+                folders = pinned.slice(); // keep only pinned
+            } else {
+                if (!confirm('Are you sure you want to clear all folders?')) return;
                 folders = [];
-                saveFolders();
-                displayFolders();
-                showNotification('All folders cleared!', 'info');
             }
+            saveFolders();
+            displayFolders();
+            showNotification('Cleared folders (pinned folders kept).', 'success');
         }
 
-        function consolidateTaggedSymbols() {
+
+        
+function consolidateTaggedSymbols() {
             // Collect all tagged symbols from all folders
             const allTaggedSymbols = [];
             let totalSymbols = 0;
@@ -1764,23 +1796,30 @@ Lesson: Should have waited for pullback instead of chasing...
 
             const nonTaggedCount = totalSymbols - allTaggedSymbols.length;
 
-            if (confirm(`This will:\n• Remove ${nonTaggedCount} non-tagged symbol${nonTaggedCount !== 1 ? 's' : ''}\n• Delete all existing folders\n• Create 1 new folder with ${allTaggedSymbols.length} tagged symbol${allTaggedSymbols.length !== 1 ? 's' : ''}\n\nThis cannot be undone. Continue?`)) {
-                // Create new folder with all tagged symbols
-                folders = [{
-                    name: 'Tagged Symbols',
-                    symbols: allTaggedSymbols,
-                    collapsed: false,
+            if (confirm(`This will:\n• Remove ${nonTaggedCount} non-tagged symbol(s) from non-pinned folders.\n\nProceed?`)) {
+                // Create a consolidated folder containing all tagged symbols
+                const consolidatedFolder = {
+                    name: `Consolidated Tagged - ${new Date().toLocaleString()}`,
+                    symbols: allTaggedSymbols.map(s => ({ name: s.name, tags: s.tags, note: s.note })),
                     batchIndex: 0,
                     batchRunning: false,
-                    openedSymbols: []
-                }];
+                    openedSymbols: [],
+                    pinned: false
+                };
+
+                // Preserve pinned folders; replace or remove other folders
+                const pinnedFolders = folders.filter(f => f.pinned);
+                // New folders list: keep pinned folders, add consolidated folder
+                folders = pinnedFolders.slice();
+                folders.push(consolidatedFolder);
 
                 saveFolders();
                 displayFolders();
                 updateGlobalTags();
-                showNotification(`Consolidated ${allTaggedSymbols.length} tagged symbols into 1 folder!`, 'success');
+                showNotification(`Consolidated ${allTaggedSymbols.length} tagged symbols into 1 folder! Pinned folders were preserved.`, 'success');
             }
         }
+
 
         // ========== SMART DUPLICATE REMOVAL WITH MERGE ==========
 
@@ -2372,6 +2411,65 @@ Lesson: Should have waited for pullback instead of chasing...
                 container.appendChild(folderDiv);
             });
         }
+// --- Pinned folder helpers: togglePin and render adjustments ---
+function togglePin(folderIndex) {
+    if (folderIndex == null || !folders[folderIndex]) return;
+    folders[folderIndex].pinned = !folders[folderIndex].pinned;
+    saveFolders();
+    displayFolders();
+    showNotification(
+        folders[folderIndex].pinned ? `Pinned "${folders[folderIndex].name}"` : `Unpinned "${folders[folderIndex].name}"`,
+        'info'
+    );
+}
+
+// Wrap the existing displayFolders to add pin buttons and move pinned folders to top
+(function(){
+    const _origDisplayFolders = displayFolders;
+    displayFolders = function() {
+        _origDisplayFolders();
+        const container = document.getElementById('foldersContainer');
+        if (!container) return;
+        const folderDivs = Array.from(container.querySelectorAll('.folder'));
+        const pinnedDivs = [];
+        const unpinnedDivs = [];
+        folderDivs.forEach(div => {
+            const idx = parseInt(div.dataset.folderIndex, 10);
+            const folder = folders[idx];
+            if (!folder) {
+                unpinnedDivs.push(div);
+                return;
+            }
+            // add/remove pinned class
+            div.classList.toggle('pinned', !!folder.pinned);
+
+            // ensure pin button exists in header
+            let header = div.querySelector('.folder-header');
+            if (header) {
+                let pinBtn = header.querySelector('.pin-btn');
+                if (!pinBtn) {
+                    pinBtn = document.createElement('button');
+                    pinBtn.className = 'pin-btn';
+                    header.appendChild(pinBtn);
+                }
+                pinBtn.title = folder.pinned ? 'Unpin folder' : 'Pin folder';
+                pinBtn.innerText = folder.pinned ? '📌' : '📍';
+                pinBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    togglePin(idx);
+                };
+            }
+
+            if (folder.pinned) pinnedDivs.push(div);
+            else unpinnedDivs.push(div);
+        });
+
+        // Reorder: pinned first, preserving relative order
+        pinnedDivs.forEach(d => container.appendChild(d));
+        unpinnedDivs.forEach(d => container.appendChild(d));
+    };
+})();
+
 
         function openSymbol(folderIndex, symbolIndex) {
             const folder = folders[folderIndex];
@@ -2787,15 +2885,21 @@ Lesson: Should have waited for pullback instead of chasing...
             }
         }
 
-        function deleteFolder(folderIndex) {
+        
+function deleteFolder(folderIndex) {
             const folder = folders[folderIndex];
-            if (confirm(`Are you sure you want to delete the folder "${folder.name}"?`)) {
+            if (folder && folder.pinned) {
+                alert(`Folder "${folder.name}" is pinned and cannot be deleted. Unpin it first to delete.`);
+                return;
+            }
+            if (confirm(`Are you sure you want to delete the folder "${folder ? folder.name : ''}"?`)) {
                 folders.splice(folderIndex, 1);
                 saveFolders();
                 displayFolders();
                 showNotification('Folder deleted!', 'info');
             }
         }
+
 
         function removeNonTaggedSymbols(folderIndex) {
             const folder = folders[folderIndex];
@@ -3266,6 +3370,8 @@ Lesson: Should have waited for pullback instead of chasing...
         function showFolderContextMenu(event, folderIndex) {
             const menu = document.getElementById('folderContextMenu');
             currentContextFolder = folderIndex;
+            // Ensure pin/unpin option reflects this folder
+            try { ensureFolderContextMenuPinOption(folderIndex); } catch(e) { /* ignore if helper missing */ }
 
             // Update edit mode text based on current state
             const folderDiv = document.getElementById(`folder-${folderIndex}`);
@@ -3298,7 +3404,26 @@ Lesson: Should have waited for pullback instead of chasing...
             currentContextFolder = null;
         }
 
-        function folderContextMenuAction(action) {
+        
+function ensureFolderContextMenuPinOption(folderIndex) {
+    const menu = document.getElementById('folderContextMenu');
+    if (!menu) return;
+    // Remove existing pin item if any
+    const existing = menu.querySelector('.menu-item-pin');
+    if (existing) existing.remove();
+    const folder = folders[folderIndex];
+    const li = document.createElement('li');
+    li.className = 'menu-item-pin';
+    li.innerText = folder && folder.pinned ? 'Unpin Folder' : 'Pin Folder';
+    li.onclick = function(e) {
+        e.stopPropagation();
+        togglePin(folderIndex);
+        hideContextMenu();
+    };
+    // Insert at top
+    menu.insertBefore(li, menu.firstChild);
+}
+function folderContextMenuAction(action) {
             if (currentContextFolder === null) return;
 
             const folderIndex = currentContextFolder;
@@ -4454,6 +4579,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 showNotification('Stored credentials cleared!', 'info');
             }
         }
-    </script>
+    
+
+</script>
 </body>
 </html>
