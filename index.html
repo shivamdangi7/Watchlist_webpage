@@ -3927,19 +3927,19 @@ Lesson: Should have waited for pullback instead of chasing...
             const menu = document.getElementById('symbolContextMenu');
             currentContextSymbol = { folderIndex, symbolIndex };
 
-            // Position the menu at mouse location
-            menu.style.left = `${event.pageX}px`;
-            menu.style.top = `${event.pageY}px`;
+            // Use clientX/clientY for fixed positioning (consistent with folder context menu)
+            menu.style.left = `${event.clientX}px`;
+            menu.style.top = `${event.clientY}px`;
             menu.classList.add('show');
 
             // Adjust if menu goes off screen
             setTimeout(() => {
                 const rect = menu.getBoundingClientRect();
                 if (rect.right > window.innerWidth) {
-                    menu.style.left = `${event.pageX - rect.width}px`;
+                    menu.style.left = `${event.clientX - rect.width}px`;
                 }
                 if (rect.bottom > window.innerHeight) {
-                    menu.style.top = `${event.pageY - rect.height}px`;
+                    menu.style.top = `${event.clientY - rect.height}px`;
                 }
             }, 0);
         }
