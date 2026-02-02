@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TradingView Link Manager</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect fill='%238B4513' width='16' height='16'/><rect fill='%23A0522D' x='0' y='0' width='5' height='5'/><rect fill='%23A0522D' x='10' y='0' width='6' height='5'/><rect fill='%23A0522D' x='0' y='10' width='5' height='6'/><rect fill='%23A0522D' x='10' y='10' width='6' height='6'/><rect fill='%23654321' x='5' y='0' width='5' height='5'/><rect fill='%23654321' x='0' y='5' width='5' height='5'/><rect fill='%23654321' x='10' y='5' width='6' height='5'/><rect fill='%23654321' x='5' y='10' width='5' height='6'/><rect fill='%23D2691E' x='5' y='5' width='5' height='5'/><rect fill='%23CD853F' x='2' y='2' width='2' height='2'/><rect fill='%23CD853F' x='12' y='2' width='2' height='2'/></svg>">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect fill='%238B4513' width='16' height='16'/><rect fill='%23A0522D' x='0' y='0' width='5' height='5'/><rect fill='%23A0522D' x='10' y='0' width='6' height='5'/><rect fill='%23A0522D' x='0' y='10' width='5' height='6'/><rect fill='%23A0522D' x='10' y='10' width='6' height='6'/><rect fill='%23654321' x='5' y='0' width='5' height='5'/><rect fill='%23654321' x='0' y='5' width='5' height='5'/><rect fill='%23654321' x='10' y='5' width='6' height='5'/><rect fill='%23654321' x='5' y='10' width='5' height='6'/><rect fill='%23D2691E' x='5' y='5' width='5' height='5'/><rect fill='%23CD853F' x='2' y='2' width='2' height='2'/><rect fill='%23CD853F' x='12' y='2' width='2' height='2'/></svg>">
     <style>
         * {
             margin: 0;
@@ -24,7 +26,7 @@
             margin: 0 auto;
             background: #121212;
             border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
             padding: 40px;
             border: 1px solid #1f1f1f;
         }
@@ -173,20 +175,55 @@
             white-space: nowrap;
         }
 
-        .folder-tag-badge.red { border-color: #f28b82; color: #f28b82; }
-        .folder-tag-badge.red:hover { background: #f28b82; color: #000; }
+        .folder-tag-badge.red {
+            border-color: #f28b82;
+            color: #f28b82;
+        }
 
-        .folder-tag-badge.blue { border-color: #8ab4f8; color: #8ab4f8; }
-        .folder-tag-badge.blue:hover { background: #8ab4f8; color: #000; }
+        .folder-tag-badge.red:hover {
+            background: #f28b82;
+            color: #000;
+        }
 
-        .folder-tag-badge.green { border-color: #81c995; color: #81c995; }
-        .folder-tag-badge.green:hover { background: #81c995; color: #000; }
+        .folder-tag-badge.blue {
+            border-color: #8ab4f8;
+            color: #8ab4f8;
+        }
 
-        .folder-tag-badge.orange { border-color: #fcad70; color: #fcad70; }
-        .folder-tag-badge.orange:hover { background: #fcad70; color: #000; }
+        .folder-tag-badge.blue:hover {
+            background: #8ab4f8;
+            color: #000;
+        }
 
-        .folder-tag-badge.purple { border-color: #c58af9; color: #c58af9; }
-        .folder-tag-badge.purple:hover { background: #c58af9; color: #000; }
+        .folder-tag-badge.green {
+            border-color: #81c995;
+            color: #81c995;
+        }
+
+        .folder-tag-badge.green:hover {
+            background: #81c995;
+            color: #000;
+        }
+
+        .folder-tag-badge.orange {
+            border-color: #fcad70;
+            color: #fcad70;
+        }
+
+        .folder-tag-badge.orange:hover {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .folder-tag-badge.purple {
+            border-color: #c58af9;
+            color: #c58af9;
+        }
+
+        .folder-tag-badge.purple:hover {
+            background: #c58af9;
+            color: #000;
+        }
 
         .folder-collapse-icon {
             font-size: 16px;
@@ -314,20 +351,55 @@
             transition: all 0.2s ease;
         }
 
-        .tag-filter-btn.red { border-color: #f28b82; color: #f28b82; }
-        .tag-filter-btn.red:hover { background: #f28b82; color: #000; }
+        .tag-filter-btn.red {
+            border-color: #f28b82;
+            color: #f28b82;
+        }
 
-        .tag-filter-btn.blue { border-color: #8ab4f8; color: #8ab4f8; }
-        .tag-filter-btn.blue:hover { background: #8ab4f8; color: #000; }
+        .tag-filter-btn.red:hover {
+            background: #f28b82;
+            color: #000;
+        }
 
-        .tag-filter-btn.green { border-color: #81c995; color: #81c995; }
-        .tag-filter-btn.green:hover { background: #81c995; color: #000; }
+        .tag-filter-btn.blue {
+            border-color: #8ab4f8;
+            color: #8ab4f8;
+        }
 
-        .tag-filter-btn.orange { border-color: #fcad70; color: #fcad70; }
-        .tag-filter-btn.orange:hover { background: #fcad70; color: #000; }
+        .tag-filter-btn.blue:hover {
+            background: #8ab4f8;
+            color: #000;
+        }
 
-        .tag-filter-btn.purple { border-color: #c58af9; color: #c58af9; }
-        .tag-filter-btn.purple:hover { background: #c58af9; color: #000; }
+        .tag-filter-btn.green {
+            border-color: #81c995;
+            color: #81c995;
+        }
+
+        .tag-filter-btn.green:hover {
+            background: #81c995;
+            color: #000;
+        }
+
+        .tag-filter-btn.orange {
+            border-color: #fcad70;
+            color: #fcad70;
+        }
+
+        .tag-filter-btn.orange:hover {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .tag-filter-btn.purple {
+            border-color: #c58af9;
+            color: #c58af9;
+        }
+
+        .tag-filter-btn.purple:hover {
+            background: #c58af9;
+            color: #000;
+        }
 
         /* Global Tags Section */
         .global-tags-container {
@@ -349,20 +421,55 @@
             white-space: nowrap;
         }
 
-        .global-tag-btn.red { border-color: #f28b82; color: #f28b82; }
-        .global-tag-btn.red:hover { background: #f28b82; color: #000; }
+        .global-tag-btn.red {
+            border-color: #f28b82;
+            color: #f28b82;
+        }
 
-        .global-tag-btn.blue { border-color: #8ab4f8; color: #8ab4f8; }
-        .global-tag-btn.blue:hover { background: #8ab4f8; color: #000; }
+        .global-tag-btn.red:hover {
+            background: #f28b82;
+            color: #000;
+        }
 
-        .global-tag-btn.green { border-color: #81c995; color: #81c995; }
-        .global-tag-btn.green:hover { background: #81c995; color: #000; }
+        .global-tag-btn.blue {
+            border-color: #8ab4f8;
+            color: #8ab4f8;
+        }
 
-        .global-tag-btn.orange { border-color: #fcad70; color: #fcad70; }
-        .global-tag-btn.orange:hover { background: #fcad70; color: #000; }
+        .global-tag-btn.blue:hover {
+            background: #8ab4f8;
+            color: #000;
+        }
 
-        .global-tag-btn.purple { border-color: #c58af9; color: #c58af9; }
-        .global-tag-btn.purple:hover { background: #c58af9; color: #000; }
+        .global-tag-btn.green {
+            border-color: #81c995;
+            color: #81c995;
+        }
+
+        .global-tag-btn.green:hover {
+            background: #81c995;
+            color: #000;
+        }
+
+        .global-tag-btn.orange {
+            border-color: #fcad70;
+            color: #fcad70;
+        }
+
+        .global-tag-btn.orange:hover {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .global-tag-btn.purple {
+            border-color: #c58af9;
+            color: #c58af9;
+        }
+
+        .global-tag-btn.purple:hover {
+            background: #c58af9;
+            color: #000;
+        }
 
         /* Search Mode Styling */
         .search-mode {
@@ -440,15 +547,19 @@
         .symbol-card.tagged-red {
             border-color: #f28b82;
         }
+
         .symbol-card.tagged-blue {
             border-color: #8ab4f8;
         }
+
         .symbol-card.tagged-green {
             border-color: #81c995;
         }
+
         .symbol-card.tagged-orange {
             border-color: #fcad70;
         }
+
         .symbol-card.tagged-purple {
             border-color: #c58af9;
         }
@@ -839,6 +950,180 @@
             justify-content: flex-end;
         }
 
+        /* Global Tagged Symbols Modal */
+        .global-tagged-symbols-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+
+        .global-tagged-symbol-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #232323;
+            border-radius: 8px;
+            border: 1px solid #2c2c2c;
+            transition: all 0.2s ease;
+        }
+
+        .global-tagged-symbol-item:hover {
+            background: #2a2a2a;
+            border-color: #3c4043;
+        }
+
+        .global-tagged-symbol-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .global-tagged-symbol-name {
+            color: #e8eaed;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .global-tagged-symbol-name:hover {
+            color: #fdd663;
+        }
+
+        .global-tagged-symbol-folder {
+            color: #9aa0a6;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .global-tagged-symbol-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .global-tag-change-btn {
+            padding: 4px 8px;
+            border: 1px solid;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .global-tag-change-btn.red {
+            border-color: #f28b82;
+            color: #f28b82;
+        }
+
+        .global-tag-change-btn.red:hover {
+            background: #f28b82;
+            color: #000;
+        }
+
+        .global-tag-change-btn.red.active {
+            background: #f28b82;
+            color: #000;
+        }
+
+        .global-tag-change-btn.blue {
+            border-color: #8ab4f8;
+            color: #8ab4f8;
+        }
+
+        .global-tag-change-btn.blue:hover {
+            background: #8ab4f8;
+            color: #000;
+        }
+
+        .global-tag-change-btn.blue.active {
+            background: #8ab4f8;
+            color: #000;
+        }
+
+        .global-tag-change-btn.green {
+            border-color: #81c995;
+            color: #81c995;
+        }
+
+        .global-tag-change-btn.green:hover {
+            background: #81c995;
+            color: #000;
+        }
+
+        .global-tag-change-btn.green.active {
+            background: #81c995;
+            color: #000;
+        }
+
+        .global-tag-change-btn.orange {
+            border-color: #fcad70;
+            color: #fcad70;
+        }
+
+        .global-tag-change-btn.orange:hover {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .global-tag-change-btn.orange.active {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .global-tag-change-btn.purple {
+            border-color: #c58af9;
+            color: #c58af9;
+        }
+
+        .global-tag-change-btn.purple:hover {
+            background: #c58af9;
+            color: #000;
+        }
+
+        .global-tag-change-btn.purple.active {
+            background: #c58af9;
+            color: #000;
+        }
+
+        .global-tag-remove-btn {
+            padding: 4px 8px;
+            border: 1px solid #5f6368;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            color: #9aa0a6;
+            transition: all 0.2s ease;
+        }
+
+        .global-tag-remove-btn:hover {
+            background: #f28b82;
+            border-color: #f28b82;
+            color: #000;
+        }
+
+        .global-tagged-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9aa0a6;
+        }
+
+        .global-tagged-empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
         .symbol-tags {
             position: relative;
             display: inline-block;
@@ -875,7 +1160,7 @@
             padding: 8px;
             z-index: 5000;
             min-width: 160px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
         }
 
         .tag-dropdown-menu.show {
@@ -927,16 +1212,19 @@
         .btn-text-mobile {
             display: none;
         }
+
         .btn-text-desktop {
             display: inline;
         }
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
+
             /* Mobile: Show emoji, hide text */
             .btn-text-mobile {
                 display: inline;
             }
+
             .btn-text-desktop {
                 display: none;
             }
@@ -1121,14 +1409,14 @@
             }
 
             /* Reduce gap in button container on mobile - prevent wrapping */
-            .input-section > div {
+            .input-section>div {
                 gap: 3px !important;
                 flex-wrap: nowrap !important;
                 overflow-x: auto !important;
             }
 
             /* Separator on mobile - thinner */
-            .input-section > div > div[style*="width: 1px"] {
+            .input-section>div>div[style*="width: 1px"] {
                 margin: 0 1px !important;
                 width: 1px !important;
                 flex-shrink: 0 !important;
@@ -1146,7 +1434,7 @@
                 padding: 10px !important;
             }
 
-            #syncPanel > div {
+            #syncPanel>div {
                 gap: 3px !important;
             }
 
@@ -1305,54 +1593,69 @@
             }
         }
 
-    
-/* Pinned folder styles and pin button */
-.pin-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    margin-left: 8px;
-    line-height: 1;
-}
-@media (max-width: 600px) {
-  .pin-btn { display: none !important; }
-}
+
+        /* Pinned folder styles and pin button */
+        .pin-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 8px;
+            line-height: 1;
+        }
+
+        @media (max-width: 600px) {
+            .pin-btn {
+                display: none !important;
+            }
+        }
 
 
-.folder.pinned {
-    border: 2px solid gold;
-    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.12);
-}
-</style>
+        .folder.pinned {
+            border: 2px solid gold;
+            box-shadow: 0 6px 16px rgba(255, 215, 0, 0.12);
+        }
+    </style>
 </head>
+
 <body>
     <div class="container">
         <h1>📈 TradingView Watchlist Manager</h1>
 
         <div class="input-section" style="margin-bottom: 12px;">
-            <textarea id="clipboardInput" placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2&#10;or type to search symbols/folders (ESC to clear)" style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
-            <div id="searchToggleContainer" style="display: none; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+            <textarea id="clipboardInput"
+                placeholder="### Folder Name, NSE:SYMBOL1, NSE:SYMBOL2&#10;or type to search symbols/folders (ESC to clear)"
+                style="min-height: 60px; padding: 10px; font-size: 13px;"></textarea>
+            <div id="searchToggleContainer"
+                style="display: none; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
                 <div id="searchInfo" class="search-info" style="display: none; margin-top: 0;"></div>
-                <button id="searchNotesToggle" class="btn-primary btn-compact" onclick="toggleSearchInNotes()" style="display: none; background: #5f6368; font-size: 11px; padding: 4px 8px;" title="Toggle search in notes">
-                    <span class="btn-text-desktop"><span id="searchNotesIcon">📝</span> Notes: <span id="searchNotesStatus">OFF</span></span>
+                <button id="searchNotesToggle" class="btn-primary btn-compact" onclick="toggleSearchInNotes()"
+                    style="display: none; background: #5f6368; font-size: 11px; padding: 4px 8px;"
+                    title="Toggle search in notes">
+                    <span class="btn-text-desktop"><span id="searchNotesIcon">📝</span> Notes: <span
+                            id="searchNotesStatus">OFF</span></span>
                     <span class="btn-text-mobile" id="searchNotesMobileIcon">📝</span>
                 </button>
-                <button id="preserveStateToggle" class="btn-primary btn-compact" onclick="togglePreserveState()" style="display: none; background: #81c995; color: #000; font-size: 11px; padding: 4px 8px;" title="Toggle preserve folder state">
-                    <span class="btn-text-desktop"><span id="preserveStateIcon">💾</span> Preserve: <span id="preserveStateStatus">ON</span></span>
+                <button id="preserveStateToggle" class="btn-primary btn-compact" onclick="togglePreserveState()"
+                    style="display: none; background: #81c995; color: #000; font-size: 11px; padding: 4px 8px;"
+                    title="Toggle preserve folder state">
+                    <span class="btn-text-desktop"><span id="preserveStateIcon">💾</span> Preserve: <span
+                            id="preserveStateStatus">ON</span></span>
                     <span class="btn-text-mobile" id="preserveStateMobileIcon">💾</span>
                 </button>
             </div>
 
             <!-- Compact unified button bar -->
             <!-- [Add] [Clear] • [☁️] [📖] • 📕 2 📘 4 📗 3 📙 1 📓 3 • [▼] [3x ▼] [📋] [⚙️] -->
-            <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; font-size: 12px;">
+            <div
+                style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; align-items: center; font-size: 12px;">
                 <!-- Group 1: Add & Clear -->
                 <button class="btn-primary btn-compact btn-add" onclick="parseData()" title="Add folders">
                     <span class="btn-text-desktop">Add</span>
                     <span class="btn-text-mobile">➕</span>
                 </button>
-                <button class="btn-primary btn-compact btn-clear" onclick="clearTextarea()" style="background: #5f6368; color: #e8eaed;" title="Clear input">
+                <button class="btn-primary btn-compact btn-clear" onclick="clearTextarea()"
+                    style="background: #5f6368; color: #e8eaed;" title="Clear input">
                     <span class="btn-text-desktop">Clear</span>
                     <span class="btn-text-mobile">🧹</span>
                 </button>
@@ -1361,25 +1664,32 @@
                 <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
                 <!-- Group 2: GitHub Sync & Journal -->
-                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;" title="Toggle GitHub sync panel">☁️</button>
-                <button class="btn-primary btn-compact" onclick="openJournalModal()" style="background: #fdd663; color: #000;" title="Trading Journal & Rules">📖</button>
+                <button class="btn-primary btn-compact" onclick="toggleSyncPanel()" style="background: #c58af9;"
+                    title="Toggle GitHub sync panel">☁️</button>
+                <button class="btn-primary btn-compact" onclick="openJournalModal()"
+                    style="background: #fdd663; color: #000;" title="Trading Journal & Rules">📖</button>
 
                 <!-- Divider (shown when folders exist) -->
-                <div id="globalTagsDivider" style="display: none; width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
+                <div id="globalTagsDivider"
+                    style="display: none; width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
                 <!-- Group 3: Global Tags (shown when folders exist) -->
                 <div id="globalTagsContainer" class="global-tags-container" style="display: none;">
                 </div>
 
                 <!-- Group 4: Folder View Controls (shown when folders exist) -->
-                <div id="folderManagement" style="display: none; margin-left: auto; display: flex; gap: 6px; align-items: center;">
+                <div id="folderManagement"
+                    style="display: none; margin-left: auto; display: flex; gap: 6px; align-items: center;">
                     <div style="width: 1px; height: 20px; background: #2c2c2c; margin: 0 2px;"></div>
 
                     <!-- Toggle Collapse/Expand Button -->
-                    <button class="btn-primary btn-compact" id="toggleCollapseBtn" onclick="toggleAllFolders()" style="background: #5f6368; color: #e8eaed;" title="Toggle Collapse/Expand All">▼</button>
+                    <button class="btn-primary btn-compact" id="toggleCollapseBtn" onclick="toggleAllFolders()"
+                        style="background: #5f6368; color: #e8eaed;" title="Toggle Collapse/Expand All">▼</button>
 
                     <!-- Batch Size -->
-                    <select id="batchSizeSelect" onchange="updateBatchSize()" style="padding: 4px 6px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 11px; cursor: pointer;" title="Batch open size">
+                    <select id="batchSizeSelect" onchange="updateBatchSize()"
+                        style="padding: 4px 6px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 11px; cursor: pointer;"
+                        title="Batch open size">
                         <option value="2">2x</option>
                         <option value="3">3x</option>
                         <option value="5">5x</option>
@@ -1387,45 +1697,59 @@
                     </select>
 
                     <!-- View Mode -->
-                    <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()" style="background: #c58af9;" title="Toggle view mode">📋</button>
+                    <button class="btn-primary btn-compact" id="viewModeBtn" onclick="toggleViewMode()"
+                        style="background: #c58af9;" title="Toggle view mode">📋</button>
 
                     <!-- Settings Button -->
-                    <button class="btn-primary btn-compact" onclick="openSettingsModal()" style="background: #5f6368; color: #e8eaed;" title="Settings">⚙️</button>
+                    <button class="btn-primary btn-compact" onclick="openSettingsModal()"
+                        style="background: #5f6368; color: #e8eaed;" title="Settings">⚙️</button>
                 </div>
             </div>
         </div>
 
         <!-- Collapsible GitHub Sync Panel -->
-        <div id="syncPanel" style="display: none; margin-bottom: 12px; padding: 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px;">
+        <div id="syncPanel"
+            style="display: none; margin-bottom: 12px; padding: 12px; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 8px;">
             <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center;">
-                <input type="password" id="githubToken" placeholder="GitHub Token" style="flex: 1; min-width: 150px; padding: 6px 10px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 12px;">
-                <button class="btn-primary btn-compact" onclick="toggleTokenHelp()" style="background: #5f6368; color: #e8eaed;" title="Help">
+                <input type="password" id="githubToken" placeholder="GitHub Token"
+                    style="flex: 1; min-width: 150px; padding: 6px 10px; background: #232323; border: 1px solid #2c2c2c; border-radius: 6px; color: #e8eaed; font-size: 12px;">
+                <button class="btn-primary btn-compact" onclick="toggleTokenHelp()"
+                    style="background: #5f6368; color: #e8eaed;" title="Help">
                     <span class="btn-text-desktop">?</span>
                     <span class="btn-text-mobile">❓</span>
                 </button>
-                <button class="btn-primary btn-compact" onclick="testGithubToken()" style="background: #81c995; color: #000;" title="Test Token">
+                <button class="btn-primary btn-compact" onclick="testGithubToken()"
+                    style="background: #81c995; color: #000;" title="Test Token">
                     <span class="btn-text-desktop">Test Token</span>
                     <span class="btn-text-mobile">✓</span>
                 </button>
-                <button class="btn-primary btn-compact" onclick="uploadToGist()" style="background: #c58af9;" title="Upload to Gist">
+                <button class="btn-primary btn-compact" onclick="uploadToGist()" style="background: #c58af9;"
+                    title="Upload to Gist">
                     <span class="btn-text-desktop">Upload</span>
                     <span class="btn-text-mobile">⬆️</span>
                 </button>
-                <button class="btn-primary btn-compact" onclick="showDownloadDialog()" style="background: #fcad70;" title="Download from Gist">
+                <button class="btn-primary btn-compact" onclick="showDownloadDialog()" style="background: #fcad70;"
+                    title="Download from Gist">
                     <span class="btn-text-desktop">Download</span>
                     <span class="btn-text-mobile">⬇️</span>
                 </button>
-                <button class="btn-primary btn-compact" onclick="clearStoredToken()" style="background: #5f6368; color: #e8eaed;" title="Clear stored token">
+                <button class="btn-primary btn-compact" onclick="clearStoredToken()"
+                    style="background: #5f6368; color: #e8eaed;" title="Clear stored token">
                     <span class="btn-text-desktop">Clear Token</span>
                     <span class="btn-text-mobile">🔄</span>
                 </button>
             </div>
-            <div id="tokenHelp" style="display: none; background: #232323; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px; color: #9aa0a6; line-height: 1.4;">
-                <strong style="color: #fdd663;">Get Token:</strong> <a href="https://github.com/settings/tokens" target="_blank" style="color: #8ab4f8;">github.com/settings/tokens</a> → Generate (classic) → Select <code style="background: #1e1e1e; padding: 1px 3px;">gist</code> scope
+            <div id="tokenHelp"
+                style="display: none; background: #232323; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 11px; color: #9aa0a6; line-height: 1.4;">
+                <strong style="color: #fdd663;">Get Token:</strong> <a href="https://github.com/settings/tokens"
+                    target="_blank" style="color: #8ab4f8;">github.com/settings/tokens</a> → Generate (classic) → Select
+                <code style="background: #1e1e1e; padding: 1px 3px;">gist</code> scope
             </div>
             <div id="syncStatus" style="font-size: 11px; color: #9aa0a6; margin-bottom: 6px;"></div>
-            <div style="padding: 6px; background: #232323; border-left: 2px solid #fcad70; border-radius: 3px; font-size: 10px; color: #9aa0a6; line-height: 1.3;">
-                🔒 Token stored locally. Only grant <code style="background: #1e1e1e; padding: 1px 3px;">gist</code> permission.
+            <div
+                style="padding: 6px; background: #232323; border-left: 2px solid #fcad70; border-radius: 3px; font-size: 10px; color: #9aa0a6; line-height: 1.3;">
+                🔒 Token stored locally. Only grant <code style="background: #1e1e1e; padding: 1px 3px;">gist</code>
+                permission.
             </div>
         </div>
 
@@ -1439,10 +1763,13 @@
                 <div class="note-modal-title" id="noteModalTitle">Add Note</div>
                 <button class="note-modal-close" onclick="closeNoteModal()">Close</button>
             </div>
-            <textarea id="noteTextarea" class="note-textarea" placeholder="Write your notes about this stock..."></textarea>
+            <textarea id="noteTextarea" class="note-textarea"
+                placeholder="Write your notes about this stock..."></textarea>
             <div class="note-modal-buttons">
-                <button class="btn-primary btn-compact" onclick="deleteNote()" style="background: #f28b82;">Delete Note</button>
-                <button class="btn-primary btn-compact" onclick="saveNote()" style="background: #fdd663; color: #000;">Save Note</button>
+                <button class="btn-primary btn-compact" onclick="deleteNote()" style="background: #f28b82;">Delete
+                    Note</button>
+                <button class="btn-primary btn-compact" onclick="saveNote()"
+                    style="background: #fdd663; color: #000;">Save Note</button>
             </div>
         </div>
     </div>
@@ -1460,76 +1787,101 @@
 
                     <!-- Backup & Restore Section -->
                     <div style="padding: 0; background: transparent;">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 4px;">
-                            <div style="width: 48px; height: 48px; background: #5f6368; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 4px;">
+                            <div
+                                style="width: 48px; height: 48px; background: #5f6368; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                                 💾
                             </div>
                             <div style="font-weight: 600; color: #e8eaed; font-size: 16px;">Backup & Restore</div>
                         </div>
                         <div style="margin-left: 0; display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button class="btn-primary btn-compact" onclick="exportData(); closeSettingsModal();" style="background: #81c995; padding: 12px 24px; font-size: 14px; font-weight: 500; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                            <button class="btn-primary btn-compact" onclick="exportData(); closeSettingsModal();"
+                                style="background: #81c995; padding: 12px 24px; font-size: 14px; font-weight: 500; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
                                 💾 Export
                             </button>
-                            <label for="importFileSettings" class="btn-primary btn-compact" style="background: #8ab4f8; cursor: pointer; padding: 12px 24px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px;">
+                            <label for="importFileSettings" class="btn-primary btn-compact"
+                                style="background: #8ab4f8; cursor: pointer; padding: 12px 24px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px;">
                                 📥 Import
                             </label>
-                            <input type="file" id="importFileSettings" accept=".json" onchange="importData(event); closeSettingsModal();" style="display: none;">
+                            <input type="file" id="importFileSettings" accept=".json"
+                                onchange="importData(event); closeSettingsModal();" style="display: none;">
                         </div>
                     </div>
 
                     <!-- Merge Preferences -->
                     <div style="padding: 0; background: transparent;">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 4px;">
-                            <div style="width: 48px; height: 48px; background: #8ab4f8; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 4px;">
+                            <div
+                                style="width: 48px; height: 48px; background: #8ab4f8; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                                 🔄
                             </div>
-                            <div style="font-weight: 600; color: #e8eaed; font-size: 16px;">Duplicate Merge Settings</div>
+                            <div style="font-weight: 600; color: #e8eaed; font-size: 16px;">Duplicate Merge Settings
+                            </div>
                         </div>
                         <div style="margin-left: 0; padding-left: 4px;">
-                            <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none;">
-                                <input type="checkbox" id="includeFolderNamesCheckbox" onchange="toggleIncludeFolderNames()" style="width: 24px; height: 24px; cursor: pointer; flex-shrink: 0; accent-color: #8ab4f8; margin-top: 2px;">
+                            <label
+                                style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="includeFolderNamesCheckbox"
+                                    onchange="toggleIncludeFolderNames()"
+                                    style="width: 24px; height: 24px; cursor: pointer; flex-shrink: 0; accent-color: #8ab4f8; margin-top: 2px;">
                                 <div style="flex: 1;">
-                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">Include folder names in merged notes</div>
-                                    <div style="font-size: 13px; color: #9aa0a6; line-height: 1.4;">When merging duplicates, prefix notes with [Folder Name]</div>
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">
+                                        Include folder names in merged notes</div>
+                                    <div style="font-size: 13px; color: #9aa0a6; line-height: 1.4;">When merging
+                                        duplicates, prefix notes with [Folder Name]</div>
                                 </div>
                             </label>
                         </div>
                     </div>
 
                     <!-- Danger Zone -->
-                    <div style="padding: 16px; background: transparent; border: 2px solid #f28b82; border-radius: 10px;">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 0 4px;">
-                            <div style="width: 48px; height: 48px; background: #f28b82; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <div
+                        style="padding: 16px; background: transparent; border: 2px solid #f28b82; border-radius: 10px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 0 4px;">
+                            <div
+                                style="width: 48px; height: 48px; background: #f28b82; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                                 ⚠️
                             </div>
                             <div style="font-weight: 600; color: #f28b82; font-size: 16px;">Danger Zone</div>
                         </div>
                         <div style="margin-left: 0; display: flex; flex-direction: column; gap: 16px;">
                             <!-- Remove Duplicates -->
-                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;" onclick="removeAllDuplicates(); closeSettingsModal();">
-                                <div style="width: 48px; height: 48px; background: #8ab4f8; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;"
+                                onclick="removeAllDuplicates(); closeSettingsModal();">
+                                <div
+                                    style="width: 48px; height: 48px; background: #8ab4f8; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                                     🔄
                                 </div>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">Intelligently merge duplicate symbols, preserving tags and notes</div>
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">
+                                        Intelligently merge duplicate symbols, preserving tags and notes</div>
                                 </div>
                             </div>
                             <!-- Consolidate Tagged -->
-                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;" onclick="consolidateTaggedSymbols(); closeSettingsModal();">
-                                <div style="width: 48px; height: 48px; background: #fbbc04; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;"
+                                onclick="consolidateTaggedSymbols(); closeSettingsModal();">
+                                <div
+                                    style="width: 48px; height: 48px; background: #fbbc04; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                                     🏷️
                                 </div>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">Keep only tagged symbols in one folder, remove everything else</div>
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">
+                                        Keep only tagged symbols in one folder, remove everything else</div>
                                 </div>
                             </div>
                             <!-- Clear All -->
-                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;" onclick="clearAllFolders(); closeSettingsModal();">
-                                <div style="width: 48px; height: 48px; background: #f28b82; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <div style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;"
+                                onclick="clearAllFolders(); closeSettingsModal();">
+                                <div
+                                    style="width: 48px; height: 48px; background: #f28b82; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                                     🗑️
                                 </div>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">This will delete all folders and symbols</div>
+                                    <div style="font-size: 15px; font-weight: 500; color: #e8eaed; margin-bottom: 4px;">
+                                        This will delete all folders and symbols</div>
                                 </div>
                             </div>
                         </div>
@@ -1546,12 +1898,15 @@
                 <button class="note-modal-close" onclick="closeJournalModal()">Close</button>
             </div>
             <div style="margin-bottom: 16px;">
-                <div class="journal-tabs-container" style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px;">
-                    <button class="btn-primary btn-compact journal-tab-btn" id="rulebookTabBtn" onclick="switchJournalTab('rulebook')" style="background: #fdd663; color: #000;">
+                <div class="journal-tabs-container"
+                    style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid #2c2c2c; padding-bottom: 8px;">
+                    <button class="btn-primary btn-compact journal-tab-btn" id="rulebookTabBtn"
+                        onclick="switchJournalTab('rulebook')" style="background: #fdd663; color: #000;">
                         <span class="btn-text-desktop">📋 Rule Book</span>
                         <span class="btn-text-mobile">📋</span>
                     </button>
-                    <button class="btn-primary btn-compact journal-tab-btn" id="journalTabBtn" onclick="switchJournalTab('journal')" style="background: #5f6368; color: #e8eaed;">
+                    <button class="btn-primary btn-compact journal-tab-btn" id="journalTabBtn"
+                        onclick="switchJournalTab('journal')" style="background: #5f6368; color: #e8eaed;">
                         <span class="btn-text-desktop">📝 Journal</span>
                         <span class="btn-text-mobile">📝</span>
                     </button>
@@ -1559,7 +1914,8 @@
 
                 <!-- Rule Book Section -->
                 <div id="rulebookSection">
-                    <div style="color: #9aa0a6; font-size: 12px; margin-bottom: 8px;">Write your trading rules and strategies here</div>
+                    <div style="color: #9aa0a6; font-size: 12px; margin-bottom: 8px;">Write your trading rules and
+                        strategies here</div>
                     <textarea id="rulebookTextarea" class="note-textarea" placeholder="Example:
 1. Never risk more than 2% per trade
 2. Always use stop loss
@@ -1571,7 +1927,8 @@
 
                 <!-- Journal Section -->
                 <div id="journalSection" style="display: none;">
-                    <div style="color: #9aa0a6; font-size: 12px; margin-bottom: 8px;">Record your trades, observations, and learnings</div>
+                    <div style="color: #9aa0a6; font-size: 12px; margin-bottom: 8px;">Record your trades, observations,
+                        and learnings</div>
                     <textarea id="journalTextarea" class="note-textarea" placeholder="Example:
 [Date: 2024-01-15]
 Entry: NSE:RELIANCE @ 2500
@@ -1592,10 +1949,30 @@ Lesson: Should have waited for pullback instead of chasing...
                     <span class="btn-text-desktop">Clear</span>
                     <span class="btn-text-mobile">🗑️</span>
                 </button>
-                <button class="btn-primary btn-compact" onclick="saveJournal()" style="background: #fdd663; color: #000;">
+                <button class="btn-primary btn-compact" onclick="saveJournal()"
+                    style="background: #fdd663; color: #000;">
                     <span class="btn-text-desktop">💾 Save</span>
                     <span class="btn-text-mobile">💾</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Tagged Symbols Modal -->
+    <div id="globalTaggedSymbolsModal" class="note-modal">
+        <div class="note-modal-content" style="max-width: 600px;">
+            <div class="note-modal-header">
+                <div class="note-modal-title" id="globalTaggedSymbolsTitle">📕 Red Tagged Symbols</div>
+                <button class="note-modal-close" onclick="closeGlobalTaggedSymbolsModal()">Close</button>
+            </div>
+            <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-primary btn-compact" id="openAllTaggedBtn" onclick="openAllCurrentTagSymbols()"
+                    style="background: #fdd663; color: #000;">
+                    Open All in TradingView
+                </button>
+            </div>
+            <div id="globalTaggedSymbolsList" class="global-tagged-symbols-list">
+                <!-- Symbols will be populated here -->
             </div>
         </div>
     </div>
@@ -1631,7 +2008,7 @@ Lesson: Should have waited for pullback instead of chasing...
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" onclick="folderContextMenuAction('removeNonTagged')" style="color: #fbbc04;">
-            <span>🏷️</span> Remove Non-Tagged 
+            <span>🏷️</span> Remove Non-Tagged
         </div>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" onclick="folderContextMenuAction('delete')" style="color: #f28b82;">
@@ -1750,8 +2127,8 @@ Lesson: Should have waited for pullback instead of chasing...
             document.getElementById('clipboardInput').value = '';
         }
 
-        
-function clearAllFolders() {
+
+        function clearAllFolders() {
             // Keep pinned folders and clear others
             const pinned = folders.filter(f => f.pinned);
             if (pinned.length > 0) {
@@ -1770,8 +2147,8 @@ function clearAllFolders() {
         }
 
 
-        
-function consolidateTaggedSymbols() {
+
+        function consolidateTaggedSymbols() {
             // Collect all tagged symbols from all folders
             const allTaggedSymbols = [];
             let totalSymbols = 0;
@@ -2411,64 +2788,64 @@ function consolidateTaggedSymbols() {
                 container.appendChild(folderDiv);
             });
         }
-// --- Pinned folder helpers: togglePin and render adjustments ---
-function togglePin(folderIndex) {
-    if (folderIndex == null || !folders[folderIndex]) return;
-    folders[folderIndex].pinned = !folders[folderIndex].pinned;
-    saveFolders();
-    displayFolders();
-    showNotification(
-        folders[folderIndex].pinned ? `Pinned "${folders[folderIndex].name}"` : `Unpinned "${folders[folderIndex].name}"`,
-        'info'
-    );
-}
+        // --- Pinned folder helpers: togglePin and render adjustments ---
+        function togglePin(folderIndex) {
+            if (folderIndex == null || !folders[folderIndex]) return;
+            folders[folderIndex].pinned = !folders[folderIndex].pinned;
+            saveFolders();
+            displayFolders();
+            showNotification(
+                folders[folderIndex].pinned ? `Pinned "${folders[folderIndex].name}"` : `Unpinned "${folders[folderIndex].name}"`,
+                'info'
+            );
+        }
 
-// Wrap the existing displayFolders to add pin buttons and move pinned folders to top
-(function(){
-    const _origDisplayFolders = displayFolders;
-    displayFolders = function() {
-        _origDisplayFolders();
-        const container = document.getElementById('foldersContainer');
-        if (!container) return;
-        const folderDivs = Array.from(container.querySelectorAll('.folder'));
-        const pinnedDivs = [];
-        const unpinnedDivs = [];
-        folderDivs.forEach(div => {
-            const idx = parseInt(div.dataset.folderIndex, 10);
-            const folder = folders[idx];
-            if (!folder) {
-                unpinnedDivs.push(div);
-                return;
-            }
-            // add/remove pinned class
-            div.classList.toggle('pinned', !!folder.pinned);
+        // Wrap the existing displayFolders to add pin buttons and move pinned folders to top
+        (function () {
+            const _origDisplayFolders = displayFolders;
+            displayFolders = function () {
+                _origDisplayFolders();
+                const container = document.getElementById('foldersContainer');
+                if (!container) return;
+                const folderDivs = Array.from(container.querySelectorAll('.folder'));
+                const pinnedDivs = [];
+                const unpinnedDivs = [];
+                folderDivs.forEach(div => {
+                    const idx = parseInt(div.dataset.folderIndex, 10);
+                    const folder = folders[idx];
+                    if (!folder) {
+                        unpinnedDivs.push(div);
+                        return;
+                    }
+                    // add/remove pinned class
+                    div.classList.toggle('pinned', !!folder.pinned);
 
-            // ensure pin button exists in header
-            let header = div.querySelector('.folder-header');
-            if (header) {
-                let pinBtn = header.querySelector('.pin-btn');
-                if (!pinBtn) {
-                    pinBtn = document.createElement('button');
-                    pinBtn.className = 'pin-btn';
-                    header.appendChild(pinBtn);
-                }
-                pinBtn.title = folder.pinned ? 'Unpin folder' : 'Pin folder';
-                pinBtn.innerText = folder.pinned ? '📌' : '📍';
-                pinBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    togglePin(idx);
-                };
-            }
+                    // ensure pin button exists in header
+                    let header = div.querySelector('.folder-header');
+                    if (header) {
+                        let pinBtn = header.querySelector('.pin-btn');
+                        if (!pinBtn) {
+                            pinBtn = document.createElement('button');
+                            pinBtn.className = 'pin-btn';
+                            header.appendChild(pinBtn);
+                        }
+                        pinBtn.title = folder.pinned ? 'Unpin folder' : 'Pin folder';
+                        pinBtn.innerText = folder.pinned ? '📌' : '📍';
+                        pinBtn.onclick = function (e) {
+                            e.stopPropagation();
+                            togglePin(idx);
+                        };
+                    }
 
-            if (folder.pinned) pinnedDivs.push(div);
-            else unpinnedDivs.push(div);
-        });
+                    if (folder.pinned) pinnedDivs.push(div);
+                    else unpinnedDivs.push(div);
+                });
 
-        // Reorder: pinned first, preserving relative order
-        pinnedDivs.forEach(d => container.appendChild(d));
-        unpinnedDivs.forEach(d => container.appendChild(d));
-    };
-})();
+                // Reorder: pinned first, preserving relative order
+                pinnedDivs.forEach(d => container.appendChild(d));
+                unpinnedDivs.forEach(d => container.appendChild(d));
+            };
+        })();
 
 
         function openSymbol(folderIndex, symbolIndex) {
@@ -2885,8 +3262,8 @@ function togglePin(folderIndex) {
             }
         }
 
-        
-function deleteFolder(folderIndex) {
+
+        function deleteFolder(folderIndex) {
             const folder = folders[folderIndex];
             if (folder && folder.pinned) {
                 alert(`Folder "${folder.name}" is pinned and cannot be deleted. Unpin it first to delete.`);
@@ -3125,6 +3502,8 @@ function deleteFolder(folderIndex) {
 
         // ========== GLOBAL TAGS FUNCTIONS ==========
 
+        let currentGlobalTag = null; // Track which tag's modal is open
+
         function updateGlobalTags() {
             const container = document.getElementById('globalTagsContainer');
             if (!container) return;
@@ -3169,11 +3548,146 @@ function deleteFolder(folderIndex) {
                     const btn = document.createElement('button');
                     btn.className = `global-tag-btn ${tag.name}`;
                     btn.textContent = `${tag.emoji} ${count}`;
-                    btn.title = `Open all ${count} ${tag.name} tagged symbols`;
-                    btn.onclick = () => openAllSymbolsByTag(tag.name);
+                    btn.title = `View and edit ${count} ${tag.name} tagged symbols`;
+                    btn.onclick = () => showGlobalTaggedSymbolsModal(tag.name);
                     container.appendChild(btn);
                 }
             });
+        }
+
+        function showGlobalTaggedSymbolsModal(tagName) {
+            currentGlobalTag = tagName;
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            const tagLabels = {
+                red: 'Red',
+                blue: 'Blue',
+                green: 'Green',
+                orange: 'Orange',
+                purple: 'Purple'
+            };
+
+            // Update modal title
+            document.getElementById('globalTaggedSymbolsTitle').textContent =
+                `${tagEmojis[tagName]} ${tagLabels[tagName]} Tagged Symbols`;
+
+            // Populate the list
+            refreshGlobalTaggedSymbolsList();
+
+            // Show modal
+            document.getElementById('globalTaggedSymbolsModal').classList.add('show');
+        }
+
+        function refreshGlobalTaggedSymbolsList() {
+            const listContainer = document.getElementById('globalTaggedSymbolsList');
+            if (!listContainer || !currentGlobalTag) return;
+
+            const tagName = currentGlobalTag;
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            const allTags = [
+                { name: 'red', emoji: '📕' },
+                { name: 'blue', emoji: '📘' },
+                { name: 'green', emoji: '📗' },
+                { name: 'orange', emoji: '📙' },
+                { name: 'purple', emoji: '📓' }
+            ];
+
+            // Collect all symbols with this tag
+            const taggedSymbols = [];
+            folders.forEach((folder, folderIndex) => {
+                folder.symbols.forEach((symbolObj, symbolIndex) => {
+                    if (symbolObj.tags && symbolObj.tags.includes(tagName)) {
+                        taggedSymbols.push({
+                            name: symbolObj.name,
+                            folderName: folder.name,
+                            folderIndex,
+                            symbolIndex,
+                            tags: symbolObj.tags
+                        });
+                    }
+                });
+            });
+
+            // Clear and rebuild
+            listContainer.innerHTML = '';
+
+            if (taggedSymbols.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="global-tagged-empty-state">
+                        <div class="icon">${tagEmojis[tagName]}</div>
+                        <div>No symbols with this tag</div>
+                    </div>
+                `;
+                // Close modal if no symbols left
+                setTimeout(() => {
+                    closeGlobalTaggedSymbolsModal();
+                    updateGlobalTags();
+                }, 1000);
+                return;
+            }
+
+            taggedSymbols.forEach(symbol => {
+                const item = document.createElement('div');
+                item.className = 'global-tagged-symbol-item';
+                item.dataset.folderIndex = symbol.folderIndex;
+                item.dataset.symbolIndex = symbol.symbolIndex;
+
+                // Build tag buttons HTML
+                const tagButtonsHtml = allTags.map(tag => {
+                    const isActive = symbol.tags.includes(tag.name) ? 'active' : '';
+                    return `<button class="global-tag-change-btn ${tag.name} ${isActive}" 
+                                onclick="changeGlobalSymbolTag(${symbol.folderIndex}, ${symbol.symbolIndex}, '${tag.name}')"
+                                title="Change to ${tag.name}">
+                                ${tag.emoji}
+                            </button>`;
+                }).join('');
+
+                item.innerHTML = `
+                    <div class="global-tagged-symbol-info">
+                        <div class="global-tagged-symbol-name" onclick="openSymbolFromGlobal(${symbol.folderIndex}, ${symbol.symbolIndex})" title="Open in TradingView">
+                            ${getDisplayName(symbol.name)}
+                        </div>
+                        <div class="global-tagged-symbol-folder">📁 ${symbol.folderName}</div>
+                    </div>
+                    <div class="global-tagged-symbol-actions">
+                        ${tagButtonsHtml}
+                        <button class="global-tag-remove-btn" onclick="removeGlobalSymbolTag(${symbol.folderIndex}, ${symbol.symbolIndex})" title="Remove tag">
+                            ✕
+                        </button>
+                    </div>
+                `;
+
+                listContainer.appendChild(item);
+            });
+        }
+
+        function closeGlobalTaggedSymbolsModal() {
+            document.getElementById('globalTaggedSymbolsModal').classList.remove('show');
+            currentGlobalTag = null;
+        }
+
+        function openSymbolFromGlobal(folderIndex, symbolIndex) {
+            openSymbol(folderIndex, symbolIndex);
+        }
+
+        function openAllCurrentTagSymbols() {
+            if (!currentGlobalTag) return;
+            openAllSymbolsByTag(currentGlobalTag);
         }
 
         function openAllSymbolsByTag(tagName) {
@@ -3210,6 +3724,68 @@ function deleteFolder(folderIndex) {
 
             showNotification(`Opened ${symbolsToOpen.length} ${tagEmojis[tagName]} ${tagName} tagged symbols!`, 'success');
         }
+
+        function changeGlobalSymbolTag(folderIndex, symbolIndex, newTag) {
+            const folder = folders[folderIndex];
+            if (!folder) return;
+
+            const symbolObj = folder.symbols[symbolIndex];
+            if (!symbolObj) return;
+
+            const oldTag = symbolObj.tags && symbolObj.tags.length > 0 ? symbolObj.tags[0] : null;
+
+            // If clicking the same tag, do nothing (use remove button to remove)
+            if (oldTag === newTag) return;
+
+            // Set new tag
+            symbolObj.tags = [newTag];
+
+            saveFolders();
+            updateSymbolTagButton(folderIndex, symbolIndex);
+            updateFolderTagBadges(folderIndex);
+            updateGlobalTags();
+
+            // Refresh the modal list (symbol will disappear if tag changed)
+            refreshGlobalTaggedSymbolsList();
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            showNotification(`Changed ${getDisplayName(symbolObj.name)} to ${tagEmojis[newTag]} ${newTag}!`, 'success');
+        }
+
+        function removeGlobalSymbolTag(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            if (!folder) return;
+
+            const symbolObj = folder.symbols[symbolIndex];
+            if (!symbolObj) return;
+
+            // Remove all tags
+            symbolObj.tags = [];
+
+            saveFolders();
+            updateSymbolTagButton(folderIndex, symbolIndex);
+            updateFolderTagBadges(folderIndex);
+            updateGlobalTags();
+
+            // Refresh the modal list
+            refreshGlobalTaggedSymbolsList();
+
+            showNotification(`Removed tag from ${getDisplayName(symbolObj.name)}!`, 'info');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('globalTaggedSymbolsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'globalTaggedSymbolsModal') {
+                closeGlobalTaggedSymbolsModal();
+            }
+        });
 
         // ========== NOTE FUNCTIONS ==========
 
@@ -3371,7 +3947,7 @@ function deleteFolder(folderIndex) {
             const menu = document.getElementById('folderContextMenu');
             currentContextFolder = folderIndex;
             // Ensure pin/unpin option reflects this folder
-            try { ensureFolderContextMenuPinOption(folderIndex); } catch(e) { /* ignore if helper missing */ }
+            try { ensureFolderContextMenuPinOption(folderIndex); } catch (e) { /* ignore if helper missing */ }
 
             // Update edit mode text based on current state
             const folderDiv = document.getElementById(`folder-${folderIndex}`);
@@ -3404,26 +3980,26 @@ function deleteFolder(folderIndex) {
             currentContextFolder = null;
         }
 
-        
-function ensureFolderContextMenuPinOption(folderIndex) {
-    const menu = document.getElementById('folderContextMenu');
-    if (!menu) return;
-    // Remove existing pin item if any
-    const existing = menu.querySelector('.menu-item-pin');
-    if (existing) existing.remove();
-    const folder = folders[folderIndex];
-    const li = document.createElement('li');
-    li.className = 'menu-item-pin';
-    li.innerText = folder && folder.pinned ? 'Unpin Folder' : 'Pin Folder';
-    li.onclick = function(e) {
-        e.stopPropagation();
-        togglePin(folderIndex);
-        hideContextMenu();
-    };
-    // Insert at top
-    menu.insertBefore(li, menu.firstChild);
-}
-function folderContextMenuAction(action) {
+
+        function ensureFolderContextMenuPinOption(folderIndex) {
+            const menu = document.getElementById('folderContextMenu');
+            if (!menu) return;
+            // Remove existing pin item if any
+            const existing = menu.querySelector('.menu-item-pin');
+            if (existing) existing.remove();
+            const folder = folders[folderIndex];
+            const li = document.createElement('li');
+            li.className = 'menu-item-pin';
+            li.innerText = folder && folder.pinned ? 'Unpin Folder' : 'Pin Folder';
+            li.onclick = function (e) {
+                e.stopPropagation();
+                togglePin(folderIndex);
+                hideContextMenu();
+            };
+            // Insert at top
+            menu.insertBefore(li, menu.firstChild);
+        }
+        function folderContextMenuAction(action) {
             if (currentContextFolder === null) return;
 
             const folderIndex = currentContextFolder;
@@ -3469,7 +4045,7 @@ function folderContextMenuAction(action) {
         let foldersWithMatchesDuringSearch = new Set(); // Track folders that had matches
 
         // Listen to textarea input for search
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const textarea = document.getElementById('clipboardInput');
             const searchToggleContainer = document.getElementById('searchToggleContainer');
 
@@ -3477,7 +4053,7 @@ function folderContextMenuAction(action) {
             initializeSearchToggles();
 
             // Show search toggle buttons when textarea is focused
-            textarea.addEventListener('focus', function() {
+            textarea.addEventListener('focus', function () {
                 // Always show the toggle buttons when textarea is focused
                 searchToggleContainer.style.display = 'flex';
                 // Also show individual buttons
@@ -3488,7 +4064,7 @@ function folderContextMenuAction(action) {
             });
 
             // Hide search toggle buttons when textarea loses focus
-            textarea.addEventListener('blur', function() {
+            textarea.addEventListener('blur', function () {
                 // Small delay to allow clicking on the toggle buttons
                 setTimeout(() => {
                     if (document.activeElement !== textarea &&
@@ -3499,7 +4075,7 @@ function folderContextMenuAction(action) {
             });
 
             // Global keyboard shortcut: '/' to focus search
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 // Only trigger if not already in an input/textarea
                 if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
                     e.preventDefault();
@@ -3508,7 +4084,7 @@ function folderContextMenuAction(action) {
                 }
             });
 
-            textarea.addEventListener('input', function(e) {
+            textarea.addEventListener('input', function (e) {
                 const value = e.target.value.trim();
 
                 // Clear any existing debounce timer
@@ -3532,7 +4108,7 @@ function folderContextMenuAction(action) {
             });
 
             // Keyboard shortcuts
-            textarea.addEventListener('keydown', function(e) {
+            textarea.addEventListener('keydown', function (e) {
                 // ESC key - clear search
                 if (e.key === 'Escape') {
                     e.preventDefault();
@@ -4579,8 +5155,9 @@ function folderContextMenuAction(action) {
                 showNotification('Stored credentials cleared!', 'info');
             }
         }
-    
 
-</script>
+
+    </script>
 </body>
+
 </html>
