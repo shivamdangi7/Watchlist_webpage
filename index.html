@@ -1170,6 +1170,181 @@
             }
         }
 
+        /* Folder Tagged Symbols Modal - reuses global styles */
+        .folder-tagged-symbols-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+
+        .folder-tagged-symbol-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #232323;
+            border-radius: 8px;
+            border: 1px solid #2c2c2c;
+            transition: all 0.2s ease;
+        }
+
+        .folder-tagged-symbol-item:hover {
+            background: #2a2a2a;
+            border-color: #3c4043;
+        }
+
+        .folder-tagged-symbol-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .folder-tagged-symbol-name {
+            color: #e8eaed;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .folder-tagged-symbol-name:hover {
+            color: #fdd663;
+        }
+
+        .folder-tagged-symbol-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .folder-tag-change-btn {
+            padding: 4px 8px;
+            border: 1px solid;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .folder-tag-change-btn.red {
+            border-color: #f28b82;
+            color: #f28b82;
+        }
+
+        .folder-tag-change-btn.red:hover,
+        .folder-tag-change-btn.red.active {
+            background: #f28b82;
+            color: #000;
+        }
+
+        .folder-tag-change-btn.blue {
+            border-color: #8ab4f8;
+            color: #8ab4f8;
+        }
+
+        .folder-tag-change-btn.blue:hover,
+        .folder-tag-change-btn.blue.active {
+            background: #8ab4f8;
+            color: #000;
+        }
+
+        .folder-tag-change-btn.green {
+            border-color: #81c995;
+            color: #81c995;
+        }
+
+        .folder-tag-change-btn.green:hover,
+        .folder-tag-change-btn.green.active {
+            background: #81c995;
+            color: #000;
+        }
+
+        .folder-tag-change-btn.orange {
+            border-color: #fcad70;
+            color: #fcad70;
+        }
+
+        .folder-tag-change-btn.orange:hover,
+        .folder-tag-change-btn.orange.active {
+            background: #fcad70;
+            color: #000;
+        }
+
+        .folder-tag-change-btn.purple {
+            border-color: #c58af9;
+            color: #c58af9;
+        }
+
+        .folder-tag-change-btn.purple:hover,
+        .folder-tag-change-btn.purple.active {
+            background: #c58af9;
+            color: #000;
+        }
+
+        .folder-tag-remove-btn {
+            padding: 4px 8px;
+            border: 1px solid #5f6368;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            color: #9aa0a6;
+            transition: all 0.2s ease;
+        }
+
+        .folder-tag-remove-btn:hover {
+            background: #f28b82;
+            border-color: #f28b82;
+            color: #000;
+        }
+
+        .folder-tagged-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9aa0a6;
+        }
+
+        .folder-tagged-empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .folder-tag-note-btn {
+            padding: 4px 8px;
+            border: 1px solid #5f6368;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            color: #9aa0a6;
+            transition: all 0.2s ease;
+        }
+
+        .folder-tag-note-btn:hover {
+            background: #fdd663;
+            border-color: #fdd663;
+            color: #000;
+        }
+
+        .folder-tag-note-btn.has-note {
+            border-color: #fdd663;
+            color: #fdd663;
+            animation: noteGlow 2s ease-in-out infinite;
+        }
+
+        .folder-tag-note-btn.has-note:hover {
+            background: #fdd663;
+            color: #000;
+            animation: none;
+        }
+
         .symbol-tags {
             position: relative;
             display: inline-block;
@@ -2023,6 +2198,25 @@ Lesson: Should have waited for pullback instead of chasing...
         </div>
     </div>
 
+    <!-- Folder Tagged Symbols Modal -->
+    <div id="folderTaggedSymbolsModal" class="note-modal">
+        <div class="note-modal-content" style="max-width: 600px;">
+            <div class="note-modal-header">
+                <div class="note-modal-title" id="folderTaggedSymbolsTitle">📕 Red Tagged Symbols</div>
+                <button class="note-modal-close" onclick="closeFolderTaggedSymbolsModal()">Close</button>
+            </div>
+            <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-primary btn-compact" id="openAllFolderTaggedBtn" onclick="openAllFolderTagSymbols()"
+                    style="background: #fdd663; color: #000;">
+                    Open All in TradingView
+                </button>
+            </div>
+            <div id="folderTaggedSymbolsList" class="folder-tagged-symbols-list">
+                <!-- Symbols will be populated here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Context Menu for Symbols -->
     <div id="symbolContextMenu" class="symbol-context-menu">
         <div class="context-menu-item" onclick="contextMenuAction('viewNote')">
@@ -2595,7 +2789,7 @@ Lesson: Should have waited for pullback instead of chasing...
                             badge.textContent = `${tagObj.emoji} ${tagCounts[tagObj.name]}`;
                             badge.onclick = (e) => {
                                 e.stopPropagation();
-                                openByTag(folderIndex, tagObj.name);
+                                showFolderTaggedSymbolsModal(folderIndex, tagObj.name);
                             };
                             tagBadgesDiv.appendChild(badge);
                         }
@@ -3167,7 +3361,7 @@ Lesson: Should have waited for pullback instead of chasing...
                         badge.textContent = `${tagObj.emoji} ${tagCounts[tagObj.name]}`;
                         badge.onclick = (e) => {
                             e.stopPropagation();
-                            openByTag(folderIndex, tagObj.name);
+                            showFolderTaggedSymbolsModal(folderIndex, tagObj.name);
                         };
                         tagBadgesDiv.appendChild(badge);
                     }
@@ -3845,6 +4039,264 @@ Lesson: Should have waited for pullback instead of chasing...
         document.getElementById('globalTaggedSymbolsModal').addEventListener('click', (e) => {
             if (e.target.id === 'globalTaggedSymbolsModal') {
                 closeGlobalTaggedSymbolsModal();
+            }
+        });
+
+        // ========== FOLDER TAGGED SYMBOLS MODAL ==========
+        let currentFolderTag = null;
+        let currentFolderTagIndex = null;
+
+        function showFolderTaggedSymbolsModal(folderIndex, tagName) {
+            currentFolderTag = tagName;
+            currentFolderTagIndex = folderIndex;
+
+            const folder = folders[folderIndex];
+            if (!folder) return;
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            const tagLabels = {
+                red: 'Red',
+                blue: 'Blue',
+                green: 'Green',
+                orange: 'Orange',
+                purple: 'Purple'
+            };
+
+            // Update modal title with folder name
+            document.getElementById('folderTaggedSymbolsTitle').textContent =
+                `${tagEmojis[tagName]} ${tagLabels[tagName]} Tagged in "${folder.name}"`;
+
+            // Populate the list
+            refreshFolderTaggedSymbolsList();
+
+            // Show modal
+            document.getElementById('folderTaggedSymbolsModal').classList.add('show');
+        }
+
+        function refreshFolderTaggedSymbolsList() {
+            const listContainer = document.getElementById('folderTaggedSymbolsList');
+            if (!listContainer || !currentFolderTag || currentFolderTagIndex === null) return;
+
+            const tagName = currentFolderTag;
+            const folderIndex = currentFolderTagIndex;
+            const folder = folders[folderIndex];
+
+            if (!folder) {
+                closeFolderTaggedSymbolsModal();
+                return;
+            }
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            const allTags = [
+                { name: 'red', emoji: '📕' },
+                { name: 'blue', emoji: '📘' },
+                { name: 'green', emoji: '📗' },
+                { name: 'orange', emoji: '📙' },
+                { name: 'purple', emoji: '📓' }
+            ];
+
+            // Collect all symbols with this tag in this folder
+            const taggedSymbols = [];
+            folder.symbols.forEach((symbolObj, symbolIndex) => {
+                if (symbolObj.tags && symbolObj.tags.includes(tagName)) {
+                    taggedSymbols.push({
+                        name: symbolObj.name,
+                        folderIndex,
+                        symbolIndex,
+                        tags: symbolObj.tags,
+                        note: symbolObj.note || ''
+                    });
+                }
+            });
+
+            // Clear and rebuild
+            listContainer.innerHTML = '';
+
+            if (taggedSymbols.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="folder-tagged-empty-state">
+                        <div class="icon">${tagEmojis[tagName]}</div>
+                        <div>No symbols with this tag in this folder</div>
+                    </div>
+                `;
+                // Close modal if no symbols left
+                setTimeout(() => {
+                    closeFolderTaggedSymbolsModal();
+                    updateFolderTagBadges(folderIndex);
+                    updateGlobalTags();
+                }, 1000);
+                return;
+            }
+
+            taggedSymbols.forEach(symbol => {
+                const item = document.createElement('div');
+                item.className = 'folder-tagged-symbol-item';
+                item.dataset.folderIndex = symbol.folderIndex;
+                item.dataset.symbolIndex = symbol.symbolIndex;
+
+                // Build tag buttons HTML
+                const tagButtonsHtml = allTags.map(tag => {
+                    const isActive = symbol.tags.includes(tag.name) ? 'active' : '';
+                    return `<button class="folder-tag-change-btn ${tag.name} ${isActive}" 
+                                onclick="changeFolderSymbolTag(${symbol.folderIndex}, ${symbol.symbolIndex}, '${tag.name}')"
+                                title="Change to ${tag.name}">
+                                ${tag.emoji}
+                            </button>`;
+                }).join('');
+
+                // Check if symbol has a note
+                const hasNote = symbol.note && symbol.note.trim().length > 0;
+                const noteClass = hasNote ? 'has-note' : '';
+                const noteTitle = hasNote ? 'View/Edit Note' : 'Add Note';
+
+                item.innerHTML = `
+                    <div class="folder-tagged-symbol-info">
+                        <div class="folder-tagged-symbol-name" onclick="openSymbolFromFolder(${symbol.folderIndex}, ${symbol.symbolIndex})" title="Open in TradingView">
+                            ${getDisplayName(symbol.name)}
+                        </div>
+                    </div>
+                    <div class="folder-tagged-symbol-actions">
+                        <button class="folder-tag-note-btn ${noteClass}" onclick="openNoteFromFolder(${symbol.folderIndex}, ${symbol.symbolIndex})" title="${noteTitle}">
+                            📝
+                        </button>
+                        ${tagButtonsHtml}
+                        <button class="folder-tag-remove-btn" onclick="removeFolderSymbolTag(${symbol.folderIndex}, ${symbol.symbolIndex})" title="Remove tag">
+                            ✕
+                        </button>
+                    </div>
+                `;
+
+                listContainer.appendChild(item);
+            });
+        }
+
+        function closeFolderTaggedSymbolsModal() {
+            document.getElementById('folderTaggedSymbolsModal').classList.remove('show');
+            currentFolderTag = null;
+            currentFolderTagIndex = null;
+        }
+
+        function openSymbolFromFolder(folderIndex, symbolIndex) {
+            openSymbol(folderIndex, symbolIndex);
+        }
+
+        function openNoteFromFolder(folderIndex, symbolIndex) {
+            // Store that we're opening from folder modal so we can refresh it after
+            window.openedNoteFromFolder = true;
+            openNoteModal(folderIndex, symbolIndex);
+        }
+
+        function openAllFolderTagSymbols() {
+            if (!currentFolderTag || currentFolderTagIndex === null) return;
+
+            const folder = folders[currentFolderTagIndex];
+            if (!folder) return;
+
+            const tagName = currentFolderTag;
+            const folderIndex = currentFolderTagIndex;
+
+            // Collect all symbols with this tag in this folder
+            const symbolsToOpen = [];
+            folder.symbols.forEach((symbolObj, symbolIndex) => {
+                if (symbolObj.tags && symbolObj.tags.includes(tagName)) {
+                    symbolsToOpen.push({ symbolIndex });
+                }
+            });
+
+            if (symbolsToOpen.length === 0) {
+                showNotification('No symbols to open!', 'info');
+                return;
+            }
+
+            // Open all symbols
+            symbolsToOpen.forEach(item => {
+                openSymbol(folderIndex, item.symbolIndex);
+            });
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            showNotification(`Opened ${symbolsToOpen.length} ${tagEmojis[tagName]} ${tagName} tagged symbols!`, 'success');
+        }
+
+        function changeFolderSymbolTag(folderIndex, symbolIndex, newTag) {
+            const folder = folders[folderIndex];
+            if (!folder) return;
+
+            const symbolObj = folder.symbols[symbolIndex];
+            if (!symbolObj) return;
+
+            const oldTag = symbolObj.tags && symbolObj.tags.length > 0 ? symbolObj.tags[0] : null;
+
+            // If clicking the same tag, do nothing (use remove button to remove)
+            if (oldTag === newTag) return;
+
+            // Set new tag
+            symbolObj.tags = [newTag];
+
+            saveFolders();
+            updateSymbolTagButton(folderIndex, symbolIndex);
+            updateFolderTagBadges(folderIndex);
+            updateGlobalTags();
+
+            // Refresh the modal list (symbol will disappear if tag changed)
+            refreshFolderTaggedSymbolsList();
+
+            const tagEmojis = {
+                red: '📕',
+                blue: '📘',
+                green: '📗',
+                orange: '📙',
+                purple: '📓'
+            };
+
+            showNotification(`Changed ${getDisplayName(symbolObj.name)} to ${tagEmojis[newTag]} ${newTag}!`, 'success');
+        }
+
+        function removeFolderSymbolTag(folderIndex, symbolIndex) {
+            const folder = folders[folderIndex];
+            if (!folder) return;
+
+            const symbolObj = folder.symbols[symbolIndex];
+            if (!symbolObj) return;
+
+            // Remove all tags
+            symbolObj.tags = [];
+
+            saveFolders();
+            updateSymbolTagButton(folderIndex, symbolIndex);
+            updateFolderTagBadges(folderIndex);
+            updateGlobalTags();
+
+            // Refresh the modal list
+            refreshFolderTaggedSymbolsList();
+
+            showNotification(`Removed tag from ${getDisplayName(symbolObj.name)}!`, 'info');
+        }
+
+        // Close folder modal when clicking outside
+        document.getElementById('folderTaggedSymbolsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'folderTaggedSymbolsModal') {
+                closeFolderTaggedSymbolsModal();
             }
         });
 
