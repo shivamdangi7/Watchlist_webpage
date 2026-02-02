@@ -876,6 +876,11 @@
             justify-content: center;
         }
 
+        /* Note modal should appear above other modals like global tagged symbols editor */
+        #noteModal {
+            z-index: 10002;
+        }
+
         .note-modal.show {
             display: flex;
         }
@@ -1122,6 +1127,47 @@
         .global-tagged-empty-state .icon {
             font-size: 48px;
             margin-bottom: 12px;
+        }
+
+        .global-tag-note-btn {
+            padding: 4px 8px;
+            border: 1px solid #5f6368;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: transparent;
+            color: #9aa0a6;
+            transition: all 0.2s ease;
+        }
+
+        .global-tag-note-btn:hover {
+            background: #fdd663;
+            border-color: #fdd663;
+            color: #000;
+        }
+
+        .global-tag-note-btn.has-note {
+            border-color: #fdd663;
+            color: #fdd663;
+            animation: noteGlow 2s ease-in-out infinite;
+        }
+
+        .global-tag-note-btn.has-note:hover {
+            background: #fdd663;
+            color: #000;
+            animation: none;
+        }
+
+        @keyframes noteGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 4px rgba(253, 214, 99, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 12px rgba(253, 214, 99, 0.8), 0 0 20px rgba(253, 214, 99, 0.4);
+            }
         }
 
         .symbol-tags {
@@ -3617,7 +3663,8 @@ Lesson: Should have waited for pullback instead of chasing...
                             folderName: folder.name,
                             folderIndex,
                             symbolIndex,
-                            tags: symbolObj.tags
+                            tags: symbolObj.tags,
+                            note: symbolObj.note || ''
                         });
                     }
                 });
@@ -3657,6 +3704,11 @@ Lesson: Should have waited for pullback instead of chasing...
                             </button>`;
                 }).join('');
 
+                // Check if symbol has a note
+                const hasNote = symbol.note && symbol.note.trim().length > 0;
+                const noteClass = hasNote ? 'has-note' : '';
+                const noteTitle = hasNote ? 'View/Edit Note' : 'Add Note';
+
                 item.innerHTML = `
                     <div class="global-tagged-symbol-info">
                         <div class="global-tagged-symbol-name" onclick="openSymbolFromGlobal(${symbol.folderIndex}, ${symbol.symbolIndex})" title="Open in TradingView">
@@ -3665,6 +3717,9 @@ Lesson: Should have waited for pullback instead of chasing...
                         <div class="global-tagged-symbol-folder">📁 ${symbol.folderName}</div>
                     </div>
                     <div class="global-tagged-symbol-actions">
+                        <button class="global-tag-note-btn ${noteClass}" onclick="openNoteFromGlobal(${symbol.folderIndex}, ${symbol.symbolIndex})" title="${noteTitle}">
+                            📝
+                        </button>
                         ${tagButtonsHtml}
                         <button class="global-tag-remove-btn" onclick="removeGlobalSymbolTag(${symbol.folderIndex}, ${symbol.symbolIndex})" title="Remove tag">
                             ✕
@@ -3683,6 +3738,12 @@ Lesson: Should have waited for pullback instead of chasing...
 
         function openSymbolFromGlobal(folderIndex, symbolIndex) {
             openSymbol(folderIndex, symbolIndex);
+        }
+
+        function openNoteFromGlobal(folderIndex, symbolIndex) {
+            // Store that we're opening from global modal so we can refresh it after
+            window.openedNoteFromGlobal = true;
+            openNoteModal(folderIndex, symbolIndex);
         }
 
         function openAllCurrentTagSymbols() {
@@ -3806,6 +3867,12 @@ Lesson: Should have waited for pullback instead of chasing...
             document.getElementById('noteModal').classList.remove('show');
             document.getElementById('noteTextarea').value = '';
             currentEditingNote = { folderIndex: null, symbolIndex: null };
+
+            // If note was opened from global tagged symbols modal, refresh the list
+            if (window.openedNoteFromGlobal && currentGlobalTag) {
+                refreshGlobalTaggedSymbolsList();
+                window.openedNoteFromGlobal = false;
+            }
         }
 
         function saveNote() {
