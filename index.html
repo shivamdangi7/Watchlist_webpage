@@ -1836,6 +1836,128 @@
             border: 2px solid gold;
             box-shadow: 0 6px 16px rgba(255, 215, 0, 0.12);
         }
+
+        /* Watchlist Tabs Styles */
+        .watchlist-tab {
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            color: #b2b5be;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .watchlist-tab:hover {
+            background: #363a45;
+            border-color: #4a4e59;
+        }
+
+        .watchlist-tab.active {
+            background: #2962ff;
+            color: #ffffff;
+            border-color: #2962ff;
+        }
+
+        #watchlist-tabs {
+            scrollbar-width: thin;
+            scrollbar-color: #3a3a3a #1a1a1a;
+        }
+
+        #watchlist-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        #watchlist-tabs::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        #watchlist-tabs::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 3px;
+        }
+
+        #watchlist-tabs::-webkit-scrollbar-thumb:hover {
+            background: #4a4e59;
+        }
+
+        /* Mobile: Concise UI */
+        @media (max-width: 768px) {
+            /* Show navigation arrows */
+            .watchlist-nav-arrow {
+                display: block !important;
+                padding: 4px 8px !important;
+                font-size: 14px !important;
+            }
+
+            /* Compact watchlist tabs */
+            .watchlist-tab {
+                padding: 5px 10px;
+                font-size: 11px;
+                min-width: auto;
+            }
+
+            /* Compact watchlist switcher container */
+            .container > div:first-of-type {
+                margin-bottom: 8px !important;
+                padding: 8px !important;
+            }
+
+            /* Smaller action buttons */
+            .btn-primary.btn-compact {
+                padding: 4px 8px !important;
+                font-size: 13px !important;
+            }
+
+            /* Hide metadata on very small screens */
+            @media (max-width: 480px) {
+                #watchlist-meta {
+                    display: none !important;
+                }
+            }
+
+            /* Compact metadata */
+            #watchlist-meta {
+                font-size: 10px !important;
+            }
+
+            /* Reduce container padding */
+            .container {
+                padding: 20px 12px !important;
+            }
+
+            /* Compact header */
+            h1 {
+                font-size: 18px !important;
+                margin-bottom: 10px !important;
+            }
+        }
+
+        /* Very small screens - extra compact */
+        @media (max-width: 480px) {
+            .watchlist-tab {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .watchlist-nav-arrow {
+                padding: 3px 6px !important;
+                font-size: 12px !important;
+            }
+
+            .btn-primary.btn-compact {
+                padding: 3px 6px !important;
+                font-size: 12px !important;
+            }
+
+            .container > div:first-of-type {
+                padding: 6px !important;
+            }
+        }
     </style>
 </head>
 
@@ -1844,6 +1966,50 @@
         <h1><a href="https://www.nseindia.com/market-data/live-market-indices/heatmap" target="_blank"
                 style="text-decoration:none; cursor:pointer;" title="Open NSE Heatmap">📈</a> TradingView Watchlist
             Manager</h1>
+
+        <!-- Watchlist Switcher -->
+        <div style="margin-bottom: 12px; padding: 12px; background: #1a1a1a; border: 1px solid #2c2c2c; border-radius: 8px;">
+            <!-- Watchlist Tabs Container -->
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <!-- Mobile: Left Arrow -->
+                <button onclick="switchToPreviousWatchlist()" class="watchlist-nav-arrow" id="watchlist-prev-arrow"
+                    style="display: none; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 4px; padding: 6px 10px; color: #e8eaed; cursor: pointer; font-size: 16px;"
+                    title="Previous watchlist">
+                    ◀
+                </button>
+
+                <!-- Watchlist Tabs -->
+                <div id="watchlist-tabs" style="display: flex; gap: 6px; flex: 1; overflow-x: auto; scrollbar-width: thin;">
+                    <!-- Tabs populated by JavaScript -->
+                </div>
+
+                <!-- Mobile: Right Arrow -->
+                <button onclick="switchToNextWatchlist()" class="watchlist-nav-arrow" id="watchlist-next-arrow"
+                    style="display: none; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 4px; padding: 6px 10px; color: #e8eaed; cursor: pointer; font-size: 16px;"
+                    title="Next watchlist">
+                    ▶
+                </button>
+            </div>
+
+            <!-- Metadata and Actions -->
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span id="watchlist-meta" style="font-size: 11px; color: #666; white-space: nowrap;"></span>
+                <div style="display: flex; gap: 6px;">
+                    <button onclick="createNewWatchlist()" class="btn-primary btn-compact"
+                        style="background: #4CAF50; padding: 6px 10px;" title="Create new watchlist">
+                        <span style="font-size: 14px;">+</span>
+                    </button>
+                    <button onclick="renameCurrentWatchlist()" class="btn-primary btn-compact"
+                        style="background: #2196F3; padding: 6px 10px;" title="Rename current watchlist">
+                        <span style="font-size: 14px;">✏️</span>
+                    </button>
+                    <button onclick="deleteCurrentWatchlist()" class="btn-primary btn-compact"
+                        style="background: #f44336; padding: 6px 10px;" title="Delete current watchlist">
+                        <span style="font-size: 14px;">🗑️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <div class="input-section" style="margin-bottom: 12px;">
             <textarea id="clipboardInput"
@@ -2259,36 +2425,422 @@ Lesson: Should have waited for pullback instead of chasing...
     </div>
 
     <script>
-        let folders = [];
+        // Multi-watchlist data structure
+        let watchlistData = {
+            watchlists: [],
+            activeWatchlistId: null
+        };
+        let folders = []; // Points to active watchlist's folders
         let batchIntervals = {};
 
-        // Load folders from localStorage on page load
+        // Load watchlist data from localStorage on page load
         window.addEventListener('DOMContentLoaded', () => {
-            loadFolders();
+            loadWatchlistData();
+            setupKeyboardShortcuts();
         });
 
-        function loadFolders() {
-            const saved = localStorage.getItem('tradingViewFolders');
-            if (saved) {
-                try {
-                    folders = JSON.parse(saved);
+        function loadWatchlistData() {
+            const STORAGE_KEY = 'tradingViewWatchlists';
+            const OLD_KEY = 'tradingViewFolders';
 
-                    // Reset batch running flags on page load
-                    folders.forEach(folder => {
-                        folder.batchRunning = false;
-                        folder.batchIndex = 0;
+            let saved = localStorage.getItem(STORAGE_KEY);
+
+            // Migration: Check if old format exists
+            if (!saved) {
+                const oldData = localStorage.getItem(OLD_KEY);
+                if (oldData) {
+                    console.log('[Migration] Converting to multi-watchlist format...');
+                    try {
+                        const oldFolders = JSON.parse(oldData);
+                        const mainId = 'watchlist_main_' + Date.now();
+
+                        watchlistData = {
+                            watchlists: [{
+                                id: mainId,
+                                name: 'Main',
+                                folders: JSON.parse(JSON.stringify(oldFolders))  // Deep copy to ensure no reference sharing
+                            }],
+                            activeWatchlistId: mainId
+                        };
+
+                        saveWatchlistData();
+                        console.log('[Migration] Migration complete!');
+                    } catch (e) {
+                        console.error('[Migration] Error:', e);
+                        initializeDefaultWatchlist();
+                    }
+                } else {
+                    initializeDefaultWatchlist();
+                }
+            } else {
+                try {
+                    watchlistData = JSON.parse(saved);
+
+                    // Ensure all watchlists have folders array and no shared references
+                    watchlistData.watchlists.forEach(wl => {
+                        if (!wl.folders) {
+                            wl.folders = [];
+                        }
                     });
 
-                    displayFolders();
+                    // Ensure activeWatchlistId is set
+                    if (!watchlistData.activeWatchlistId && watchlistData.watchlists.length > 0) {
+                        watchlistData.activeWatchlistId = watchlistData.watchlists[0].id;
+                    }
+
+                    console.log('[Load] Loaded watchlists:', watchlistData.watchlists.map(w => `${w.name} (${w.folders.length} folders)`).join(', '));
                 } catch (e) {
-                    // Error loading folders - reset to empty
-                    folders = [];
+                    console.error('[Load] Error loading watchlists:', e);
+                    initializeDefaultWatchlist();
                 }
+            }
+
+            // Verify data integrity - ensure no shared references
+            verifyDataIntegrity();
+
+            // Load active watchlist's folders
+            loadActiveFolders();
+            updateWatchlistUI();
+            displayFolders();
+        }
+
+        function verifyDataIntegrity() {
+            // Check if any watchlists share the same folders array reference
+            const foldersArrays = new Map();
+            let hasSharedReference = false;
+
+            watchlistData.watchlists.forEach((wl, idx) => {
+                if (!wl.folders) {
+                    console.warn(`[Integrity] Watchlist "${wl.name}" has no folders property! Creating empty array.`);
+                    wl.folders = [];
+                }
+
+                // Check if this folders array is shared with another watchlist
+                for (const [name, arr] of foldersArrays) {
+                    if (arr === wl.folders) {
+                        console.error(`[Integrity] ❌ SHARED REFERENCE DETECTED! "${wl.name}" and "${name}" share the same folders array!`);
+                        // Fix by creating a deep copy
+                        wl.folders = JSON.parse(JSON.stringify(wl.folders));
+                        console.log(`[Integrity] ✓ Fixed by creating separate array for "${wl.name}"`);
+                        hasSharedReference = true;
+                    }
+                }
+
+                foldersArrays.set(wl.name, wl.folders);
+            });
+
+            if (!hasSharedReference) {
+                console.log('[Integrity] ✓ All watchlists have separate folders arrays');
             }
         }
 
+        function initializeDefaultWatchlist() {
+            const mainId = 'watchlist_main_' + Date.now();
+            watchlistData = {
+                watchlists: [{
+                    id: mainId,
+                    name: 'Main',
+                    folders: []
+                }],
+                activeWatchlistId: mainId
+            };
+            saveWatchlistData();
+        }
+
+        function loadActiveFolders() {
+            const activeWatchlist = getActiveWatchlist();
+            if (activeWatchlist) {
+                // Ensure folders property exists on the watchlist
+                if (!activeWatchlist.folders) {
+                    activeWatchlist.folders = [];
+                }
+
+                // Create reference to the watchlist's folders array
+                folders = activeWatchlist.folders;
+
+                // Reset batch running flags
+                folders.forEach(folder => {
+                    folder.batchRunning = false;
+                    folder.batchIndex = 0;
+                });
+
+                console.log(`[LoadFolders] Loaded ${folders.length} folders from watchlist: ${activeWatchlist.name}`);
+            } else {
+                folders = [];
+                console.error('[LoadFolders] No active watchlist found!');
+            }
+        }
+
+        function getActiveWatchlist() {
+            return watchlistData.watchlists.find(w => w.id === watchlistData.activeWatchlistId) || watchlistData.watchlists[0];
+        }
+
+        function saveWatchlistData() {
+            const STORAGE_KEY = 'tradingViewWatchlists';
+
+            // Update active watchlist's folders
+            const activeWatchlist = getActiveWatchlist();
+            if (activeWatchlist) {
+                // Ensure folders property exists
+                if (!activeWatchlist.folders) {
+                    activeWatchlist.folders = [];
+                }
+                activeWatchlist.folders = folders;
+                console.log(`[SaveData] Saving ${folders.length} folders to watchlist: ${activeWatchlist.name}`);
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlistData));
+        }
+
         function saveFolders() {
-            localStorage.setItem('tradingViewFolders', JSON.stringify(folders));
+            saveWatchlistData();
+        }
+
+        // Backward compatibility
+        function loadFolders() {
+            loadActiveFolders();
+        }
+
+        // ========== WATCHLIST CRUD OPERATIONS ==========
+
+        function createNewWatchlist() {
+            const name = prompt('Enter watchlist name:');
+            if (!name || !name.trim()) return;
+
+            const trimmedName = name.trim();
+
+            // Check for duplicates
+            const duplicate = watchlistData.watchlists.some(w =>
+                w.name.toLowerCase() === trimmedName.toLowerCase()
+            );
+
+            if (duplicate) {
+                showNotification('A watchlist with this name already exists!', 'error');
+                return;
+            }
+
+            const newId = 'watchlist_' + trimmedName.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
+            const newWatchlist = {
+                id: newId,
+                name: trimmedName,
+                folders: []  // Empty array for new watchlist
+            };
+
+            watchlistData.watchlists.push(newWatchlist);
+
+            // Save to localStorage directly
+            const STORAGE_KEY = 'tradingViewWatchlists';
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlistData));
+
+            updateWatchlistUI();
+
+            console.log(`[CreateWatchlist] Created new watchlist: ${trimmedName}`);
+            showNotification(`Watchlist "${trimmedName}" created!`, 'success');
+        }
+
+        function renameCurrentWatchlist() {
+            const activeWatchlist = getActiveWatchlist();
+            if (!activeWatchlist) return;
+
+            const newName = prompt('Enter new watchlist name:', activeWatchlist.name);
+            if (!newName || !newName.trim()) return;
+
+            const trimmedName = newName.trim();
+
+            // Check for duplicates (excluding current)
+            const duplicate = watchlistData.watchlists.some(w =>
+                w.id !== activeWatchlist.id && w.name.toLowerCase() === trimmedName.toLowerCase()
+            );
+
+            if (duplicate) {
+                showNotification('A watchlist with this name already exists!', 'error');
+                return;
+            }
+
+            activeWatchlist.name = trimmedName;
+            saveWatchlistData();
+            updateWatchlistSelect();
+
+            showNotification(`Watchlist renamed to "${trimmedName}"!`, 'success');
+        }
+
+        function deleteCurrentWatchlist() {
+            const activeWatchlist = getActiveWatchlist();
+            if (!activeWatchlist) return;
+
+            if (watchlistData.watchlists.length === 1) {
+                showNotification('Cannot delete the last watchlist!', 'error');
+                return;
+            }
+
+            const confirmMsg = `Delete watchlist "${activeWatchlist.name}"?\n\nThis will permanently delete all folders and symbols in this watchlist.\n\nThis action cannot be undone.`;
+            if (!confirm(confirmMsg)) return;
+
+            const deletedName = activeWatchlist.name;
+
+            // Remove watchlist
+            watchlistData.watchlists = watchlistData.watchlists.filter(w => w.id !== activeWatchlist.id);
+
+            // Switch to first watchlist
+            watchlistData.activeWatchlistId = watchlistData.watchlists[0].id;
+
+            // Save to localStorage directly
+            const STORAGE_KEY = 'tradingViewWatchlists';
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlistData));
+
+            // Load new watchlist's folders
+            loadActiveFolders();
+            updateWatchlistUI();
+            displayFolders();
+
+            showNotification(`Watchlist "${deletedName}" deleted!`, 'info');
+        }
+
+        function switchWatchlist(watchlistId) {
+            const watchlist = watchlistData.watchlists.find(w => w.id === watchlistId);
+            if (!watchlist) {
+                console.error('[SwitchWatchlist] Watchlist not found:', watchlistId);
+                return;
+            }
+
+            // Get current watchlist before switching
+            const currentWatchlist = getActiveWatchlist();
+            if (currentWatchlist) {
+                // Ensure current watchlist has folders property
+                if (!currentWatchlist.folders) {
+                    currentWatchlist.folders = [];
+                }
+                // Save current folders (folders is already a reference, but be explicit)
+                currentWatchlist.folders = folders;
+                console.log(`[SwitchWatchlist] Saved ${folders.length} folders to: ${currentWatchlist.name}`);
+            }
+
+            // Switch to new watchlist
+            console.log(`[SwitchWatchlist] Switching from "${currentWatchlist?.name}" to "${watchlist.name}"`);
+            watchlistData.activeWatchlistId = watchlistId;
+
+            // Save to localStorage
+            const STORAGE_KEY = 'tradingViewWatchlists';
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlistData));
+
+            // Load new watchlist's folders
+            loadActiveFolders();
+            updateWatchlistUI();
+            displayFolders();
+        }
+
+        function switchToNextWatchlist() {
+            if (watchlistData.watchlists.length <= 1) return;
+
+            const currentIndex = watchlistData.watchlists.findIndex(w => w.id === watchlistData.activeWatchlistId);
+            const nextIndex = (currentIndex + 1) % watchlistData.watchlists.length;
+            const nextWatchlist = watchlistData.watchlists[nextIndex];
+
+            switchWatchlist(nextWatchlist.id);
+            showNotification(`Switched to: ${nextWatchlist.name}`, 'info');
+        }
+
+        function switchToPreviousWatchlist() {
+            if (watchlistData.watchlists.length <= 1) return;
+
+            const currentIndex = watchlistData.watchlists.findIndex(w => w.id === watchlistData.activeWatchlistId);
+            const prevIndex = (currentIndex - 1 + watchlistData.watchlists.length) % watchlistData.watchlists.length;
+            const prevWatchlist = watchlistData.watchlists[prevIndex];
+
+            switchWatchlist(prevWatchlist.id);
+            showNotification(`Switched to: ${prevWatchlist.name}`, 'info');
+        }
+
+        function updateWatchlistUI() {
+            renderWatchlistTabs();
+            updateWatchlistMeta();
+        }
+
+        function renderWatchlistTabs() {
+            const tabsContainer = document.getElementById('watchlist-tabs');
+            if (!tabsContainer) return;
+
+            tabsContainer.innerHTML = '';
+
+            watchlistData.watchlists.forEach(wl => {
+                const tab = document.createElement('div');
+                tab.className = 'watchlist-tab';
+                tab.textContent = wl.name;
+                tab.onclick = () => switchWatchlist(wl.id);
+
+                if (wl.id === watchlistData.activeWatchlistId) {
+                    tab.classList.add('active');
+                }
+
+                tabsContainer.appendChild(tab);
+            });
+        }
+
+        // Backward compatibility
+        function updateWatchlistSelect() {
+            updateWatchlistUI();
+        }
+
+        function updateWatchlistMeta() {
+            const meta = document.getElementById('watchlist-meta');
+            if (!meta) return;
+
+            const activeWatchlist = getActiveWatchlist();
+            if (!activeWatchlist) {
+                meta.textContent = '';
+                return;
+            }
+
+            const folders = activeWatchlist.folders || [];
+            const totalSymbols = folders.reduce((sum, folder) =>
+                sum + (folder.symbols ? folder.symbols.length : 0), 0
+            );
+
+            meta.textContent = `${folders.length} folders, ${totalSymbols} symbols`;
+            meta.title = `Folders: ${folders.length}\nSymbols: ${totalSymbols}`;
+        }
+
+        // ========== KEYBOARD SHORTCUTS ==========
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ignore if typing in input/textarea
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+
+                // W key - Switch watchlist
+                if (e.key === 'w' || e.key === 'W') {
+                    e.preventDefault();
+                    switchToNextWatchlist();
+                }
+            });
+        }
+
+        // ========== DEBUG FUNCTION ==========
+        // Call from console: debugWatchlists()
+        window.debugWatchlists = function() {
+            console.log('=== WATCHLIST DEBUG INFO ===');
+            console.log('Total watchlists:', watchlistData.watchlists.length);
+            console.log('Active watchlist ID:', watchlistData.activeWatchlistId);
+            console.log('Current folders array length:', folders.length);
+            console.log('\nAll Watchlists:');
+            watchlistData.watchlists.forEach((wl, idx) => {
+                console.log(`${idx + 1}. ${wl.name} (${wl.id})`);
+                console.log(`   - Folders: ${wl.folders ? wl.folders.length : 'undefined'}`);
+                console.log(`   - Is Active: ${wl.id === watchlistData.activeWatchlistId}`);
+                if (wl.folders && wl.folders.length > 0) {
+                    wl.folders.forEach((folder, fidx) => {
+                        console.log(`      ${fidx + 1}. ${folder.name} (${folder.symbols ? folder.symbols.length : 0} symbols)`);
+                    });
+                }
+            });
+            console.log('\nCurrent global folders variable:');
+            console.log('Length:', folders.length);
+            folders.forEach((folder, idx) => {
+                console.log(`${idx + 1}. ${folder.name} (${folder.symbols ? folder.symbols.length : 0} symbols)`);
+            });
+            console.log('=== END DEBUG INFO ===');
         }
 
         function parseData() {
@@ -5194,14 +5746,23 @@ Lesson: Should have waited for pullback instead of chasing...
         // ========== EXPORT/IMPORT FUNCTIONS ==========
 
         function exportData() {
-            if (folders.length === 0) {
+            if (watchlistData.watchlists.length === 0 || watchlistData.watchlists.every(w => w.folders.length === 0)) {
                 alert('No data to export! Please add some folders first.');
                 return;
             }
 
-            // Export everything including journal and rule book
+            // Save current folders to active watchlist before export
+            const activeWatchlist = getActiveWatchlist();
+            if (activeWatchlist) {
+                activeWatchlist.folders = folders;
+            }
+
+            // Export v2.0 format with all watchlists
             const exportData = {
-                folders: folders,
+                version: '2.0',
+                exportDate: new Date().toISOString(),
+                watchlists: watchlistData.watchlists,
+                activeWatchlistId: watchlistData.activeWatchlistId,
                 tradingRulebook: localStorage.getItem('tradingRulebook') || '',
                 tradingJournal: localStorage.getItem('tradingJournal') || ''
             };
@@ -5218,7 +5779,7 @@ Lesson: Should have waited for pullback instead of chasing...
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
-            showNotification('All data exported (folders + journal + rules)!', 'success');
+            showNotification('All data exported (watchlists + journal + rules)!', 'success');
         }
 
         function importData(event) {
@@ -5244,43 +5805,127 @@ Lesson: Should have waited for pullback instead of chasing...
             reader.onload = (e) => {
                 try {
                     const imported = JSON.parse(e.target.result);
+                    const version = imported.version || '1.0';
 
-                    // Check if this is new format (with journal and rulebook) or old format (just folders array)
-                    let foldersData, rulebook, journal;
+                    console.log(`[Import] Detected format version: ${version}`);
 
-                    if (Array.isArray(imported)) {
-                        // Old format - just folders
-                        foldersData = imported;
-                        rulebook = '';
-                        journal = '';
-                    } else if (imported.folders && Array.isArray(imported.folders)) {
-                        // New format - includes journal and rulebook
-                        foldersData = imported.folders;
-                        rulebook = imported.tradingRulebook || '';
-                        journal = imported.tradingJournal || '';
-                    } else {
-                        throw new Error('Invalid data structure');
-                    }
+                    if (version === '2.0') {
+                        // v2.0 format - Multi-watchlist
+                        if (!imported.watchlists || !Array.isArray(imported.watchlists)) {
+                            throw new Error('Invalid v2.0 format: missing watchlists array');
+                        }
 
-                    // Security: Comprehensive data validation
-                    if (!validateImportedData(foldersData)) {
-                        throw new Error('Invalid data structure');
-                    }
+                        // Validate watchlists
+                        for (const wl of imported.watchlists) {
+                            if (!validateImportedData(wl.folders)) {
+                                throw new Error('Invalid watchlist data structure');
+                            }
+                        }
 
-                    // Prepare confirmation message
-                    let itemsToImport = [`${foldersData.length} folder(s)`];
-                    if (rulebook.trim()) itemsToImport.push('Rule Book');
-                    if (journal.trim()) itemsToImport.push('Journal');
+                        // Ask merge or replace
+                        const mode = confirm('Click OK to MERGE watchlists, or Cancel to REPLACE all data');
 
-                    const confirmMsg = `This will replace all existing data:\n\n• ${itemsToImport.join('\n• ')}\n\nContinue?`;
-                    if (confirm(confirmMsg)) {
-                        folders = foldersData;
-                        localStorage.setItem('tradingRulebook', rulebook);
-                        localStorage.setItem('tradingJournal', journal);
-                        saveFolders();
+                        if (mode) {
+                            // Merge mode
+                            imported.watchlists.forEach(wl => {
+                                // Check for duplicate names and rename if needed
+                                let newName = wl.name;
+                                let counter = 1;
+                                while (watchlistData.watchlists.some(existing => existing.name.toLowerCase() === newName.toLowerCase())) {
+                                    newName = `${wl.name} (${counter})`;
+                                    counter++;
+                                }
+
+                                // Generate new ID to avoid conflicts
+                                const newWatchlist = {
+                                    ...wl,
+                                    id: 'watchlist_' + newName.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11),
+                                    name: newName
+                                };
+
+                                watchlistData.watchlists.push(newWatchlist);
+                            });
+                        } else {
+                            // Replace mode
+                            watchlistData.watchlists = imported.watchlists;
+                            watchlistData.activeWatchlistId = imported.activeWatchlistId;
+
+                            if (imported.tradingRulebook) {
+                                localStorage.setItem('tradingRulebook', imported.tradingRulebook);
+                            }
+                            if (imported.tradingJournal) {
+                                localStorage.setItem('tradingJournal', imported.tradingJournal);
+                            }
+                        }
+
+                        saveWatchlistData();
+                        loadActiveFolders();
+                        updateWatchlistSelect();
                         displayFolders();
-                        showNotification(`Imported ${itemsToImport.join(', ')} successfully!`, 'success');
+
+                        const totalFolders = watchlistData.watchlists.reduce((sum, wl) => sum + wl.folders.length, 0);
+                        showNotification(`Imported ${watchlistData.watchlists.length} watchlist(s) with ${totalFolders} folders!`, 'success');
+
+                    } else {
+                        // v1.0 format - Single watchlist (backward compatibility)
+                        let foldersData, rulebook, journal;
+
+                        if (Array.isArray(imported)) {
+                            // Old format - just folders
+                            foldersData = imported;
+                            rulebook = '';
+                            journal = '';
+                        } else if (imported.folders && Array.isArray(imported.folders)) {
+                            // Old format with journal/rulebook
+                            foldersData = imported.folders;
+                            rulebook = imported.tradingRulebook || '';
+                            journal = imported.tradingJournal || '';
+                        } else {
+                            throw new Error('Invalid data structure');
+                        }
+
+                        // Security: Comprehensive data validation
+                        if (!validateImportedData(foldersData)) {
+                            throw new Error('Invalid data structure');
+                        }
+
+                        // Ask for watchlist name
+                        const watchlistName = prompt('Enter name for imported watchlist:', 'Imported');
+                        if (!watchlistName || !watchlistName.trim()) {
+                            showNotification('Import cancelled', 'info');
+                            event.target.value = '';
+                            return;
+                        }
+
+                        // Create new watchlist from v1.0 data
+                        let finalName = watchlistName.trim();
+                        let counter = 1;
+                        while (watchlistData.watchlists.some(wl => wl.name.toLowerCase() === finalName.toLowerCase())) {
+                            finalName = `${watchlistName.trim()} (${counter})`;
+                            counter++;
+                        }
+
+                        const newWatchlist = {
+                            id: 'watchlist_' + finalName.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now(),
+                            name: finalName,
+                            folders: foldersData
+                        };
+
+                        watchlistData.watchlists.push(newWatchlist);
+
+                        // Optionally import journal/rulebook if they don't exist
+                        if (rulebook && !localStorage.getItem('tradingRulebook')) {
+                            localStorage.setItem('tradingRulebook', rulebook);
+                        }
+                        if (journal && !localStorage.getItem('tradingJournal')) {
+                            localStorage.setItem('tradingJournal', journal);
+                        }
+
+                        saveWatchlistData();
+                        updateWatchlistSelect();
+                        showNotification(`Imported watchlist "${finalName}" with ${foldersData.length} folders!`, 'success');
                     }
+
                 } catch (err) {
                     alert('Invalid file format! Please select a valid backup file.');
                     console.error('Import error:', err);
@@ -5427,7 +6072,7 @@ Lesson: Should have waited for pullback instead of chasing...
         }
 
         async function uploadToGist() {
-            if (folders.length === 0) {
+            if (watchlistData.watchlists.length === 0 || watchlistData.watchlists.every(w => w.folders.length === 0)) {
                 alert('No data to upload! Please add some folders first.');
                 return;
             }
@@ -5441,8 +6086,21 @@ Lesson: Should have waited for pullback instead of chasing...
             setSyncStatus('Uploading to GitHub Gist...', 'info');
 
             try {
-                // Prepare all data
-                const foldersData = JSON.stringify(folders, null, 2);
+                // Save current folders to active watchlist before upload
+                const activeWatchlist = getActiveWatchlist();
+                if (activeWatchlist) {
+                    activeWatchlist.folders = folders;
+                }
+
+                // Prepare all data (v2.0 format)
+                const exportData = {
+                    version: '2.0',
+                    exportDate: new Date().toISOString(),
+                    watchlists: watchlistData.watchlists,
+                    activeWatchlistId: watchlistData.activeWatchlistId
+                };
+
+                const watchlistsData = JSON.stringify(exportData, null, 2);
                 const rulebook = localStorage.getItem('tradingRulebook') || '';
                 const journal = localStorage.getItem('tradingJournal') || '';
                 const timestamp = new Date().toISOString();
@@ -5450,7 +6108,7 @@ Lesson: Should have waited for pullback instead of chasing...
                 // Build files object - only include non-empty files
                 const files = {
                     'watchlist-data.json': {
-                        content: foldersData
+                        content: watchlistsData
                     }
                 };
 
@@ -5596,14 +6254,35 @@ Lesson: Should have waited for pullback instead of chasing...
                 }
 
                 const imported = JSON.parse(watchlistContent);
+                const version = imported.version || '1.0';
 
-                // Security: Comprehensive data validation
-                if (!validateImportedData(imported)) {
-                    throw new Error('Invalid data structure in gist');
+                console.log(`[Gist Download] Detected format version: ${version}`);
+
+                let itemsToDownload = [];
+
+                if (version === '2.0') {
+                    // v2.0 format - Multi-watchlist
+                    if (!imported.watchlists || !Array.isArray(imported.watchlists)) {
+                        throw new Error('Invalid v2.0 format in gist');
+                    }
+
+                    // Validate all watchlists
+                    for (const wl of imported.watchlists) {
+                        if (!validateImportedData(wl.folders)) {
+                            throw new Error('Invalid watchlist data in gist');
+                        }
+                    }
+
+                    itemsToDownload.push(`${imported.watchlists.length} watchlist(s)`);
+                } else {
+                    // v1.0 format - Single watchlist
+                    if (!validateImportedData(imported)) {
+                        throw new Error('Invalid data structure in gist');
+                    }
+
+                    itemsToDownload.push(`${imported.length} folder(s)`);
                 }
 
-                // Prepare summary message
-                let itemsToDownload = [`${imported.length} folder(s)`];
                 if (rulebookFile && rulebookFile.content.trim()) {
                     itemsToDownload.push('Rule Book');
                 }
@@ -5611,13 +6290,43 @@ Lesson: Should have waited for pullback instead of chasing...
                     itemsToDownload.push('Journal');
                 }
 
-                const confirmMsg = `Download will replace all existing data:\n\n${itemsToDownload.join('\n• ')}\n\nContinue?`;
+                const confirmMsg = `Download will replace all existing data:\n\n• ${itemsToDownload.join('\n• ')}\n\nContinue?`;
                 if (confirm(confirmMsg)) {
-                    // Import folders
-                    folders = imported;
-                    gistId = gistIdToDownload;
-                    localStorage.setItem('watchlistGistId', gistId);
-                    saveFolders();
+                    if (version === '2.0') {
+                        // Import v2.0 format
+                        watchlistData.watchlists = imported.watchlists;
+                        watchlistData.activeWatchlistId = imported.activeWatchlistId;
+
+                        gistId = gistIdToDownload;
+                        localStorage.setItem('watchlistGistId', gistId);
+
+                        saveWatchlistData();
+                        loadActiveFolders();
+                        updateWatchlistSelect();
+                        displayFolders();
+                    } else {
+                        // Import v1.0 format - convert to new format
+                        const mainWatchlist = watchlistData.watchlists.find(w => w.name === 'Main');
+                        if (mainWatchlist) {
+                            mainWatchlist.folders = imported;
+                        } else {
+                            const mainId = 'watchlist_main_' + Date.now();
+                            watchlistData.watchlists = [{
+                                id: mainId,
+                                name: 'Main',
+                                folders: imported
+                            }];
+                            watchlistData.activeWatchlistId = mainId;
+                        }
+
+                        gistId = gistIdToDownload;
+                        localStorage.setItem('watchlistGistId', gistId);
+
+                        saveWatchlistData();
+                        loadActiveFolders();
+                        updateWatchlistSelect();
+                        displayFolders();
+                    }
 
                     // Import rule book and journal
                     if (rulebookFile) {
