@@ -1760,57 +1760,85 @@
             }
 
             .container {
-                padding: 12px;
-                border-radius: 8px;
+                padding: 8px;
+                border-radius: 6px;
             }
 
             h1 {
-                font-size: 18px;
-                margin-bottom: 10px;
+                font-size: 16px;
+                margin-bottom: 8px;
             }
 
             textarea {
-                min-height: 80px;
-                padding: 10px;
-                font-size: 12px;
+                min-height: 60px;
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .input-section {
+                margin-bottom: 8px !important;
+            }
+
+            /* Compact button bar */
+            .input-section + div {
+                gap: 4px !important;
+                margin-top: 4px !important;
             }
 
             .folder {
-                padding: 12px;
-                margin-bottom: 12px;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .folder-header {
+                margin-bottom: 8px !important;
+                padding-bottom: 8px !important;
             }
 
             .folder-name {
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .btn-control {
-                font-size: 11px;
-                padding: 7px 10px;
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+
+            .folder-controls {
+                gap: 6px !important;
             }
 
             .symbols-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 6px;
+                gap: 5px;
             }
 
             .symbol-card {
-                padding: 8px;
+                padding: 6px;
             }
 
             .symbol-btn {
-                font-size: 12px;
-                padding: 5px 6px;
+                font-size: 11px;
+                padding: 4px 6px;
             }
 
             .tag-filter-btn {
-                padding: 4px 8px;
-                font-size: 11px;
+                padding: 3px 6px;
+                font-size: 10px;
             }
 
             .batch-status {
-                padding: 8px 10px;
-                font-size: 11px;
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            /* Hide text in buttons, show icons only */
+            .btn-text-desktop {
+                display: none !important;
+            }
+
+            .btn-text-mobile {
+                display: inline !important;
             }
         }
 
@@ -1885,59 +1913,66 @@
             background: #4a4e59;
         }
 
-        /* Mobile: Concise UI */
+        /* Tablet: Medium screens */
         @media (max-width: 768px) {
             /* Show navigation arrows */
             .watchlist-nav-arrow {
                 display: block !important;
-                padding: 4px 8px !important;
+                padding: 5px 10px !important;
                 font-size: 14px !important;
             }
 
             /* Compact watchlist tabs */
             .watchlist-tab {
-                padding: 5px 10px;
-                font-size: 11px;
+                padding: 6px 12px;
+                font-size: 12px;
                 min-width: auto;
             }
 
             /* Compact watchlist switcher container */
             .container > div:first-of-type {
-                margin-bottom: 8px !important;
-                padding: 8px !important;
+                margin-bottom: 10px !important;
+                padding: 10px !important;
             }
 
             /* Smaller action buttons */
             .btn-primary.btn-compact {
-                padding: 4px 8px !important;
+                padding: 5px 10px !important;
                 font-size: 13px !important;
-            }
-
-            /* Hide metadata on very small screens */
-            @media (max-width: 480px) {
-                #watchlist-meta {
-                    display: none !important;
-                }
             }
 
             /* Compact metadata */
             #watchlist-meta {
-                font-size: 10px !important;
+                font-size: 11px !important;
             }
 
             /* Reduce container padding */
             .container {
-                padding: 20px 12px !important;
+                padding: 16px !important;
             }
 
             /* Compact header */
             h1 {
-                font-size: 18px !important;
-                margin-bottom: 10px !important;
+                font-size: 20px !important;
+                margin-bottom: 12px !important;
+            }
+
+            /* Compact folders */
+            .folder {
+                padding: 14px;
+                margin-bottom: 14px;
+            }
+
+            .folder-header {
+                margin-bottom: 10px;
+            }
+
+            .symbols-grid {
+                gap: 8px;
             }
         }
 
-        /* Very small screens - extra compact */
+        /* Mobile: Small screens - extra compact */
         @media (max-width: 480px) {
             .watchlist-tab {
                 padding: 4px 8px;
@@ -1945,17 +1980,37 @@
             }
 
             .watchlist-nav-arrow {
-                padding: 3px 6px !important;
-                font-size: 12px !important;
+                padding: 4px 8px !important;
+                font-size: 13px !important;
             }
 
             .btn-primary.btn-compact {
-                padding: 3px 6px !important;
+                padding: 4px 8px !important;
                 font-size: 12px !important;
             }
 
             .container > div:first-of-type {
                 padding: 6px !important;
+                margin-bottom: 8px !important;
+            }
+
+            /* Hide metadata on very small screens */
+            #watchlist-meta {
+                display: none !important;
+            }
+
+            /* Ultra compact spacing */
+            body {
+                padding: 2px;
+            }
+
+            .container {
+                padding: 8px !important;
+            }
+
+            h1 {
+                font-size: 16px !important;
+                margin-bottom: 8px !important;
             }
         }
     </style>
@@ -3211,6 +3266,11 @@ Lesson: Should have waited for pullback instead of chasing...
         }
 
         function displayFolders() {
+            // Sort folders: pinned first, then unpinned (maintaining relative order)
+            const pinnedFolders = folders.filter(f => f.pinned);
+            const unpinnedFolders = folders.filter(f => !f.pinned);
+            folders = [...pinnedFolders, ...unpinnedFolders];
+
             const container = document.getElementById('foldersContainer');
             container.innerHTML = '';
 
@@ -3594,7 +3654,7 @@ Lesson: Should have waited for pullback instead of chasing...
             );
         }
 
-        // Wrap the existing displayFolders to add pin buttons and move pinned folders to top
+        // Wrap the existing displayFolders to add pin buttons
         (function () {
             const _origDisplayFolders = displayFolders;
             displayFolders = function () {
@@ -3602,19 +3662,16 @@ Lesson: Should have waited for pullback instead of chasing...
                 const container = document.getElementById('foldersContainer');
                 if (!container) return;
                 const folderDivs = Array.from(container.querySelectorAll('.folder'));
-                const pinnedDivs = [];
-                const unpinnedDivs = [];
+
                 folderDivs.forEach(div => {
                     const idx = parseInt(div.dataset.folderIndex, 10);
                     const folder = folders[idx];
-                    if (!folder) {
-                        unpinnedDivs.push(div);
-                        return;
-                    }
-                    // add/remove pinned class
+                    if (!folder) return;
+
+                    // Add/remove pinned class
                     div.classList.toggle('pinned', !!folder.pinned);
 
-                    // ensure pin button exists in header
+                    // Ensure pin button exists in header
                     let header = div.querySelector('.folder-header');
                     if (header) {
                         let pinBtn = header.querySelector('.pin-btn');
@@ -3630,14 +3687,7 @@ Lesson: Should have waited for pullback instead of chasing...
                             togglePin(idx);
                         };
                     }
-
-                    if (folder.pinned) pinnedDivs.push(div);
-                    else unpinnedDivs.push(div);
                 });
-
-                // Reorder: pinned first, preserving relative order
-                pinnedDivs.forEach(d => container.appendChild(d));
-                unpinnedDivs.forEach(d => container.appendChild(d));
             };
         })();
 
@@ -5845,6 +5895,14 @@ Lesson: Should have waited for pullback instead of chasing...
 
                                 watchlistData.watchlists.push(newWatchlist);
                             });
+
+                            // Import rulebook/journal if they don't exist locally
+                            if (imported.tradingRulebook && !localStorage.getItem('tradingRulebook')) {
+                                localStorage.setItem('tradingRulebook', imported.tradingRulebook);
+                            }
+                            if (imported.tradingJournal && !localStorage.getItem('tradingJournal')) {
+                                localStorage.setItem('tradingJournal', imported.tradingJournal);
+                            }
                         } else {
                             // Replace mode
                             watchlistData.watchlists = imported.watchlists;
@@ -6072,7 +6130,16 @@ Lesson: Should have waited for pullback instead of chasing...
         }
 
         async function uploadToGist() {
-            if (watchlistData.watchlists.length === 0 || watchlistData.watchlists.every(w => w.folders.length === 0)) {
+            // Ensure all watchlists have folders property
+            watchlistData.watchlists.forEach(wl => {
+                if (!wl.folders) {
+                    wl.folders = [];
+                }
+            });
+
+            // Check if there's any data to upload
+            const totalFolders = watchlistData.watchlists.reduce((sum, w) => sum + (w.folders ? w.folders.length : 0), 0);
+            if (watchlistData.watchlists.length === 0 || totalFolders === 0) {
                 alert('No data to upload! Please add some folders first.');
                 return;
             }
@@ -6089,7 +6156,11 @@ Lesson: Should have waited for pullback instead of chasing...
                 // Save current folders to active watchlist before upload
                 const activeWatchlist = getActiveWatchlist();
                 if (activeWatchlist) {
+                    if (!activeWatchlist.folders) {
+                        activeWatchlist.folders = [];
+                    }
                     activeWatchlist.folders = folders;
+                    console.log(`[Upload] Saving ${folders.length} folders from active watchlist: ${activeWatchlist.name}`);
                 }
 
                 // Prepare all data (v2.0 format)
@@ -6099,6 +6170,9 @@ Lesson: Should have waited for pullback instead of chasing...
                     watchlists: watchlistData.watchlists,
                     activeWatchlistId: watchlistData.activeWatchlistId
                 };
+
+                console.log(`[Upload] Uploading ${watchlistData.watchlists.length} watchlists:`,
+                    watchlistData.watchlists.map(w => `${w.name} (${w.folders.length} folders)`).join(', '));
 
                 const watchlistsData = JSON.stringify(exportData, null, 2);
                 const rulebook = localStorage.getItem('tradingRulebook') || '';
@@ -6266,14 +6340,18 @@ Lesson: Should have waited for pullback instead of chasing...
                         throw new Error('Invalid v2.0 format in gist');
                     }
 
-                    // Validate all watchlists
+                    // Validate all watchlists and ensure folders property exists
                     for (const wl of imported.watchlists) {
+                        if (!wl.folders) {
+                            wl.folders = [];
+                        }
                         if (!validateImportedData(wl.folders)) {
                             throw new Error('Invalid watchlist data in gist');
                         }
                     }
 
-                    itemsToDownload.push(`${imported.watchlists.length} watchlist(s)`);
+                    const totalFolders = imported.watchlists.reduce((sum, w) => sum + w.folders.length, 0);
+                    itemsToDownload.push(`${imported.watchlists.length} watchlist(s) with ${totalFolders} folders`);
                 } else {
                     // v1.0 format - Single watchlist
                     if (!validateImportedData(imported)) {
@@ -6294,18 +6372,47 @@ Lesson: Should have waited for pullback instead of chasing...
                 if (confirm(confirmMsg)) {
                     if (version === '2.0') {
                         // Import v2.0 format
+                        console.log('[Gist Download] Importing v2.0 format...');
+
+                        // Ensure all watchlists have proper structure
+                        imported.watchlists.forEach(wl => {
+                            if (!wl.folders) wl.folders = [];
+                            if (!wl.id) wl.id = 'watchlist_' + wl.name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
+                        });
+
+                        // Ensure activeWatchlistId is valid
+                        if (!imported.activeWatchlistId || !imported.watchlists.find(w => w.id === imported.activeWatchlistId)) {
+                            imported.activeWatchlistId = imported.watchlists[0].id;
+                            console.warn('[Gist Download] Invalid activeWatchlistId, using first watchlist');
+                        }
+
                         watchlistData.watchlists = imported.watchlists;
                         watchlistData.activeWatchlistId = imported.activeWatchlistId;
+
+                        console.log('[Gist Download] Loaded watchlists:',
+                            watchlistData.watchlists.map(w => `${w.name} (${w.folders.length} folders)`).join(', '));
 
                         gistId = gistIdToDownload;
                         localStorage.setItem('watchlistGistId', gistId);
 
-                        saveWatchlistData();
+                        // Save to localStorage
+                        const STORAGE_KEY = 'tradingViewWatchlists';
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlistData));
+
+                        // Verify data integrity
+                        verifyDataIntegrity();
+
+                        // Load active watchlist
                         loadActiveFolders();
-                        updateWatchlistSelect();
+                        updateWatchlistUI();
                         displayFolders();
+
+                        console.log('[Gist Download] Active watchlist:', getActiveWatchlist()?.name);
+                        console.log('[Gist Download] Loaded folders:', folders.length);
                     } else {
                         // Import v1.0 format - convert to new format
+                        console.log('[Gist Download] Importing v1.0 format...');
+
                         const mainWatchlist = watchlistData.watchlists.find(w => w.name === 'Main');
                         if (mainWatchlist) {
                             mainWatchlist.folders = imported;
@@ -6322,9 +6429,13 @@ Lesson: Should have waited for pullback instead of chasing...
                         gistId = gistIdToDownload;
                         localStorage.setItem('watchlistGistId', gistId);
 
-                        saveWatchlistData();
+                        // Save to localStorage
+                        const STORAGE_KEY = 'tradingViewWatchlists';
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlistData));
+
+                        // Load active watchlist
                         loadActiveFolders();
-                        updateWatchlistSelect();
+                        updateWatchlistUI();
                         displayFolders();
                     }
 
@@ -6336,9 +6447,11 @@ Lesson: Should have waited for pullback instead of chasing...
                         localStorage.setItem('tradingJournal', journalFile.content);
                     }
 
-                    displayFolders();
                     setSyncStatus(`✓ Downloaded successfully! (${itemsToDownload.join(', ')})`, 'success');
                     showNotification('All data downloaded from GitHub Gist!', 'success');
+
+                    // Run debug to verify
+                    console.log('[Gist Download] Complete! Run debugWatchlists() to verify data.');
                 }
 
             } catch (err) {
