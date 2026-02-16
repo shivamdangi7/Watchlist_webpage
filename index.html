@@ -225,6 +225,16 @@
             color: #000;
         }
 
+        .folder-tag-badge.pink {
+            border-color: #f48fb1;
+            color: #f48fb1;
+        }
+
+        .folder-tag-badge.pink:hover {
+            background: #f48fb1;
+            color: #000;
+        }
+
         .folder-collapse-icon {
             font-size: 16px;
             transition: transform 0.3s ease;
@@ -401,6 +411,16 @@
             color: #000;
         }
 
+        .tag-filter-btn.pink {
+            border-color: #f48fb1;
+            color: #f48fb1;
+        }
+
+        .tag-filter-btn.pink:hover {
+            background: #f48fb1;
+            color: #000;
+        }
+
         /* Global Tags Section */
         .global-tags-container {
             display: inline-flex;
@@ -468,6 +488,16 @@
 
         .global-tag-btn.purple:hover {
             background: #c58af9;
+            color: #000;
+        }
+
+        .global-tag-btn.pink {
+            border-color: #f48fb1;
+            color: #f48fb1;
+        }
+
+        .global-tag-btn.pink:hover {
+            background: #f48fb1;
             color: #000;
         }
 
@@ -562,6 +592,10 @@
 
         .symbol-card.tagged-purple {
             border-color: #c58af9;
+        }
+
+        .symbol-card.tagged-pink {
+            border-color: #f48fb1;
         }
 
         /* Compact View Styles */
@@ -1101,6 +1135,21 @@
             color: #000;
         }
 
+        .global-tag-change-btn.pink {
+            border-color: #f48fb1;
+            color: #f48fb1;
+        }
+
+        .global-tag-change-btn.pink:hover {
+            background: #f48fb1;
+            color: #000;
+        }
+
+        .global-tag-change-btn.pink.active {
+            background: #f48fb1;
+            color: #000;
+        }
+
         .global-tag-remove-btn {
             padding: 4px 8px;
             border: 1px solid #5f6368;
@@ -1285,6 +1334,17 @@
         .folder-tag-change-btn.purple:hover,
         .folder-tag-change-btn.purple.active {
             background: #c58af9;
+            color: #000;
+        }
+
+        .folder-tag-change-btn.pink {
+            border-color: #f48fb1;
+            color: #f48fb1;
+        }
+
+        .folder-tag-change-btn.pink:hover,
+        .folder-tag-change-btn.pink.active {
+            background: #f48fb1;
             color: #000;
         }
 
@@ -2531,10 +2591,13 @@ Lesson: Should have waited for pullback instead of chasing...
                 try {
                     watchlistData = JSON.parse(saved);
 
-                    // Ensure all watchlists have folders array and no shared references
+                    // Ensure all watchlists have folders and looseSymbols arrays
                     watchlistData.watchlists.forEach(wl => {
                         if (!wl.folders) {
                             wl.folders = [];
+                        }
+                        if (!wl.looseSymbols) {
+                            wl.looseSymbols = [];
                         }
                     });
 
@@ -2543,7 +2606,7 @@ Lesson: Should have waited for pullback instead of chasing...
                         watchlistData.activeWatchlistId = watchlistData.watchlists[0].id;
                     }
 
-                    console.log('[Load] Loaded watchlists:', watchlistData.watchlists.map(w => `${w.name} (${w.folders.length} folders)`).join(', '));
+                    console.log('[Load] Loaded watchlists:', watchlistData.watchlists.map(w => `${w.name} (${w.folders.length} folders, ${w.looseSymbols?.length || 0} loose stocks)`).join(', '));
                 } catch (e) {
                     console.error('[Load] Error loading watchlists:', e);
                     initializeDefaultWatchlist();
@@ -2595,7 +2658,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 watchlists: [{
                     id: mainId,
                     name: 'Main',
-                    folders: []
+                    folders: [],
+                    looseSymbols: []
                 }],
                 activeWatchlistId: mainId
             };
@@ -2678,7 +2742,8 @@ Lesson: Should have waited for pullback instead of chasing...
             const newWatchlist = {
                 id: newId,
                 name: trimmedName,
-                folders: []  // Empty array for new watchlist
+                folders: [],  // Empty array for new watchlist
+                looseSymbols: []  // Empty array for folderless stocks
             };
 
             watchlistData.watchlists.push(newWatchlist);
@@ -2898,6 +2963,45 @@ Lesson: Should have waited for pullback instead of chasing...
             console.log('=== END DEBUG INFO ===');
         }
 
+        // Check if folder name exists (case-insensitive)
+        function folderNameExists(name) {
+            return folders.some(f => f.name.toLowerCase() === name.toLowerCase());
+        }
+
+        // Generate unique folder name by appending counter
+        function generateUniqueFolderName(baseName) {
+            let uniqueName = baseName;
+            let counter = 1;
+
+            while (folderNameExists(uniqueName)) {
+                uniqueName = `${baseName} (${counter})`;
+                counter++;
+            }
+
+            return uniqueName;
+        }
+
+        // Ensure all folder names in an array are unique
+        function ensureUniqueFolderNames(folderArray) {
+            const usedNames = new Set();
+
+            folderArray.forEach(folder => {
+                let folderName = folder.name;
+                const baseName = folderName;
+                let counter = 1;
+
+                while (usedNames.has(folderName.toLowerCase())) {
+                    folderName = `${baseName} (${counter})`;
+                    counter++;
+                }
+
+                folder.name = folderName;
+                usedNames.add(folderName.toLowerCase());
+            });
+
+            return folderArray;
+        }
+
         function parseData() {
             const input = document.getElementById('clipboardInput').value.trim();
             if (!input) {
@@ -2918,11 +3022,11 @@ Lesson: Should have waited for pullback instead of chasing...
                     const parts = line.substring(3).split(',').map(s => s.trim()).filter(s => s);
 
                     if (parts.length > 0) {
-                        const folderName = parts[0];
+                        let folderName = parts[0];
                         const symbols = parts.slice(1).filter(s => s.includes(':'));
 
                         if (symbols.length > 0) {
-                            // Check if folder already exists
+                            // Check if folder already exists (exact match for update)
                             const existingIndex = folders.findIndex(f => f.name === folderName);
 
                             if (existingIndex >= 0) {
@@ -3280,7 +3384,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 { name: 'blue', emoji: '📘', label: 'Blue' },
                 { name: 'green', emoji: '📗', label: 'Green' },
                 { name: 'orange', emoji: '📙', label: 'Orange' },
-                { name: 'purple', emoji: '📓', label: 'Purple' }
+                { name: 'purple', emoji: '📓', label: 'Purple' },
+                { name: 'pink', emoji: '💗', label: 'Pink' }
             ];
 
             // Show/hide folder management buttons
@@ -3316,6 +3421,47 @@ Lesson: Should have waited for pullback instead of chasing...
             const batchSizeSelect = document.getElementById('batchSizeSelect');
             if (batchSizeSelect) {
                 batchSizeSelect.value = batchSize.toString();
+            }
+
+            // Render loose symbols (stocks without folders) at root level
+            const activeWatchlist = getActiveWatchlist();
+            const looseSymbols = activeWatchlist?.looseSymbols || [];
+
+            if (looseSymbols.length > 0) {
+                const looseSection = document.createElement('div');
+                looseSection.className = 'loose-symbols-section';
+                looseSection.style.cssText = 'margin-bottom: 20px; padding: 15px; background: #1e222d; border-radius: 8px; border-left: 4px solid #f48fb1;';
+
+                const looseHeader = document.createElement('div');
+                looseHeader.style.cssText = 'font-size: 14px; color: #f48fb1; margin-bottom: 12px; font-weight: 500;';
+                looseHeader.textContent = `💗 Loose Stocks (${looseSymbols.length})`;
+                looseSection.appendChild(looseHeader);
+
+                const looseGrid = document.createElement('div');
+                looseGrid.className = 'symbols-grid';
+                looseGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;';
+
+                looseSymbols.forEach((symbol, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'symbol-card';
+                    if (symbol.tags && symbol.tags.length > 0) {
+                        card.classList.add(`tagged-${symbol.tags[0]}`);
+                    }
+                    card.style.cssText = 'padding: 12px; background: #2a2e39; border-radius: 6px; border: 1px solid #363a45; cursor: pointer; transition: all 0.2s;';
+                    card.innerHTML = `<div style="font-weight: 500; font-size: 14px; color: #e8eaed;">${symbol.name}</div>`;
+                    if (symbol.note) {
+                        card.innerHTML += `<div style="font-size: 12px; color: #9aa0a6; margin-top: 4px;">📝 ${symbol.note}</div>`;
+                    }
+                    // Add click handler to open symbol in TradingView
+                    card.onclick = () => {
+                        const url = `https://in.tradingview.com/chart/?symbol=${symbol.name}`;
+                        window.open(url, '_blank');
+                    };
+                    looseGrid.appendChild(card);
+                });
+
+                looseSection.appendChild(looseGrid);
+                container.appendChild(looseSection);
             }
 
             folders.forEach((folder, folderIndex) => {
@@ -3808,7 +3954,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 { name: 'blue', emoji: '📘', label: 'Blue' },
                 { name: 'green', emoji: '📗', label: 'Green' },
                 { name: 'orange', emoji: '📙', label: 'Orange' },
-                { name: 'purple', emoji: '📓', label: 'Purple' }
+                { name: 'purple', emoji: '📓', label: 'Purple' },
+                { name: 'pink', emoji: '💗', label: 'Pink' }
             ];
 
             const currentTag = symbolObj.tags && symbolObj.tags.length > 0 ? symbolObj.tags[0] : null;
@@ -3950,7 +4097,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 { name: 'blue', emoji: '📘', label: 'Blue' },
                 { name: 'green', emoji: '📗', label: 'Green' },
                 { name: 'orange', emoji: '📙', label: 'Orange' },
-                { name: 'purple', emoji: '📓', label: 'Purple' }
+                { name: 'purple', emoji: '📓', label: 'Purple' },
+                { name: 'pink', emoji: '💗', label: 'Pink' }
             ];
 
             // Create new tag badges if there are any tags
@@ -4191,10 +4339,37 @@ Lesson: Should have waited for pullback instead of chasing...
             if (!folderNameInput || !folderNameText) return;
 
             const newName = folderNameInput.value.trim();
+            const oldName = folders[folderIndex].name;
 
             if (newName === '') {
                 showNotification('Folder name cannot be empty!', 'error');
-                folderNameInput.value = folders[folderIndex].name;
+                folderNameInput.value = oldName;
+                return;
+            }
+
+            // Check if name is same (case-insensitive)
+            if (newName.toLowerCase() === oldName.toLowerCase()) {
+                // Just update case if different
+                folders[folderIndex].name = newName;
+                folderNameText.textContent = newName;
+                saveFolders();
+
+                folderNameInput.style.display = 'none';
+                folderNameText.style.display = 'inline';
+                showNotification('Folder name updated!', 'success');
+                return;
+            }
+
+            // Check if new name already exists
+            const duplicate = folders.some((f, idx) =>
+                idx !== folderIndex && f.name.toLowerCase() === newName.toLowerCase()
+            );
+
+            if (duplicate) {
+                showNotification(`Folder "${newName}" already exists! Please choose a different name.`, 'error');
+                folderNameInput.value = oldName;
+                folderNameInput.focus();
+                folderNameInput.select();
                 return;
             }
 
@@ -4358,7 +4533,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: 0,
                 green: 0,
                 orange: 0,
-                purple: 0
+                purple: 0,
+                pink: 0
             };
 
             folders.forEach(folder => {
@@ -4379,7 +4555,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 { name: 'blue', emoji: '📘' },
                 { name: 'green', emoji: '📗' },
                 { name: 'orange', emoji: '📙' },
-                { name: 'purple', emoji: '📓' }
+                { name: 'purple', emoji: '📓' },
+                { name: 'pink', emoji: '💗' }
             ];
 
             // Clear and rebuild
@@ -4407,7 +4584,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             const tagLabels = {
@@ -4415,7 +4593,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: 'Blue',
                 green: 'Green',
                 orange: 'Orange',
-                purple: 'Purple'
+                purple: 'Purple',
+                pink: 'Pink'
             };
 
             // Update modal title
@@ -4440,7 +4619,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             const allTags = [
@@ -4448,7 +4628,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 { name: 'blue', emoji: '📘' },
                 { name: 'green', emoji: '📗' },
                 { name: 'orange', emoji: '📙' },
-                { name: 'purple', emoji: '📓' }
+                { name: 'purple', emoji: '📓' },
+                { name: 'pink', emoji: '💗' }
             ];
 
             // Collect all symbols with this tag
@@ -4578,7 +4759,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             showNotification(`Opened ${symbolsToOpen.length} ${tagEmojis[tagName]} ${tagName} tagged symbols!`, 'success');
@@ -4612,7 +4794,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             showNotification(`Changed ${getDisplayName(symbolObj.name)} to ${tagEmojis[newTag]} ${newTag}!`, 'success');
@@ -4662,7 +4845,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             const tagLabels = {
@@ -4670,7 +4854,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: 'Blue',
                 green: 'Green',
                 orange: 'Orange',
-                purple: 'Purple'
+                purple: 'Purple',
+                pink: 'Pink'
             };
 
             // Update modal title with folder name
@@ -4702,7 +4887,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             const allTags = [
@@ -4710,7 +4896,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 { name: 'blue', emoji: '📘' },
                 { name: 'green', emoji: '📗' },
                 { name: 'orange', emoji: '📙' },
-                { name: 'purple', emoji: '📓' }
+                { name: 'purple', emoji: '📓' },
+                { name: 'pink', emoji: '💗' }
             ];
 
             // Collect all symbols with this tag in this folder
@@ -4836,7 +5023,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             showNotification(`Opened ${symbolsToOpen.length} ${tagEmojis[tagName]} ${tagName} tagged symbols!`, 'success');
@@ -4870,7 +5058,8 @@ Lesson: Should have waited for pullback instead of chasing...
                 blue: '📘',
                 green: '📗',
                 orange: '📙',
-                purple: '📓'
+                purple: '📓',
+                pink: '💗'
             };
 
             showNotification(`Changed ${getDisplayName(symbolObj.name)} to ${tagEmojis[newTag]} ${newTag}!`, 'success');
@@ -5567,7 +5756,7 @@ Lesson: Should have waited for pullback instead of chasing...
                 <div style="margin-top: 12px; font-size: 12px;">
                     Try: <br>
                     • Searching for partial names (e.g., "REL" for RELIANCE)<br>
-                    • Typing tag colors: red, blue, green, orange, purple<br>
+                    • Typing tag colors: red, blue, green, orange, purple, pink<br>
                     • Typing folder names or dates<br>
                     • Toggling "Search Notes" if searching note content<br>
                     • Checking your spelling
@@ -5878,7 +6067,12 @@ Lesson: Should have waited for pullback instead of chasing...
                         if (mode) {
                             // Merge mode
                             imported.watchlists.forEach(wl => {
-                                // Check for duplicate names and rename if needed
+                                // Ensure unique folder names within this watchlist
+                                if (wl.folders && Array.isArray(wl.folders)) {
+                                    ensureUniqueFolderNames(wl.folders);
+                                }
+
+                                // Check for duplicate watchlist names and rename if needed
                                 let newName = wl.name;
                                 let counter = 1;
                                 while (watchlistData.watchlists.some(existing => existing.name.toLowerCase() === newName.toLowerCase())) {
@@ -5905,6 +6099,13 @@ Lesson: Should have waited for pullback instead of chasing...
                             }
                         } else {
                             // Replace mode
+                            // Ensure unique folder names within each watchlist
+                            imported.watchlists.forEach(wl => {
+                                if (wl.folders && Array.isArray(wl.folders)) {
+                                    ensureUniqueFolderNames(wl.folders);
+                                }
+                            });
+
                             watchlistData.watchlists = imported.watchlists;
                             watchlistData.activeWatchlistId = imported.activeWatchlistId;
 
@@ -6377,6 +6578,8 @@ Lesson: Should have waited for pullback instead of chasing...
                         // Ensure all watchlists have proper structure
                         imported.watchlists.forEach(wl => {
                             if (!wl.folders) wl.folders = [];
+                            // Ensure unique folder names within this watchlist
+                            ensureUniqueFolderNames(wl.folders);
                             if (!wl.id) wl.id = 'watchlist_' + wl.name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
                         });
 
